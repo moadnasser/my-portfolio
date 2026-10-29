@@ -1,5 +1,14 @@
 # Served from the site root after `vite build` copies public/ into dist/.
 
+# Client-side routes (/projects, /projects/<id>): serve index.html for any path that is not a real file.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>
+
 # Long cache for hashed build assets, short cache for the HTML shell.
 <IfModule mod_headers.c>
   <FilesMatch "\.(js|css|woff2?|webp|png|svg)$">
