@@ -6,7 +6,7 @@ interface AvatarProps {
   className?: string
 }
 
-/** Circular portrait with a teal signal ring. Falls back to a monogram until a photo is supplied. */
+/** Circular portrait with a Telegram-blue signal ring. Falls back to a monogram until a photo is supplied. */
 export function Avatar({ size = 96, className = '' }: AvatarProps) {
   const { t } = useLanguage()
   const localize = useLocalized()

@@ -35,18 +35,21 @@ function lookup(dict: Dict, key: string): string | undefined {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(readInitialLang)
+  const [pageTitle, setPageTitle] = useState<string | null>(null)
 
   useEffect(() => {
     const root = document.documentElement
     root.setAttribute('lang', lang)
     root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr')
-    document.title = dictionaries[lang].meta.title
+    const base = dictionaries[lang].meta.title
+    const prefix = pageTitle ? lookup(dictionaries[lang], pageTitle) : undefined
+    document.title = prefix ? `${prefix} — ${base}` : base
     try {
       localStorage.setItem(LANG_STORAGE_KEY, lang)
     } catch {
       /* storage unavailable */
     }
-  }, [lang])
+  }, [lang, pageTitle])
 
   const setLang = useCallback((next: Lang) => setLangState(next), [])
   const toggleLang = useCallback(() => setLangState((l) => (l === 'en' ? 'ar' : 'en')), [])
@@ -61,7 +64,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   )
 
   const value = useMemo<LanguageContextValue>(
-    () => ({ lang, dir: lang === 'ar' ? 'rtl' : 'ltr', setLang, toggleLang, t }),
+    () => ({ lang, dir: lang === 'ar' ? 'rtl' : 'ltr', setLang, toggleLang, t, setPageTitle }),
     [lang, setLang, toggleLang, t],
   )
 

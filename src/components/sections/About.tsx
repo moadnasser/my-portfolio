@@ -29,7 +29,6 @@ function LayerStack({ label }: { label: string }) {
             className="plate glass themed shadow-[0_40px_80px_-40px_rgb(var(--shadow-color)/0.6)]"
             style={{ '--z': p.z, '--delay': p.delay, opacity: p.opacity } as React.CSSProperties}
           >
-            {i === 0 && <div className="grid-bg absolute inset-0 rounded-[inherit] opacity-70" />}
             {i === 1 && (
               <div className="absolute inset-0 flex flex-wrap content-start gap-2 p-5" aria-hidden="true">
                 {chips.map((c) => (

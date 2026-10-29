@@ -1,4 +1,4 @@
-/** Soft teal lighting behind a surface. Purely decorative. */
+/** Soft blue lighting behind a surface. Purely decorative. */
 export function Ambient({ className = '' }: { className?: string }) {
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`} aria-hidden="true">

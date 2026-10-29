@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, MeshDistortMaterial } from '@react-three/drei'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { Float, useTexture } from '@react-three/drei'
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as THREE from 'three'
 import { useTheme } from '../../theme/context'
 import { scenePalettes, type ScenePalette } from './palette'
@@ -59,8 +59,107 @@ function Particles({ color, animate }: { color: string; animate: boolean }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial map={sprite} alphaMap={sprite} color={color} size={0.07} sizeAttenuation transparent opacity={0.85} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <pointsMaterial map={sprite} alphaMap={sprite} color={color} size={0.032} sizeAttenuation transparent opacity={0.75} depthWrite={false} blending={THREE.AdditiveBlending} />
     </points>
+  )
+}
+
+
+const EARTH_TEXTURES = {
+  map: '/textures/earth/color.webp',
+  normalMap: '/textures/earth/normal.webp',
+  specularMap: '/textures/earth/specular.webp',
+  emissiveMap: '/textures/earth/lights.webp',
+  cloudMap: '/textures/earth/clouds.webp',
+}
+// Start fetching as soon as this chunk loads, before the Earth component mounts.
+useTexture.preload(Object.values(EARTH_TEXTURES))
+
+const EARTH_RADIUS = 1.25
+const EARTH_TILT = 0.41 // 23.4°
+
+const atmosphereShader = {
+  vertexShader: /* glsl */ `
+    varying vec3 vNormal;
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: /* glsl */ `
+    uniform vec3 glowColor;
+    uniform float strength;
+    varying vec3 vNormal;
+    void main() {
+      float rim = pow(0.66 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+      gl_FragColor = vec4(glowColor, 1.0) * rim * strength;
+    }
+  `,
+}
+
+/** Textured Earth with clouds and a rim-lit atmosphere. Textures suspend; the wireframe shell renders meanwhile. */
+function Earth({ palette, animate }: { palette: ScenePalette; animate: boolean }) {
+  const surface = useRef<THREE.Mesh>(null)
+  const clouds = useRef<THREE.Mesh>(null)
+  const maps = useTexture(EARTH_TEXTURES)
+
+  // Colour textures are sRGB; data textures (normal / specular) stay linear.
+  useEffect(() => {
+    for (const t of [maps.map, maps.emissiveMap, maps.cloudMap]) {
+      t.colorSpace = THREE.SRGBColorSpace
+      t.anisotropy = 8
+      t.needsUpdate = true
+    }
+  }, [maps])
+
+  const atmosphereUniforms = useMemo(
+    () => ({ glowColor: { value: new THREE.Color(palette.accent) }, strength: { value: palette.light ? 0.55 : 1.1 } }),
+    [palette],
+  )
+
+  useFrame((_, dt) => {
+    if (!animate) return
+    if (surface.current) surface.current.rotation.y += dt * 0.06
+    if (clouds.current) clouds.current.rotation.y += dt * 0.08
+  })
+
+  return (
+    <group rotation={[0, 0, EARTH_TILT]}>
+      <mesh ref={surface}>
+        <sphereGeometry args={[EARTH_RADIUS, 96, 96]} />
+        <meshPhongMaterial
+          map={maps.map}
+          normalMap={maps.normalMap}
+          normalScale={new THREE.Vector2(0.8, 0.8)}
+          specularMap={maps.specularMap}
+          specular={new THREE.Color(palette.light ? '#8fb6d6' : '#3d6f9c')}
+          shininess={18}
+          emissiveMap={maps.emissiveMap}
+          emissive={new THREE.Color('#9fd8f5')}
+          emissiveIntensity={palette.light ? 0 : 1.15}
+        />
+      </mesh>
+      <mesh ref={clouds}>
+        <sphereGeometry args={[EARTH_RADIUS * 1.012, 64, 64]} />
+        <meshLambertMaterial map={maps.cloudMap} transparent opacity={palette.light ? 0.85 : 0.7} depthWrite={false} />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[EARTH_RADIUS * 1.09, 64, 64]} />
+        <shaderMaterial
+          args={[{ ...atmosphereShader, uniforms: atmosphereUniforms, side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }]}
+        />
+      </mesh>
+    </group>
+  )
+}
+
+/** Plain dark globe shown for the few hundred ms while textures download. */
+function EarthFallback({ palette }: { palette: ScenePalette }) {
+  return (
+    <mesh>
+      <sphereGeometry args={[EARTH_RADIUS, 48, 48]} />
+      <meshStandardMaterial color={palette.body} roughness={0.6} metalness={0.2} />
+    </mesh>
   )
 }
 
@@ -71,6 +170,7 @@ function SignalCore({ palette, animate }: { palette: ScenePalette; animate: bool
   const ringB = useRef<THREE.Mesh>(null)
   const { viewport, size } = useThree()
   const target = useMemo(() => new THREE.Vector3(), [])
+  const placed = useRef(false)
 
   useFrame((state, dt) => {
     const g = group.current
@@ -79,10 +179,17 @@ function SignalCore({ palette, animate }: { palette: ScenePalette; animate: bool
     const wide = size.width >= 1024
     const rtl = document.documentElement.getAttribute('dir') === 'rtl'
     const side = rtl ? -1 : 1
-    target.set(wide ? side * viewport.width * 0.26 : 0, wide ? 0.1 : viewport.height * 0.26, 0)
-    g.position.lerp(target, 0.06)
-    const scale = wide ? 0.78 : 0.42
-    g.scale.setScalar(THREE.MathUtils.lerp(g.scale.x || scale, scale, 0.08))
+    target.set(wide ? side * viewport.width * 0.315 : 0, wide ? 0.1 : viewport.height * 0.26, 0)
+    const scale = wide ? 0.68 : 0.42
+    if (!placed.current) {
+      // First frame: land exactly on target so nothing slides in from the centre.
+      g.position.copy(target)
+      g.scale.setScalar(scale)
+      placed.current = true
+    } else {
+      g.position.lerp(target, 0.08)
+      g.scale.setScalar(THREE.MathUtils.lerp(g.scale.x, scale, 0.1))
+    }
 
     if (!animate) return
     // Pointer parallax (pointer is tracked over the whole hero via eventSource).
@@ -102,21 +209,10 @@ function SignalCore({ palette, animate }: { palette: ScenePalette; animate: bool
   return (
     <group ref={group}>
       <Float speed={animate ? 1.4 : 0} rotationIntensity={animate ? 0.35 : 0} floatIntensity={animate ? 0.9 : 0}>
-        {/* Liquid core */}
-        <mesh>
-          <sphereGeometry args={[1.18, 96, 96]} />
-          <MeshDistortMaterial
-            color={palette.body}
-            distort={animate ? 0.38 : 0}
-            speed={animate ? 1.6 : 0}
-            metalness={palette.light ? 0.3 : 0.7}
-            roughness={palette.light ? 0.45 : 0.25}
-            emissive={palette.deep}
-            emissiveIntensity={palette.light ? 0.04 : 0.14}
-            transparent
-            opacity={palette.light ? 0.82 : 1}
-          />
-        </mesh>
+        {/* Planet */}
+        <Suspense fallback={<EarthFallback palette={palette} />}>
+          <Earth palette={palette} animate={animate} />
+        </Suspense>
 
         {/* Wireframe shell */}
         <mesh ref={wire}>
@@ -179,10 +275,9 @@ export default function HeroScene({ eventSource, animate }: HeroSceneProps) {
         camera={{ position: [0, 0, 7], fov: 40 }}
         style={{ pointerEvents: 'none' }}
       >
-        <hemisphereLight args={[palette.light ? '#ffffff' : '#9fe8dc', palette.light ? '#9fb4b8' : '#06110f', palette.light ? 1.2 : 0.7]} />
-        <pointLight position={[4, 3, 4]} intensity={palette.light ? 30 : 55} color={palette.accent2} />
-        <pointLight position={[-4, -2, 3]} intensity={palette.light ? 14 : 22} color="#ffffff" />
-        <directionalLight position={[-2, 5, 3]} intensity={palette.light ? 1.6 : 0.8} color="#ffffff" />
+        <hemisphereLight args={[palette.light ? '#ffffff' : '#9fd8f5', palette.light ? '#9fb0bd' : '#061018', palette.light ? 0.9 : 0.28]} />
+        <directionalLight position={[5, 2.5, 4]} intensity={palette.light ? 2.6 : 2.3} color="#ffffff" />
+        <pointLight position={[-4, -2, 3]} intensity={palette.light ? 6 : 10} color={palette.accent2} />
         <SignalCore palette={palette} animate={animate} />
         <Particles color={palette.accent} animate={animate} />
       </Canvas>

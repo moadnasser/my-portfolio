@@ -13,7 +13,7 @@ export function Contact() {
   const whatsappUrl = profile.whatsapp ? `https://wa.me/${profile.whatsapp.replace(/\D/g, '')}` : null
 
   return (
-    <section id="contact" className="grid-bg relative isolate scroll-mt-24 overflow-hidden py-28 sm:py-36 lg:py-44" aria-labelledby="contact-title">
+    <section id="contact" className="relative isolate scroll-mt-24 overflow-hidden py-28 sm:py-36 lg:py-44" aria-labelledby="contact-title">
       <Ambient />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-bg to-transparent" aria-hidden="true" />
       <div className="shell relative">

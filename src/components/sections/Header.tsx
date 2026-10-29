@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Check, Copy, FileDown, Menu, Moon, Sun, X } from 'lucide-react'
+import { FileDown, Menu, Moon, Sun, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
 import { profile } from '../../data/profile'
 import type { SocialLink } from '../../data/types'
 import { useLanguage } from '../../i18n/context'
@@ -8,13 +9,12 @@ import { useTheme } from '../../theme/context'
 import { BrandIcon } from '../ui/BrandIcon'
 import { ButtonLink, IconButton } from '../ui/Button'
 import { EASE } from '../../lib/motion'
-import { useCopyEmail } from '../../hooks/useCopyEmail'
 
 const navItems = [
-  { id: 'work', key: 'nav.work', index: '01' },
-  { id: 'services', key: 'nav.services', index: '02' },
-  { id: 'about', key: 'nav.about', index: '03' },
-  { id: 'contact', key: 'nav.contact', index: '04' },
+  { id: 'work', key: 'nav.work', to: '/projects' },
+  { id: 'services', key: 'nav.services', to: '/#services' },
+  { id: 'about', key: 'nav.about', to: '/#about' },
+  { id: 'contact', key: 'nav.contact', to: '/#contact' },
 ] as const
 
 function SocialIcon({ id }: { id: SocialLink['id'] }) {
@@ -25,9 +25,9 @@ function SocialIcon({ id }: { id: SocialLink['id'] }) {
 export function Header() {
   const { t, lang, toggleLang } = useLanguage()
   const { theme, toggleTheme } = useTheme()
-  const { status, copy } = useCopyEmail()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [hovered, setHovered] = useState<string | null>(null)
   const reduce = useReducedMotion()
 
   useEffect(() => {
@@ -49,8 +49,6 @@ export function Header() {
     }
   }, [menuOpen])
 
-  const copyLabel = status === 'copied' ? t('header.copied') : status === 'failed' ? t('header.copyFailed') : t('header.copyEmail')
-
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <a
@@ -66,25 +64,11 @@ export function Header() {
             scrolled || menuOpen ? 'glass shadow-[0_18px_50px_-30px_rgb(var(--shadow-color)/0.5)]' : 'border border-transparent'
           }`}
         >
-          {/* Start: monogram + email + copy + CV */}
+          {/* Start: monogram + CV */}
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <a href="#top" className="latin font-display inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent" aria-label={t('footer.backToTop')}>
+            <Link to="/" className="latin font-display inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent" aria-label={t('projects.backHome')}>
               M
-            </a>
-            <a href={`mailto:${profile.email}`} className="latin link-underline hidden min-w-0 truncate text-sm font-medium text-text-2 hover:text-text md:block">
-              {profile.email}
-            </a>
-            <button
-              type="button"
-              onClick={copy}
-              aria-live="polite"
-              aria-label={copyLabel}
-              title={copyLabel}
-              className="glass themed inline-flex h-9 min-w-9 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full px-2.5 text-xs font-semibold text-text transition-[border-color,transform] duration-200 hover:border-accent/60 active:scale-95 sm:px-3.5 sm:text-sm"
-            >
-              {status === 'copied' ? <Check className="size-3.5 text-accent" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
-              <span className="sr-only sm:not-sr-only">{copyLabel}</span>
-            </button>
+            </Link>
             {profile.cvFile && (
               <ButtonLink href={profile.cvFile} download variant="secondary" size="sm" className="h-9 px-3.5 text-xs sm:text-sm" aria-label={t('header.downloadCvLabel')}>
                 <FileDown className="size-3.5" aria-hidden="true" />
@@ -94,16 +78,33 @@ export function Header() {
           </div>
 
           {/* Centre: nav (desktop) */}
+          {/* A glowing pill glides between items as the pointer moves across the nav. */}
           <nav aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-7">
-              {navItems.map((item) => (
-                <li key={item.id}>
-                  <a href={`#${item.id}`} className="link-underline inline-flex items-baseline gap-1.5 text-sm font-medium text-text-2 hover:text-text">
-                    <span className="latin text-[10px] font-semibold text-accent">{item.index}</span>
-                    {t(item.key)}
-                  </a>
-                </li>
-              ))}
+            <ul className="flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+              {navItems.map((item) => {
+                const active = hovered === item.id
+                return (
+                  <li key={item.id}>
+                    <Link
+                      to={item.to}
+                      onMouseEnter={() => setHovered(item.id)}
+                      onFocus={() => setHovered(item.id)}
+                      onBlur={() => setHovered(null)}
+                      className={`relative block rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${active ? 'text-accent' : 'text-text-2'}`}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId="nav-pill"
+                          aria-hidden="true"
+                          className="absolute inset-0 rounded-full border border-accent/30 bg-accent/12 shadow-[0_0_24px_-6px_var(--ring)]"
+                          transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative">{t(item.key)}</span>
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           </nav>
 
@@ -166,10 +167,9 @@ export function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45, delay: 0.05 + i * 0.06, ease: EASE }}
                   >
-                    <a href={`#${item.id}`} onClick={() => setMenuOpen(false)} className="font-display flex items-baseline gap-4 py-3 text-4xl font-bold tracking-tight text-text sm:text-5xl">
-                      <span className="latin text-sm font-semibold text-accent">{item.index}</span>
+                    <Link to={item.to} onClick={() => setMenuOpen(false)} className="font-display block py-3 text-4xl font-bold tracking-tight text-text transition-colors duration-200 hover:text-accent sm:text-5xl">
                       {t(item.key)}
-                    </a>
+                    </Link>
                   </motion.li>
                 ))}
               </ul>

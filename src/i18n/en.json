@@ -1,5 +1,7 @@
 {
-  "meta": { "title": "Moad Almshirem — Software Engineer" },
+  "meta": {
+    "title": "Moad Almshirem — Software Engineer"
+  },
   "nav": {
     "work": "Work",
     "services": "Services",
@@ -32,7 +34,9 @@
     "secondaryCta": "Get in Touch",
     "photoAlt": "Portrait of Moad Almshirem"
   },
-  "tech": { "label": "Tools I work with" },
+  "tech": {
+    "label": "Tools I work with"
+  },
   "work": {
     "eyebrow": "Portfolio",
     "title": "Selected Work",
@@ -65,7 +69,9 @@
     "previous": "Previous project",
     "next": "Next project",
     "counter": "{current} of {total}",
-    "screenshotAlt": "{title} — screenshot {n}"
+    "screenshotAlt": "{title} — screenshot {n}",
+    "viewAll": "View all projects",
+    "featuredSubtitle": "Three highlights. The full catalogue, with filters and details, lives on its own page."
   },
   "services": {
     "eyebrow": "Services",
@@ -116,5 +122,19 @@
     "signoff": "Designed and built by Moad Almshirem.",
     "rights": "All rights reserved.",
     "backToTop": "Back to top"
+  },
+  "projects": {
+    "eyebrow": "Portfolio",
+    "title": "All projects",
+    "subtitle": "Everything I've shipped recently — mobile apps, web products and the systems behind them.",
+    "count": {
+      "one": "1 project",
+      "two": "2 projects",
+      "few": "{n} projects",
+      "many": "{n} projects"
+    },
+    "details": "View details",
+    "backHome": "Back to home",
+    "meta": "Projects"
   }
 }

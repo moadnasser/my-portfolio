@@ -12,6 +12,8 @@ export interface LanguageContextValue {
   toggleLang: () => void
   /** Translate a dot-path key, e.g. t('hero.primaryCta'). Supports {var} interpolation. */
   t: (key: string, vars?: Vars) => string
+  /** Translation key for the current page's title prefix (e.g. 'projects.meta'); null on the home page. */
+  setPageTitle: (key: string | null) => void
 }
 
 export const LanguageContext = createContext<LanguageContextValue | null>(null)

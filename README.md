@@ -39,13 +39,19 @@ npm run lint      # oxlint
 
 ## Colour rule
 
-Cool hues only: graphite backgrounds, teal / mint signal accent (`--accent`, `--accent-2`, `--accent-deep`).
-No blue, no purple, no warm colours. All colours are CSS variables in `src/styles/index.css`;
+Cool hues only: graphite backgrounds, Telegram blue accent (#2AABEE / #0088CC via `--accent`, `--accent-2`, `--accent-deep`).
+No purple, no warm colours. All colours are CSS variables in `src/styles/index.css`;
 the three.js scene mirrors them in `src/components/three/palette.ts` (three needs plain hex).
+
+## Pages
+
+- `/` — home: hero, tech ticker, three featured projects, services, about, contact.
+- `/projects` — full catalogue with filters; `/projects/<id>` opens that project's detail viewer (shareable link). Unknown ids fall back to `/projects`, unknown paths to `/`.
+- Routing is `react-router` (`src/App.tsx`); pages live in `src/pages/`.
 
 ## 3D and motion
 
-- `src/components/three/HeroScene.tsx` — react-three-fiber scene (liquid core, wireframe shell, orbit rings, 1800-particle halo). Lazy-loaded into its own chunk, pointer parallax over the whole hero, paused when scrolled out of view, single still frame under `prefers-reduced-motion`, skipped entirely when WebGL is unavailable.
+- `src/components/three/HeroScene.tsx` — react-three-fiber scene (textured Earth with clouds, night lights and a blue atmosphere, inside a wireframe shell with orbit rings and an 1800-particle halo; textures in `public/textures/earth/`, NASA Blue Marble via three.js examples). Lazy-loaded into its own chunk, pointer parallax over the whole hero, paused when scrolled out of view, single still frame under `prefers-reduced-motion`, skipped entirely when WebGL is unavailable.
 - `src/components/ui/TiltCard.tsx` — pointer-following perspective tilt with glare (project and service cards). Off on touch devices and under reduced motion.
 - `src/components/ui/Magnetic.tsx` — magnetic pull for the two focal CTAs (hero, contact).
 - Tech ticker (`TechStrip.tsx`) is a CSS 3D plane with two counter-scrolling rows; the About visual (`About.tsx`) is a CSS 3D stack of floating plates. Both render static under reduced motion.
@@ -61,5 +67,5 @@ branch `deploy`, into a folder outside `public_html` (for example `repositories/
 Then, after each green Actions run: Manage » Pull or Deploy » Update from Remote » Deploy HEAD Commit.
 
 - `public/.htaccess` ships with the build: long cache for hashed assets, no-cache for `index.html`, gzip.
-- No rewrite rule is needed because the site has no client-side routes.
+- `public/.htaccess` also rewrites unknown paths to `index.html`: the site has client-side routes (`/projects`, `/projects/<id>`).
 - `public_html` should be empty (or hold only files you no longer need) before the first deploy.

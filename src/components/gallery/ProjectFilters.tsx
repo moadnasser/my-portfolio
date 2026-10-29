@@ -9,13 +9,14 @@ interface ProjectFiltersProps {
   options: FilterValue[]
   value: FilterValue
   onChange: (value: FilterValue) => void
+  align?: 'center' | 'start'
 }
 
-export function ProjectFilters({ options, value, onChange }: ProjectFiltersProps) {
+export function ProjectFilters({ options, value, onChange, align = 'center' }: ProjectFiltersProps) {
   const { t } = useLanguage()
   const reduce = useReducedMotion()
   return (
-    <div role="group" aria-label={t('work.category')} className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
+    <div role="group" aria-label={t('work.category')} className={`no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0 ${align === 'center' ? 'sm:justify-center' : ''}`}>
       {options.map((opt) => {
         const active = opt === value
         return (

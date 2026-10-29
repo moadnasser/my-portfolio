@@ -10,6 +10,8 @@ interface ProjectCardProps {
   project: Project
   index: number
   onOpen: (project: Project) => void
+  /** Ignore the cover orientation and render every card at the same 4:3 frame (home highlight strip). */
+  uniform?: boolean
 }
 
 const orientationClasses: Record<Project['coverOrientation'], string> = {
@@ -21,12 +23,13 @@ const orientationClasses: Record<Project['coverOrientation'], string> = {
 const actionClass =
   'themed inline-flex size-9 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-black/55'
 
-export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function ProjectCard({ project, index, onOpen }, ref) {
+export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function ProjectCard({ project, index, onOpen, uniform = false }, ref) {
   const { t } = useLanguage()
   const localize = useLocalized()
   const reduce = useReducedMotion()
   const title = localize(project.title)
   const hasActions = Boolean(project.liveUrl || project.sourceUrl)
+  const [aspect, ...span] = (uniform ? 'aspect-[4/3]' : orientationClasses[project.coverOrientation]).split(' ')
 
   return (
     <motion.article
@@ -36,11 +39,11 @@ export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function Pr
       animate={{ opacity: 1, y: 0 }}
       exit={reduce ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.3), ease: EASE }}
-      className={`group relative flex flex-col ${orientationClasses[project.coverOrientation].split(' ').slice(1).join(' ')}`}
+      className={`group relative flex flex-col ${span.join(' ')}`}
     >
       <TiltCard max={6} className="rounded-card">
       <div
-        className={`themed relative w-full overflow-hidden rounded-card border border-border bg-surface-2 shadow-[0_30px_60px_-40px_rgb(var(--shadow-color)/0.6)] ${orientationClasses[project.coverOrientation].split(' ')[0]}`}
+        className={`themed relative w-full overflow-hidden rounded-card border border-border bg-surface-2 shadow-[0_30px_60px_-40px_rgb(var(--shadow-color)/0.6)] ${aspect}`}
       >
         <button
           type="button"

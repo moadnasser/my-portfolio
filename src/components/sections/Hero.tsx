@@ -48,7 +48,7 @@ export function Hero() {
   })
 
   return (
-    <section ref={sectionRef} id="top" className="grid-bg relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden pb-14 pt-32 sm:pb-20 lg:justify-center lg:pb-24 lg:pt-36" aria-labelledby="hero-title">
+    <section ref={sectionRef} id="top" className="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden pb-14 pt-32 sm:pb-20 lg:justify-center lg:pb-24 lg:pt-36" aria-labelledby="hero-title">
       <Ambient />
       <motion.div className="absolute inset-0 -z-10" style={{ y: sceneY, opacity: sceneOpacity }} aria-hidden="true">
         {webgl && (
@@ -73,9 +73,9 @@ export function Hero() {
             </div>
           </motion.div>
 
-          <h1 id="hero-title" className="font-display text-balance text-[2.75rem] font-bold leading-[0.98] tracking-[-0.035em] text-text sm:text-7xl lg:text-[6.5rem]">
+          <h1 id="hero-title" className="font-display text-balance text-[2.75rem] font-bold leading-[0.98] tracking-[-0.035em] text-text sm:text-6xl lg:text-[4.5rem] xl:text-[5rem] 2xl:text-[5.75rem]">
             <RisingLine delay={0.1}>{t('hero.headline1')}</RisingLine>
-            <RisingLine delay={0.2} className="lg:ps-[0.6em]">{t('hero.headline2')}</RisingLine>
+            <RisingLine delay={0.2} className="lg:ps-[0.5em]">{t('hero.headline2')}</RisingLine>
             <RisingLine delay={0.3} textClassName="text-signal">{t('hero.headline3')}</RisingLine>
           </h1>
 

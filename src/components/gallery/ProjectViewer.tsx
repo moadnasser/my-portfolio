@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Code2, ExternalLink, X } from 'lucide-react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Project } from '../../data/types'
 import { useLanguage, useLocalized } from '../../i18n/context'
 import { ButtonLink, IconButton } from '../ui/Button'
@@ -15,11 +15,29 @@ interface ProjectViewerProps {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+/** One screenshot at its natural proportions. Portrait (phone) shots are narrowed so they read at a sensible size. */
+function Shot({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
+  const [portrait, setPortrait] = useState(false)
+  return (
+    <figure className={`themed overflow-hidden rounded-2xl border border-border bg-bg shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.7)] ${portrait ? 'mx-auto w-full max-w-[20rem] sm:max-w-[22rem]' : 'w-full'}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        onLoad={(e) => setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)}
+        className="block h-auto w-full"
+      />
+    </figure>
+  )
+}
+
 export function ProjectViewer({ projects, activeId, onClose, onNavigate }: ProjectViewerProps) {
   const { t, dir } = useLanguage()
   const localize = useLocalized()
   const reduce = useReducedMotion()
   const dialogRef = useRef<HTMLDivElement>(null)
+  const scrollerRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
 
   const index = projects.findIndex((p) => p.id === activeId)
@@ -80,8 +98,10 @@ export function ProjectViewer({ projects, activeId, onClose, onNavigate }: Proje
 
   // Reset scroll position of the panel when the project changes.
   useEffect(() => {
-    dialogRef.current?.scrollTo({ top: 0 })
+    scrollerRef.current?.scrollTo({ top: 0 })
   }, [activeId])
+
+  const title = project ? localize(project.title) : ''
 
   return (
     <AnimatePresence>
@@ -94,95 +114,99 @@ export function ProjectViewer({ projects, activeId, onClose, onNavigate }: Proje
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.22 }}
         >
-          <button type="button" aria-label={t('work.close')} onClick={onClose} className="absolute inset-0 cursor-default" style={{ background: 'var(--overlay)' }} />
+          <button
+            type="button"
+            aria-label={t('work.close')}
+            onClick={onClose}
+            className="absolute inset-0 cursor-default backdrop-blur-md"
+            style={{ background: 'var(--overlay)' }}
+          />
 
           <motion.div
             ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="viewer-title"
-            initial={reduce ? false : { opacity: 0, y: 24, scale: 0.985 }}
+            initial={reduce ? false : { opacity: 0, y: 28, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduce ? undefined : { opacity: 0, y: 16, scale: 0.985, transition: { duration: 0.18 } }}
-            transition={{ duration: 0.38, ease: EASE }}
-            className="themed relative flex max-h-[94dvh] w-full max-w-6xl flex-col overflow-y-auto overscroll-contain rounded-t-[1.75rem] border border-border bg-surface shadow-[0_40px_120px_-40px_rgb(var(--shadow-color)/0.5)] sm:max-h-[90dvh] sm:rounded-[1.75rem]"
+            exit={reduce ? undefined : { opacity: 0, y: 18, scale: 0.98, transition: { duration: 0.18 } }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="themed relative flex max-h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-[1.75rem] border border-[var(--glass-border)] bg-surface shadow-[0_60px_140px_-40px_rgb(var(--shadow-color)/0.7)] sm:max-h-[90dvh] sm:rounded-[1.75rem]"
           >
-            {/* Top bar */}
-            <div className="themed sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-surface/90 px-4 py-3 backdrop-blur sm:px-6">
-              <div className="flex items-center gap-2">
-                {hasMany && (
-                  <>
-                    <IconButton onClick={goPrev} label={t('work.previous')}>
-                      <ChevronLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
-                    </IconButton>
-                    <IconButton onClick={goNext} label={t('work.next')}>
-                      <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
-                    </IconButton>
-                    <span className="ms-1 text-xs font-semibold tabular-nums text-text-2" aria-live="polite">
-                      {t('work.counter', { current: index + 1, total: projects.length })}
-                    </span>
-                  </>
-                )}
-              </div>
-              <IconButton ref={closeRef} onClick={onClose} label={t('work.close')}>
-                <X className="size-4" aria-hidden="true" />
-              </IconButton>
-            </div>
+            <IconButton ref={closeRef} onClick={onClose} label={t('work.close')} className="absolute end-4 top-4 z-20">
+              <X className="size-4" aria-hidden="true" />
+            </IconButton>
 
-            <div className="grid grid-cols-1 gap-8 p-4 sm:p-6 lg:grid-cols-12 lg:gap-10 lg:p-8">
-              {/* Images */}
-              <div className="flex flex-col gap-4 lg:col-span-7" aria-label={t('work.gallery')}>
-                {project.galleryImages.map((src, i) => (
-                  <figure key={src} className="themed overflow-hidden rounded-card border border-border bg-surface-2">
-                    <img
-                      src={src}
-                      alt={t('work.screenshotAlt', { title: localize(project.title), n: i + 1 })}
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                      decoding="async"
-                      className="mx-auto max-h-[70dvh] w-full object-contain"
-                    />
-                  </figure>
-                ))}
+            <div ref={scrollerRef} className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto overscroll-contain lg:grid-cols-12">
+              {/* Stage: screenshots floating on a lit surface */}
+              <div className="relative isolate bg-surface-2 p-4 pt-16 sm:p-6 sm:pt-16 lg:col-span-7 lg:p-8 lg:pt-8" aria-label={t('work.gallery')}>
+                <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+                  <div className="ambient -top-20 start-[-10%] h-72 w-72" style={{ background: 'var(--glow-a)' }} />
+                  <div className="ambient -bottom-24 end-[-10%] h-80 w-80" style={{ background: 'var(--glow-b)' }} />
+                </div>
+                <div className="flex flex-col gap-6">
+                  {project.galleryImages.map((src, i) => (
+                    <Shot key={src} src={src} alt={t('work.screenshotAlt', { title, n: i + 1 })} eager={i === 0} />
+                  ))}
+                </div>
               </div>
 
               {/* Details */}
-              <div className="lg:col-span-5">
-                <div className="lg:sticky lg:top-20">
-                  <p className="latin text-xs font-semibold uppercase tracking-wider text-text-2">
+              <div className="flex flex-col p-6 sm:p-8 lg:sticky lg:top-0 lg:col-span-5 lg:max-h-[90dvh] lg:self-start lg:overflow-y-auto lg:p-10 lg:pe-16">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="latin inline-flex items-center gap-1.5 rounded-full bg-accent/12 px-3 py-1 text-xs font-semibold text-accent">
+                    <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
                     {t(`work.categories.${project.category}`)}
-                    {project.year && <span className="text-text-2/70"> · {project.year}</span>}
-                  </p>
-                  <h2 id="viewer-title" className="font-display mt-2 text-balance text-2xl font-bold tracking-tight text-text sm:text-3xl">
-                    {localize(project.title)}
-                  </h2>
-                  <p className="mt-4 text-pretty text-base leading-relaxed text-text-2">{localize(project.details ?? project.description)}</p>
-
-                  <h3 className="mt-7 text-xs font-semibold uppercase tracking-wider text-text-2">{t('work.technologies')}</h3>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <li key={tech} className="latin glass themed rounded-full px-3 py-1 text-xs font-semibold text-text">
-                        {tech}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {(project.liveUrl || project.sourceUrl) && (
-                    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                      {project.liveUrl && (
-                        <ButtonLink href={project.liveUrl} external size="md">
-                          <ExternalLink className="size-4" aria-hidden="true" />
-                          {t('work.viewLive')}
-                        </ButtonLink>
-                      )}
-                      {project.sourceUrl && (
-                        <ButtonLink href={project.sourceUrl} external variant="secondary" size="md">
-                          <Code2 className="size-4" aria-hidden="true" />
-                          {t('work.viewSource')}
-                        </ButtonLink>
-                      )}
-                    </div>
-                  )}
+                  </span>
+                  {project.year && <span className="latin glass rounded-full px-3 py-1 text-xs font-semibold text-text-2">{project.year}</span>}
                 </div>
+                <h2 id="viewer-title" className="font-display mt-5 text-balance text-3xl font-bold leading-[1.05] tracking-[-0.02em] text-text sm:text-4xl">
+                  {title}
+                </h2>
+                <p className="mt-5 text-pretty text-base leading-relaxed text-text-2">{localize(project.details ?? project.description)}</p>
+
+                <h3 className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-text-2">{t('work.technologies')}</h3>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
+                    <li key={tech} className="latin glass themed rounded-full px-3 py-1.5 text-xs font-semibold text-text">
+                      {tech}
+                    </li>
+                  ))}
+                </ul>
+
+                {(project.liveUrl || project.sourceUrl) && (
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    {project.liveUrl && (
+                      <ButtonLink href={project.liveUrl} external size="md">
+                        <ExternalLink className="size-4" aria-hidden="true" />
+                        {t('work.viewLive')}
+                      </ButtonLink>
+                    )}
+                    {project.sourceUrl && (
+                      <ButtonLink href={project.sourceUrl} external variant="secondary" size="md">
+                        <Code2 className="size-4" aria-hidden="true" />
+                        {t('work.viewSource')}
+                      </ButtonLink>
+                    )}
+                  </div>
+                )}
+
+                {hasMany && (
+                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-6 lg:pt-8">
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] tabular-nums text-text-2" aria-live="polite">
+                      {t('work.counter', { current: index + 1, total: projects.length })}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <IconButton onClick={goPrev} label={t('work.previous')}>
+                        <ChevronLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+                      </IconButton>
+                      <IconButton onClick={goNext} label={t('work.next')}>
+                        <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+                      </IconButton>
+                    </div>
+                  </div>
+                )}
+                <div className="mt-8" aria-hidden="true" />
               </div>
             </div>
           </motion.div>
