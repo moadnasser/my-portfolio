@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Moad Almshirem — Software Engineer</title>
+    <meta name="description" content="Portfolio of Moad Almshirem, a software engineer building mobile and web products with Flutter, React and TypeScript." />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F5F6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070A0F" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Moad Almshirem — Software Engineer" />
+    <meta property="og:description" content="Engineering digital experiences that move ideas forward. Mobile and web products built with Flutter, React and TypeScript." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Readex+Pro:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Apply theme and language before first paint to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var root = document.documentElement;
+          var theme = localStorage.getItem('portfolio.theme');
+          if (theme !== 'light' && theme !== 'dark') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          root.setAttribute('data-theme', theme);
+          var lang = localStorage.getItem('portfolio.lang');
+          if (lang !== 'en' && lang !== 'ar') {
+            lang = /^ar\b/i.test(navigator.language || '') ? 'ar' : 'en';
+          }
+          root.setAttribute('lang', lang);
+          root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-BJ3XjmXf.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dri3Iq3h.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home2/moadalms/public_html/
+    - if command -v rsync >/dev/null 2>&1; then rsync -a --exclude='.git' --exclude='.cpanel.yml' ./ "$DEPLOYPATH"; else /bin/cp -R . "$DEPLOYPATH" && rm -f "$DEPLOYPATH/.cpanel.yml"; fi
