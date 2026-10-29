@@ -13,7 +13,7 @@ import { Magnetic } from '../ui/Magnetic'
 const HeroScene = lazy(() => import('../three/HeroScene'))
 
 /** Line-by-line masked rise. Each line slides up out of its own clipping box. */
-function RisingLine({ children, delay, className = '' }: { children: string; delay: number; className?: string }) {
+function RisingLine({ children, delay, className = '', textClassName = '' }: { children: string; delay: number; className?: string; textClassName?: string }) {
   const reduce = useReducedMotion()
   return (
     <span className="block overflow-hidden pb-[0.08em]">
@@ -23,7 +23,8 @@ function RisingLine({ children, delay, className = '' }: { children: string; del
         animate={{ y: 0 }}
         transition={{ duration: 0.9, delay, ease: EASE }}
       >
-        {children}
+        {/* Gradient lives on a plain inline span: Safari breaks background-clip:text on transformed elements. */}
+        <span className={textClassName}>{children}</span>
       </motion.span>
     </span>
   )
@@ -75,7 +76,7 @@ export function Hero() {
           <h1 id="hero-title" className="font-display text-balance text-[2.75rem] font-bold leading-[0.98] tracking-[-0.035em] text-text sm:text-7xl lg:text-[6.5rem]">
             <RisingLine delay={0.1}>{t('hero.headline1')}</RisingLine>
             <RisingLine delay={0.2} className="lg:ps-[0.6em]">{t('hero.headline2')}</RisingLine>
-            <RisingLine delay={0.3} className="text-signal">{t('hero.headline3')}</RisingLine>
+            <RisingLine delay={0.3} textClassName="text-signal">{t('hero.headline3')}</RisingLine>
           </h1>
 
           <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">

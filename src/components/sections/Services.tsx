@@ -21,8 +21,8 @@ export function Services() {
                   <TiltCard max={5} className="group h-full rounded-card">
                     <div className="glass themed relative flex h-full min-h-72 flex-col justify-between overflow-hidden rounded-card p-6 transition-[border-color,box-shadow] duration-300 group-hover:border-accent/50 group-hover:shadow-[0_30px_60px_-40px_var(--ring)] sm:p-7">
                       {/* Wrapper carries the logical offset; the inner span flips to LTR for the digits only. */}
-                      <span className="pointer-events-none absolute -top-3 end-4 select-none" aria-hidden="true">
-                        <span className="latin font-display text-outline block text-7xl font-bold leading-none">{index}</span>
+                      <span className="pointer-events-none absolute end-6 top-5 select-none opacity-60" aria-hidden="true">
+                        <span className="latin font-display text-outline block text-6xl font-bold leading-none">{index}</span>
                       </span>
                       <span className="themed inline-flex size-12 items-center justify-center rounded-2xl border border-border bg-surface text-accent transition-[background-color,color,border-color] duration-300 group-hover:border-transparent group-hover:bg-accent group-hover:text-on-accent">
                         <Icon className="size-5" strokeWidth={1.75} aria-hidden="true" />
