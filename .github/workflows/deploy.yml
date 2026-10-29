@@ -1,0 +1,46 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Never let two pushes race each other onto the deploy branch.
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      # cPanel pulls the `deploy` branch and runs this file: copy the built site into public_html.
+      # Falls back to cp if the host has no rsync.
+      - name: Add cPanel deploy file
+        run: |
+          cat > dist/.cpanel.yml <<'EOF'
+          ---
+          deployment:
+            tasks:
+              - export DEPLOYPATH=/home2/moadalms/public_html/
+              - if command -v rsync >/dev/null 2>&1; then rsync -a --exclude='.git' --exclude='.cpanel.yml' ./ "$DEPLOYPATH"; else /bin/cp -R . "$DEPLOYPATH" && rm -f "$DEPLOYPATH/.cpanel.yml"; fi
+          EOF
+
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: deploy
+          publish_dir: ./dist
+          enable_jekyll: true   # skip the .nojekyll marker; this is not GitHub Pages
+          commit_message: "Deploy ${{ github.sha }}"

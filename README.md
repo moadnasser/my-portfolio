@@ -49,3 +49,17 @@ the three.js scene mirrors them in `src/components/three/palette.ts` (three need
 - `src/components/ui/TiltCard.tsx` — pointer-following perspective tilt with glare (project and service cards). Off on touch devices and under reduced motion.
 - `src/components/ui/Magnetic.tsx` — magnetic pull for the two focal CTAs (hero, contact).
 - Tech ticker (`TechStrip.tsx`) is a CSS 3D plane with two counter-scrolling rows; the About visual (`About.tsx`) is a CSS 3D stack of floating plates. Both render static under reduced motion.
+
+## Deploying to cPanel
+
+The host has no Node, so GitHub builds the site. On every push to `main`, `.github/workflows/deploy.yml`
+runs `npm ci && npm run build` and publishes the contents of `dist/` (plus a tiny `.cpanel.yml`) to the
+`deploy` branch. cPanel is pointed at that branch and only copies files.
+
+One-time cPanel setup: Git Version Control » Create » clone `https://github.com/moadnasser/my-portfolio.git`,
+branch `deploy`, into a folder outside `public_html` (for example `repositories/my-portfolio`).
+Then, after each green Actions run: Manage » Pull or Deploy » Update from Remote » Deploy HEAD Commit.
+
+- `public/.htaccess` ships with the build: long cache for hashed assets, no-cache for `index.html`, gzip.
+- No rewrite rule is needed because the site has no client-side routes.
+- `public_html` should be empty (or hold only files you no longer need) before the first deploy.
