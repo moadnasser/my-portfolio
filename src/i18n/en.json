@@ -1,0 +1,120 @@
+{
+  "meta": { "title": "Moad Almshirem — Software Engineer" },
+  "nav": {
+    "work": "Work",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "skipToContent": "Skip to content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "header": {
+    "copyEmail": "Copy email",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "downloadCv": "CV",
+    "downloadCvLabel": "Download CV",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "language": "Switch to Arabic",
+    "languageShort": "AR",
+    "themeToLight": "Switch to light mode",
+    "themeToDark": "Switch to dark mode"
+  },
+  "hero": {
+    "intro": "Hi, I'm Moad — a software engineer building mobile and web products.",
+    "headline1": "Engineering digital",
+    "headline2": "experiences that",
+    "headline3": "move ideas forward.",
+    "paragraph": "I design and build Flutter apps, React web products and the backends behind them — bilingual, accessible and made to last.",
+    "primaryCta": "Explore My Work",
+    "secondaryCta": "Get in Touch",
+    "photoAlt": "Portrait of Moad Almshirem"
+  },
+  "tech": { "label": "Tools I work with" },
+  "work": {
+    "eyebrow": "Portfolio",
+    "title": "Selected Work",
+    "subtitle": "A few of the products I've shipped recently, across mobile and web.",
+    "filters": {
+      "all": "All",
+      "web": "Web",
+      "mobile": "Mobile",
+      "backend": "Backend / API",
+      "uiux": "UI / UX",
+      "other": "Other"
+    },
+    "categories": {
+      "web": "Web",
+      "mobile": "Mobile",
+      "backend": "Backend / API",
+      "uiux": "UI / UX",
+      "other": "Other"
+    },
+    "viewProject": "View project",
+    "viewLive": "View Live Project",
+    "viewSource": "View Source Code",
+    "openDetails": "Open details for {title}",
+    "empty": "No projects in this category yet.",
+    "year": "Year",
+    "technologies": "Technologies",
+    "category": "Category",
+    "gallery": "Screenshots",
+    "close": "Close",
+    "previous": "Previous project",
+    "next": "Next project",
+    "counter": "{current} of {total}",
+    "screenshotAlt": "{title} — screenshot {n}"
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "From concept to production.",
+    "subtitle": "Thoughtful engineering and design for products built to last.",
+    "items": {
+      "product": {
+        "title": "Product Engineering",
+        "description": "Building reliable, maintainable applications with clean architecture and real tests."
+      },
+      "web": {
+        "title": "Web Development",
+        "description": "Responsive, accessible, bilingual web experiences with React, TypeScript and Next.js."
+      },
+      "mobile": {
+        "title": "Mobile Applications",
+        "description": "Polished iOS and Android apps with Flutter — offline-first, localized and production-ready."
+      },
+      "backend": {
+        "title": "Backend & Systems",
+        "description": "APIs, data models, integrations and the infrastructure that keeps products running."
+      }
+    }
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "Building for real people, in two languages.",
+    "p1": "I'm Moad Almshirem, a software engineer based in Libya. I build mobile apps with Flutter and web products with React, TypeScript and Next.js, usually with the backend and data layer alongside them.",
+    "p2": "Most of what I ship is Arabic-first and bilingual, so right-to-left layouts, Arabic typography and localization are part of how I work rather than an afterthought.",
+    "focusTitle": "Focus areas",
+    "focus": {
+      "mobile": "Flutter apps with clean architecture, Riverpod and offline-first data",
+      "web": "React and Next.js products with careful typography and motion",
+      "backend": "APIs, Firebase and SQL data models that stay consistent",
+      "i18n": "Arabic / English localization and RTL done properly"
+    },
+    "visualLabel": "Abstract visual"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Have a good idea? Let's build it.",
+    "subtitle": "Tell me about the product you have in mind and I'll get back to you.",
+    "email": "Email me",
+    "whatsapp": "WhatsApp",
+    "copyEmail": "Copy email address"
+  },
+  "footer": {
+    "signoff": "Designed and built by Moad Almshirem.",
+    "rights": "All rights reserved.",
+    "backToTop": "Back to top"
+  }
+}

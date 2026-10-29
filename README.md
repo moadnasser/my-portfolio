@@ -2,7 +2,7 @@
 
 Bilingual (English / Arabic), light + dark personal portfolio. Static, data-driven, no backend.
 
-**Stack:** React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · Lucide icons.
+**Stack:** React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · three.js (react-three-fiber + drei) · Lucide icons.
 
 ```bash
 npm install
@@ -39,5 +39,13 @@ npm run lint      # oxlint
 
 ## Colour rule
 
-Only cool colours (blue, navy, indigo, cyan, white, cool greys) are used, in both themes — no purple, no warm hues. All colours come from the CSS variables in `src/styles/index.css`; do not introduce raw warm hex values in components.
-# my-portfolio
+Cool hues only: graphite backgrounds, teal / mint signal accent (`--accent`, `--accent-2`, `--accent-deep`).
+No blue, no purple, no warm colours. All colours are CSS variables in `src/styles/index.css`;
+the three.js scene mirrors them in `src/components/three/palette.ts` (three needs plain hex).
+
+## 3D and motion
+
+- `src/components/three/HeroScene.tsx` — react-three-fiber scene (liquid core, wireframe shell, orbit rings, 1800-particle halo). Lazy-loaded into its own chunk, pointer parallax over the whole hero, paused when scrolled out of view, single still frame under `prefers-reduced-motion`, skipped entirely when WebGL is unavailable.
+- `src/components/ui/TiltCard.tsx` — pointer-following perspective tilt with glare (project and service cards). Off on touch devices and under reduced motion.
+- `src/components/ui/Magnetic.tsx` — magnetic pull for the two focal CTAs (hero, contact).
+- Tech ticker (`TechStrip.tsx`) is a CSS 3D plane with two counter-scrolling rows; the About visual (`About.tsx`) is a CSS 3D stack of floating plates. Both render static under reduced motion.
