@@ -1,15 +1,20 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, Code2, ExternalLink } from 'lucide-react'
-import { forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
 import type { Project } from '../../data/types'
 import { useLanguage, useLocalized } from '../../i18n/context'
+import { hasDemo } from '../../demos/registry'
 import { EASE } from '../../lib/motion'
+import { DeviceShowcase } from '../ui/DeviceShowcase'
+import { ProjectDetails } from './ProjectDetails'
 import { TiltCard } from '../ui/TiltCard'
 
 interface ProjectCardProps {
   project: Project
   index: number
   onOpen: (project: Project) => void
+  /** Expanded in place to full width, showing the story, links and screenshots. */
+  expanded?: boolean
   /** Ignore the cover orientation and render every card at the same 4:3 frame (home highlight strip). */
   uniform?: boolean
 }
@@ -23,13 +28,31 @@ const orientationClasses: Record<Project['coverOrientation'], string> = {
 const actionClass =
   'themed inline-flex size-9 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-black/55'
 
-export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function ProjectCard({ project, index, onOpen, uniform = false }, ref) {
+export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function ProjectCard({ project, index, onOpen, uniform = false, expanded = false }, ref) {
   const { t } = useLanguage()
   const localize = useLocalized()
   const reduce = useReducedMotion()
   const title = localize(project.title)
+  const [hover, setHover] = useState(false)
   const hasActions = Boolean(project.liveUrl || project.sourceUrl)
   const [aspect, ...span] = (uniform ? 'aspect-[4/3]' : orientationClasses[project.coverOrientation]).split(' ')
+
+  if (expanded)
+    return (
+      <motion.article
+        ref={ref}
+        layout={!reduce}
+        transition={{ type: 'spring', stiffness: 260, damping: 32 }}
+        id={`card-${project.id}`}
+        className="relative col-span-full scroll-mt-28 overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-[0_40px_90px_-50px_rgb(var(--shadow-color)/0.7)]"
+        role="region"
+        aria-labelledby={`card-title-${project.id}`}
+      >
+        <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduce ? 0 : 0.15, duration: 0.3 } }} className="p-5 sm:p-8 lg:p-10">
+          <ProjectDetails project={project} variant="full" headingId={`card-title-${project.id}`} onClose={() => onOpen(project)} />
+        </motion.div>
+      </motion.article>
+    )
 
   return (
     <motion.article
@@ -40,24 +63,39 @@ export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function Pr
       exit={reduce ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.3), ease: EASE }}
       className={`group relative flex flex-col ${span.join(' ')}`}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
     >
       <TiltCard max={6} className="rounded-card">
-      <div
-        className={`themed relative w-full overflow-hidden rounded-card border border-border bg-surface-2 shadow-[0_30px_60px_-40px_rgb(var(--shadow-color)/0.6)] ${aspect}`}
+      <motion.div
+        style={{ borderRadius: 20 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.9 }}
+        className={`themed relative w-full overflow-hidden border border-border bg-surface-2 shadow-[0_30px_60px_-40px_rgb(var(--shadow-color)/0.6)] ${aspect}`}
       >
         <button
           type="button"
           onClick={() => onOpen(project)}
+          aria-expanded={false}
+          data-card-trigger={project.id}
           aria-label={t('work.openDetails', { title })}
           className="absolute inset-0 block h-full w-full cursor-pointer rounded-card focus-visible:outline-offset-[-3px]"
         >
-          <img
-            src={project.coverImage}
-            alt={title}
-            loading={index < 2 ? 'eager' : 'lazy'}
-            decoding="async"
-            className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          />
+          {project.screens ? (
+            <>
+              <span className="absolute inset-0 bg-[radial-gradient(120%_90%_at_80%_100%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_60%)]" aria-hidden="true" />
+              <DeviceShowcase screens={project.screens} alt={title} active={hover} eager={index < 2} />
+            </>
+          ) : (
+            <img
+              src={project.coverImage}
+              alt={title}
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
+              className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+          )}
           {/* Hover overlay */}
           <span
             aria-hidden="true"
@@ -74,6 +112,16 @@ export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function Pr
             </span>
           </span>
         </button>
+
+        {hasDemo(project.id) && (
+          <span className="pointer-events-none absolute start-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--overlay)] px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
+            <span className="relative flex size-1.5" aria-hidden="true">
+              <span className="absolute inline-flex size-full rounded-full bg-accent-2 opacity-75 motion-safe:animate-ping" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent-2" />
+            </span>
+            {t('demo.tryShort')}
+          </span>
+        )}
 
         <span
           aria-hidden="true"
@@ -96,7 +144,7 @@ export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function Pr
             )}
           </div>
         )}
-      </div>
+      </motion.div>
       </TiltCard>
 
       <div className="flex flex-col gap-2 px-1 pt-5">

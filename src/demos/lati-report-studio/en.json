@@ -1,0 +1,131 @@
+{
+  "brand": "Report Studio",
+  "org": "Libyan Academy of Telecommunications and Informatics",
+  "back": "Back",
+  "next": "Next",
+  "stepOf": "Step {n} of {total}",
+  "steps": {
+    "general": {
+      "t": "Course details",
+      "d": "Course name, dates and trainer for the cover and signatures"
+    },
+    "imports": {
+      "t": "Files",
+      "d": "Drop the whole course folder: grades, attendance, survey, photos, certificates"
+    },
+    "content": {
+      "t": "Content",
+      "d": "Objectives, main topics and report text"
+    },
+    "review": {
+      "t": "Review",
+      "d": "The pages as they will print, per company"
+    },
+    "export": {
+      "t": "Export",
+      "d": "PowerPoint and PDF for every company in one folder"
+    }
+  },
+  "general": {
+    "title": "Course title",
+    "trainer": "Trainer",
+    "city": "Location",
+    "cities": {
+      "tripoli": "Tripoli",
+      "benghazi": "Benghazi"
+    },
+    "start": "First day",
+    "days": "Training days",
+    "time": "Daily time",
+    "hours": "{n} training hours",
+    "trainees": "{n} trainees"
+  },
+  "imports": {
+    "drop": "Drop the whole course folder here",
+    "or": "or",
+    "sample": "Use the sample course folder",
+    "dropNote": "In the demo, any drop loads the sample folder. Nothing leaves your browser.",
+    "reading": "Reading files…",
+    "ready": "Ready",
+    "applied": "All files applied — moving on to content",
+    "kinds": {
+      "grades": "Grades sheet",
+      "attendance": "Attendance",
+      "survey": "Survey",
+      "content": "Objectives & topics",
+      "photos": "Course photos",
+      "certificates": "Certificates"
+    },
+    "needFolder": "Load the course folder to continue."
+  },
+  "content": {
+    "objectives": "Objectives",
+    "axes": "Main topics",
+    "hint": "One item per line."
+  },
+  "review": {
+    "company": "Company",
+    "pages": "Pages",
+    "hide": "Hide page",
+    "show": "Show page",
+    "hidden": "Hidden from the export",
+    "names": {
+      "cover": "Cover",
+      "info": "Course info",
+      "overview": "Technical overview",
+      "attendance": "Attendance",
+      "grades": "Grades",
+      "survey": "Survey",
+      "closing": "Closing"
+    }
+  },
+  "report": {
+    "final": "Final report",
+    "for": "Prepared for {company}",
+    "trainer": "Trainer",
+    "place": "Location",
+    "days": "Days",
+    "daysValue": "{n} days",
+    "time": "Time",
+    "hours": "Hours",
+    "date": "Date",
+    "trainees": "Trainees",
+    "objectives": "Objectives",
+    "axes": "Main topics",
+    "no": "#",
+    "name": "Name",
+    "pre": "Pre-exam 50%",
+    "att": "Attendance 20%",
+    "part": "Participation 30%",
+    "post": "Post-exam 50%",
+    "total": "Overall 100%",
+    "absent": "Absent",
+    "day": "Day {n}",
+    "rule": "Attendance certificates require at least 75% attendance.",
+    "survey": {
+      "program": "Programme",
+      "logistics": "Logistics",
+      "trainer": "Trainer"
+    },
+    "overall": "Overall satisfaction",
+    "closing": "The course achieved its objectives. We thank the participants and their organisations for their commitment.",
+    "prepared": "Prepared by:",
+    "reviewed": "Reviewed by:",
+    "programs": "Training programmes:"
+  },
+  "export": {
+    "title": "One button finishes the export",
+    "desc": "For each company: build the PowerPoint, convert it to PDF, merge that company's certificates after it, and save everything in one folder.",
+    "run": "Export {n} companies",
+    "steps": {
+      "pptx": "Building PowerPoint",
+      "pdf": "Converting to PDF",
+      "certs": "Merging certificates",
+      "save": "Saving"
+    },
+    "done": "Saved to Downloads",
+    "csv": "Download grades (CSV)",
+    "csvNote": "This one is a real file, generated in your browser.",
+    "simulated": "The PowerPoint and PDF files are simulated in the demo."
+  }
+}

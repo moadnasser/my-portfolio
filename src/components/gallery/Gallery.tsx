@@ -1,6 +1,6 @@
-import { AnimatePresence, LayoutGroup } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { visibleProjects } from '../../data/projects'
 import type { Project } from '../../data/types'
@@ -8,26 +8,46 @@ import { useLanguage } from '../../i18n/context'
 import { Reveal } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
 import { ProjectCard } from './ProjectCard'
-import { ProjectViewer } from './ProjectViewer'
 
 const featured = visibleProjects.filter((p) => p.featured)
 
 /** Home-page highlight strip: the featured projects, with a link to the full catalogue page. */
 export function Gallery() {
   const { t } = useLanguage()
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const lastTrigger = useRef<HTMLElement | null>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
+  const reduce = useReducedMotion()
 
-  const open = useCallback((project: Project) => {
-    lastTrigger.current = document.activeElement as HTMLElement | null
-    setActiveId(project.id)
+  // The card's button is re-created when it folds back, so focus is restored by project id.
+  const collapse = useCallback((id: string) => {
+    setOpenId(null)
+    window.setTimeout(() => document.querySelector<HTMLElement>(`[data-card-trigger="${id}"]`)?.focus({ preventScroll: true }), 80)
   }, [])
 
-  const close = useCallback(() => {
-    setActiveId(null)
-    const el = lastTrigger.current
-    window.setTimeout(() => el?.focus?.(), 40)
-  }, [])
+  // Clicking a card expands it in place; clicking again (or Escape) folds it back.
+  const toggle = useCallback(
+    (project: Project) => {
+      if (openId === project.id) {
+        collapse(project.id)
+        return
+      }
+      setOpenId(project.id)
+      window.setTimeout(() => {
+        document.getElementById(`card-${project.id}`)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+        document.getElementById(`card-title-${project.id}`)?.focus({ preventScroll: true })
+      }, 260)
+    },
+    [openId, reduce, collapse],
+  )
+
+  useEffect(() => {
+    if (!openId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      collapse(openId)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [openId, collapse])
 
   return (
     <section id="work" className="scroll-mt-24 py-24 sm:py-28 lg:py-36" aria-labelledby="work-title">
@@ -35,10 +55,10 @@ export function Gallery() {
         <SectionHeading id="work-title" index="01" eyebrow={t('work.eyebrow')} title={t('work.title')} subtitle={t('work.featuredSubtitle')} />
 
         <LayoutGroup id="gallery">
-          <div className="mt-12 grid grid-cols-1 items-start gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8">
+          <div className="mt-12 grid grid-flow-row-dense grid-cols-1 items-start gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-8">
             <AnimatePresence mode="popLayout" initial={false}>
               {featured.map((project, i) => (
-                <ProjectCard key={project.id} project={project} index={i} onOpen={open} uniform />
+                <ProjectCard key={project.id} project={project} index={i} onOpen={toggle} uniform expanded={openId === project.id} />
               ))}
             </AnimatePresence>
           </div>
@@ -55,7 +75,6 @@ export function Gallery() {
         </Reveal>
       </div>
 
-      <ProjectViewer projects={featured} activeId={activeId} onClose={close} onNavigate={setActiveId} />
     </section>
   )
 }

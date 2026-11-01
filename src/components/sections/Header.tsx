@@ -12,6 +12,7 @@ import { EASE } from '../../lib/motion'
 
 const navItems = [
   { id: 'work', key: 'nav.work', to: '/projects' },
+  { id: 'playground', key: 'nav.playground', to: '/#playground' },
   { id: 'services', key: 'nav.services', to: '/#services' },
   { id: 'about', key: 'nav.about', to: '/#about' },
   { id: 'contact', key: 'nav.contact', to: '/#contact' },
@@ -66,8 +67,12 @@ export function Header() {
         >
           {/* Start: monogram + CV */}
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <Link to="/" className="latin font-display inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent" aria-label={t('projects.backHome')}>
-              M
+            <Link to="/" className="relative inline-flex size-10 shrink-0 rounded-full bg-[conic-gradient(from_200deg,var(--accent),var(--accent-2),var(--accent-deep),var(--accent))] p-[2px] transition-transform duration-200 hover:scale-105" aria-label={t('projects.backHome')}>
+              {profile.photo ? (
+                <img src={profile.photo} alt="" width={40} height={40} decoding="async" className="size-full rounded-full border-2 border-bg bg-[linear-gradient(160deg,var(--accent-2),var(--accent-deep))] object-cover object-top" />
+              ) : (
+                <span className="latin font-display grid size-full place-items-center rounded-full bg-accent text-sm font-bold text-on-accent">M</span>
+              )}
             </Link>
             {profile.cvFile && (
               <ButtonLink href={profile.cvFile} download variant="secondary" size="sm" className="h-9 px-3.5 text-xs sm:text-sm" aria-label={t('header.downloadCvLabel')}>

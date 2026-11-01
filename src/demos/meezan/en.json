@@ -1,0 +1,138 @@
+{
+  "brand": "Meezan",
+  "close": "Close",
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "money": "Money",
+    "fitness": "Fitness",
+    "more": "More"
+  },
+  "greet": {
+    "morning": "Good morning",
+    "day": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "name": "Guest",
+  "home": {
+    "total": "Total balance",
+    "income": "Income this month",
+    "expense": "Spent this month",
+    "attention": "Budgets that need attention",
+    "allGood": "Every budget is within its limit.",
+    "today": "Today's tasks",
+    "noTasks": "Nothing due today.",
+    "recent": "Latest transactions",
+    "empty": "No transactions yet"
+  },
+  "money": {
+    "title": "Money",
+    "accounts": "Accounts and cards",
+    "budgets": "Budgets",
+    "transactions": "Transactions",
+    "new": "New transaction",
+    "kind": {
+      "bank": "Bank account",
+      "card": "Card",
+      "cash": "Cash"
+    },
+    "period": {
+      "monthly": "Monthly"
+    }
+  },
+  "budget": {
+    "ok": "Within limit",
+    "warning": "Close to the limit",
+    "over": "Over the limit",
+    "percent": "{n}% of budget",
+    "left": "{amount} left",
+    "overBy": "Over by {amount}"
+  },
+  "tx": {
+    "title": "New transaction",
+    "type": "Type",
+    "out": "Expense",
+    "in": "Income",
+    "transfer": "Transfer",
+    "amount": "Amount",
+    "amountHint": "Arabic or Latin digits both work",
+    "amountError": "Enter an amount greater than zero.",
+    "account": "Account",
+    "to": "To account",
+    "sameAccount": "Pick a different account for the transfer.",
+    "category": "Category",
+    "desc": "Description",
+    "descPlaceholder": "e.g. Fuel",
+    "save": "Save transaction",
+    "noCategory": "No category",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "cats": {
+    "groceries": "Food & groceries",
+    "cafes": "Cafés & restaurants",
+    "fuel": "Fuel",
+    "shopping": "Personal shopping",
+    "housing": "Housing",
+    "health": "Health & pharmacy",
+    "car": "Car maintenance",
+    "bills": "Bills & subscriptions",
+    "transfers": "Transfers",
+    "income": "Income"
+  },
+  "fitness": {
+    "title": "Fitness",
+    "attendance": "Gym attendance",
+    "streak": "Current streak",
+    "streakUnit": "days in a row",
+    "month": "This month",
+    "monthUnit": "sessions",
+    "hint": "Tap any day to log a gym visit or a rest day.",
+    "went": "Went",
+    "rest": "Rest",
+    "none": "Not logged",
+    "future": "Upcoming day",
+    "days": {
+      "0": "Sat",
+      "1": "Sun",
+      "2": "Mon",
+      "3": "Tue",
+      "4": "Wed",
+      "5": "Thu",
+      "6": "Fri"
+    },
+    "legend": "Status"
+  },
+  "more": {
+    "goals": "Goals",
+    "todos": "Tasks",
+    "goalProgress": "{p}% of goal",
+    "overdue": "Overdue",
+    "due": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "week": "This week"
+    },
+    "complete": "Complete task",
+    "reopen": "Reopen task",
+    "done": "Done"
+  },
+  "data": {
+    "cash": "Wallet cash",
+    "bank": "Jumhouria Bank",
+    "salary": "October salary",
+    "market": "Vegetable market",
+    "supermarket": "Supermarket",
+    "coffee": "Coffee with friends",
+    "lunch": "Lunch",
+    "fuel1": "Fuel",
+    "fuel2": "Fuel",
+    "internet": "Internet subscription",
+    "todo1": "Pay the internet bill",
+    "todo2": "Book a car service",
+    "todo3": "Buy a gift for my brother",
+    "goal1": "Save 5,000 LYD",
+    "goal2": "Reach 78 kg"
+  },
+  "greeting": "{greet}, {name}"
+}

@@ -6,9 +6,9 @@ import { useLanguage, useLocalized } from '../../i18n/context'
 import { EASE } from '../../lib/motion'
 import { useWebGL } from '../three/useWebGL'
 import { Ambient } from '../ui/Ambient'
-import { Avatar } from '../ui/Avatar'
 import { ButtonLink } from '../ui/Button'
 import { Magnetic } from '../ui/Magnetic'
+import { HeroPortrait } from './HeroPortrait'
 
 const HeroScene = lazy(() => import('../three/HeroScene'))
 
@@ -16,7 +16,7 @@ const HeroScene = lazy(() => import('../three/HeroScene'))
 function RisingLine({ children, delay, className = '', textClassName = '' }: { children: string; delay: number; className?: string; textClassName?: string }) {
   const reduce = useReducedMotion()
   return (
-    <span className="block overflow-hidden pb-[0.08em]">
+    <span className="-my-[0.06em] block overflow-hidden py-[0.06em] pb-[0.08em] rtl:-my-[0.2em] rtl:py-[0.2em]">
       <motion.span
         className={`block ${className}`}
         initial={reduce ? false : { y: '112%' }}
@@ -64,26 +64,27 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-bg to-transparent" aria-hidden="true" />
 
       <div className="shell relative">
-        <div className="max-w-4xl">
+        <div className="grid items-end gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="order-2 lg:order-1 lg:col-span-7 lg:pb-6">
           <motion.div {...fade(0.05)} className="mb-8 flex items-center gap-4">
-            <Avatar size={56} />
+            <span className="h-px w-10 bg-accent" aria-hidden="true" />
             <div className="flex flex-col">
               <span className="font-display text-sm font-semibold text-text" dir="auto">{localize(profile.name)}</span>
               <span className="text-xs font-medium uppercase tracking-[0.18em] text-text-2">{localize(profile.role)}</span>
             </div>
           </motion.div>
 
-          <h1 id="hero-title" className="font-display text-balance text-[2.75rem] font-bold leading-[0.98] tracking-[-0.035em] text-text sm:text-6xl lg:text-[4.5rem] xl:text-[5rem] 2xl:text-[5.75rem]">
+          <h1 id="hero-title" className="font-display text-balance text-[2.6rem] font-bold leading-[0.98] tracking-[-0.035em] rtl:leading-[1.12] text-text sm:text-6xl lg:text-[4rem] xl:text-[4.6rem] 2xl:text-[5.25rem]">
             <RisingLine delay={0.1}>{t('hero.headline1')}</RisingLine>
             <RisingLine delay={0.2} className="lg:ps-[0.5em]">{t('hero.headline2')}</RisingLine>
             <RisingLine delay={0.3} textClassName="text-signal">{t('hero.headline3')}</RisingLine>
           </h1>
 
-          <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:items-end">
-            <motion.p {...fade(0.5)} className="max-w-xl text-pretty text-base leading-relaxed text-text-2 sm:text-lg lg:col-span-7">
+          <div className="mt-10 flex flex-col gap-8">
+            <motion.p {...fade(0.5)} className="max-w-xl text-pretty text-base leading-relaxed text-text-2 sm:text-lg">
               {t('hero.paragraph')}
             </motion.p>
-            <motion.div {...fade(0.62)} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:col-span-5 lg:justify-end">
+            <motion.div {...fade(0.62)} className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <Magnetic className="w-full sm:w-auto">
                 <ButtonLink href="#work" size="lg" className="w-full sm:w-auto">
                   {t('hero.primaryCta')}
@@ -96,6 +97,10 @@ export function Hero() {
               </ButtonLink>
             </motion.div>
           </div>
+        </div>
+        <div className="order-1 w-[82%] max-w-[22rem] justify-self-center sm:max-w-[25rem] lg:order-2 lg:col-span-5 lg:w-full lg:max-w-[30rem] lg:justify-self-end">
+          <HeroPortrait trackRef={sectionRef} />
+        </div>
         </div>
       </div>
     </section>

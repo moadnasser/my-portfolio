@@ -9,7 +9,8 @@
     "contact": "Contact",
     "skipToContent": "Skip to content",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "playground": "Live demos"
   },
   "header": {
     "copyEmail": "Copy email",
@@ -22,7 +23,8 @@
     "language": "Switch to Arabic",
     "languageShort": "AR",
     "themeToLight": "Switch to light mode",
-    "themeToDark": "Switch to dark mode"
+    "themeToDark": "Switch to dark mode",
+    "telegram": "Telegram"
   },
   "hero": {
     "intro": "Hi, I'm Moad — a software engineer building mobile and web products.",
@@ -32,10 +34,9 @@
     "paragraph": "I design and build Flutter apps, React web products and the backends behind them — bilingual, accessible and made to last.",
     "primaryCta": "Explore My Work",
     "secondaryCta": "Get in Touch",
-    "photoAlt": "Portrait of Moad Almshirem"
-  },
-  "tech": {
-    "label": "Tools I work with"
+    "photoAlt": "Moad Almshirem in traditional Libyan dress",
+    "location": "Libya",
+    "demosChip": "4 live demos"
   },
   "work": {
     "eyebrow": "Portfolio",
@@ -71,7 +72,9 @@
     "counter": "{current} of {total}",
     "screenshotAlt": "{title} — screenshot {n}",
     "viewAll": "View all projects",
-    "featuredSubtitle": "Three highlights. The full catalogue, with filters and details, lives on its own page."
+    "featuredSubtitle": "Three highlights. The full catalogue, with filters and details, lives on its own page.",
+    "hideDetails": "Hide details",
+    "noScreenshots": "Screenshots for this project are coming soon."
   },
   "services": {
     "eyebrow": "Services",
@@ -116,7 +119,16 @@
     "subtitle": "Tell me about the product you have in mind and I'll get back to you.",
     "email": "Email me",
     "whatsapp": "WhatsApp",
-    "copyEmail": "Copy email address"
+    "copyEmail": "Copy email address",
+    "telegram": "Message on Telegram",
+    "phone": "Phone",
+    "call": "Call {number}",
+    "whatsappLabel": "WhatsApp",
+    "copyHandle": "Copy WhatsApp username",
+    "emailLabel": "Email",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "copyEmailShort": "Copy email address"
   },
   "footer": {
     "signoff": "Designed and built by Moad Almshirem.",
@@ -136,5 +148,35 @@
     "details": "View details",
     "backHome": "Back to home",
     "meta": "Projects"
+  },
+  "demo": {
+    "meta": "Live demo",
+    "loading": "Loading demo…",
+    "badge": "Demo",
+    "badgeLong": "Interactive demo",
+    "back": "Back to project",
+    "stageLabel": "{title} interactive demo",
+    "openGuide": "Show demo steps",
+    "guideTitle": "Try this",
+    "progress": "{done} of {total}",
+    "stepDone": "Done",
+    "stepTodo": "Not done yet",
+    "allDone": "Everything tried. That is the core of the real app.",
+    "notice": "A simplified rebuild with sample data. It runs entirely in your browser and nothing you enter is sent anywhere.",
+    "reset": "Reset demo",
+    "introTitle": "You are inside a live demo",
+    "showSteps": "Show steps",
+    "explore": "Just explore",
+    "try": "Try live demo",
+    "tryShort": "Live demo",
+    "tryFor": "Try the {title} live demo"
+  },
+  "playground": {
+    "eyebrow": "Playground",
+    "title": "Don't take my word for it. Try them.",
+    "subtitle": "Simplified, working rebuilds of real apps I shipped. Same flows and rules, sample data, right in your browser.",
+    "launch": "Launch demo",
+    "phone": "Mobile app",
+    "web": "Web app"
   }
 }

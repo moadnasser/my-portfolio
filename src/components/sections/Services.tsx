@@ -9,7 +9,7 @@ export function Services() {
   return (
     <section id="services" className="scroll-mt-24 py-24 sm:py-28 lg:py-36" aria-labelledby="services-title">
       <div className="shell">
-        <SectionHeading id="services-title" index="02" eyebrow={t('services.eyebrow')} title={t('services.title')} subtitle={t('services.subtitle')} />
+        <SectionHeading id="services-title" index="03" eyebrow={t('services.eyebrow')} title={t('services.title')} subtitle={t('services.subtitle')} />
 
         <ul className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
           {services.map((service, i) => {

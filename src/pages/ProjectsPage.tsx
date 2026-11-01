@@ -1,12 +1,15 @@
-import { LayoutGroup, motion, useReducedMotion } from 'framer-motion'
-import { ArrowLeft, ArrowUpRight, Code2, ExternalLink, Maximize2 } from 'lucide-react'
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'framer-motion'
+import { ArrowLeft, ChevronDown, Code2, ExternalLink, Maximize2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ProjectFilters, type FilterValue } from '../components/gallery/ProjectFilters'
-import { ProjectViewer } from '../components/gallery/ProjectViewer'
+import { ProjectDetails } from '../components/gallery/ProjectDetails'
 import { Ambient } from '../components/ui/Ambient'
 import { Button, ButtonLink } from '../components/ui/Button'
+import { DemoLink } from '../components/ui/DemoLink'
+import { DeviceShowcase } from '../components/ui/DeviceShowcase'
 import { Reveal } from '../components/ui/Reveal'
+import { hasDemo } from '../demos/registry'
 import { TiltCard } from '../components/ui/TiltCard'
 import { categoryOrder, visibleProjects } from '../data/projects'
 import type { Project } from '../data/types'
@@ -24,58 +27,91 @@ function useProjectCount(n: number) {
 interface ShowcaseRowProps {
   project: Project
   index: number
-  onOpen: (project: Project, trigger: HTMLElement | null) => void
+  expanded: boolean
+  onToggle: (project: Project, trigger: HTMLElement | null) => void
 }
 
 /** One editorial row: large cover on one side, full story on the other. Rows alternate sides on desktop. */
-function ShowcaseRow({ project, index, onOpen }: ShowcaseRowProps) {
+function ShowcaseRow({ project, index, expanded, onToggle }: ShowcaseRowProps) {
   const { t } = useLanguage()
   const localize = useLocalized()
   const reduce = useReducedMotion()
   const title = localize(project.title)
   const flip = index % 2 === 1
   const portrait = project.coverOrientation === 'portrait'
+  const [hover, setHover] = useState(false)
+  const rowRef = useRef<HTMLElement>(null)
+  const panelId = `details-${project.id}`
+  const headingId = `details-title-${project.id}`
+
+  // Bring the opened row into view and move focus into the panel (also for shared deep links).
+  useEffect(() => {
+    if (!expanded) return
+    const id = window.setTimeout(() => {
+      rowRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+      document.getElementById(headingId)?.focus({ preventScroll: true })
+    }, 120)
+    return () => window.clearTimeout(id)
+  }, [expanded, headingId, reduce])
 
   return (
     <motion.article
+      ref={rowRef}
       layout={!reduce}
       initial={reduce ? false : { opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '0px 0px -12% 0px' }}
       exit={reduce ? undefined : { opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="grid grid-cols-1 items-center gap-8 border-t border-border py-12 lg:grid-cols-12 lg:gap-14 lg:py-20"
+      className="scroll-mt-24 border-t border-border py-12 lg:py-20"
     >
+      <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
       {/* Media */}
       <div className={`lg:col-span-7 ${flip ? 'lg:order-2' : ''}`}>
         <TiltCard max={5} className="rounded-card">
-          <button
+          <motion.button
             type="button"
-            onClick={(e) => onOpen(project, e.currentTarget)}
+            style={{ borderRadius: 20 }}
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={(e) => onToggle(project, e.currentTarget)}
             aria-label={t('work.openDetails', { title })}
-            className={`group themed relative block w-full cursor-pointer overflow-hidden rounded-card border border-border bg-surface-2 shadow-[0_40px_80px_-40px_rgb(var(--shadow-color)/0.7)] ${
-              portrait ? 'aspect-[4/3] p-6 sm:p-10' : 'aspect-[16/10]'
+            onPointerEnter={() => setHover(true)}
+            onPointerLeave={() => setHover(false)}
+            onFocus={() => setHover(true)}
+            onBlur={() => setHover(false)}
+            className={`group themed relative block w-full cursor-pointer overflow-hidden border border-border bg-surface-2 shadow-[0_40px_80px_-40px_rgb(var(--shadow-color)/0.7)] ${
+              project.screens ? 'aspect-[16/11]' : portrait ? 'aspect-[4/3] p-6 sm:p-10' : 'aspect-[16/10]'
             }`}
           >
-            {portrait && <Ambient />}
-            <img
-              src={project.coverImage}
-              alt={title}
-              loading={index < 1 ? 'eager' : 'lazy'}
-              decoding="async"
-              className={`transition-transform duration-700 ease-out motion-reduce:transition-none ${
-                portrait
-                  ? 'relative mx-auto h-full w-auto rounded-xl border border-border object-contain shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.8)] group-hover:-translate-y-1'
-                  : 'h-full w-full object-cover object-top group-hover:scale-[1.03]'
-              }`}
-            />
+            {project.screens ? (
+              <>
+                <span className="absolute inset-0 bg-[radial-gradient(120%_90%_at_80%_100%,color-mix(in_oklab,var(--accent)_22%,transparent),transparent_60%)]" aria-hidden="true" />
+                <DeviceShowcase screens={project.screens} alt={title} active={hover} eager={index < 1} />
+              </>
+            ) : (
+              <>
+                {portrait && <Ambient />}
+                <img
+                  src={project.coverImage}
+                  alt={title}
+                  loading={index < 1 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  className={`transition-transform duration-700 ease-out motion-reduce:transition-none ${
+                    portrait
+                      ? 'relative mx-auto h-full w-auto rounded-xl border border-border object-contain shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.8)] group-hover:-translate-y-1'
+                      : 'h-full w-full object-cover object-top group-hover:scale-[1.03]'
+                  }`}
+                />
+              </>
+            )}
             <span
               aria-hidden="true"
               className="absolute bottom-4 end-4 inline-flex size-11 items-center justify-center rounded-full bg-accent text-on-accent opacity-0 shadow-[0_12px_30px_-10px_var(--ring)] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 touch:opacity-100"
             >
               <Maximize2 className="size-4" />
             </span>
-          </button>
+          </motion.button>
         </TiltCard>
       </div>
 
@@ -97,9 +133,10 @@ function ShowcaseRow({ project, index, onOpen }: ShowcaseRowProps) {
           ))}
         </ul>
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Button onClick={(e) => onOpen(project, e.currentTarget)} size="md">
-            {t('projects.details')}
-            <ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+          {hasDemo(project.id) && <DemoLink projectId={project.id} title={localize(project.title)} />}
+          <Button onClick={(e) => onToggle(project, e.currentTarget)} size="md" variant={hasDemo(project.id) ? 'secondary' : 'primary'} aria-expanded={expanded} aria-controls={panelId}>
+            {expanded ? t('work.hideDetails') : t('projects.details')}
+            <ChevronDown className={`size-4 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
           </Button>
           {project.liveUrl && (
             <ButtonLink href={project.liveUrl} external variant="secondary" size="md">
@@ -115,6 +152,27 @@ function ShowcaseRow({ project, index, onOpen }: ShowcaseRowProps) {
           )}
         </div>
       </div>
+      </div>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            key="details"
+            id={panelId}
+            role="region"
+            aria-labelledby={headingId}
+            initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            animate={reduce ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+            exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className="overflow-hidden"
+          >
+            <div className="mt-10 rounded-[1.75rem] border border-border bg-surface/70 p-5 sm:p-8">
+              <ProjectDetails project={project} variant="gallery" headingId={headingId} onClose={() => onToggle(project, null)} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.article>
   )
 }
@@ -140,25 +198,32 @@ export function ProjectsPage() {
     if (projectId && !activeId) navigate('/projects', { replace: true })
   }, [projectId, activeId, navigate])
 
-  // The viewer navigates within the current filter; if the open project is filtered out, keep it reachable.
-  const viewerProjects = useMemo(() => {
-    if (!activeId || filtered.some((p) => p.id === activeId)) return filtered
-    return visibleProjects
-  }, [activeId, filtered])
-
-  const open = useCallback(
+  // One row open at a time; its id lives in the URL so the expanded view is shareable.
+  const toggle = useCallback(
     (project: Project, trigger: HTMLElement | null) => {
-      lastTrigger.current = trigger
-      navigate(`/projects/${project.id}`)
+      if (activeId === project.id) {
+        navigate('/projects', { replace: true })
+        const back = trigger ?? lastTrigger.current
+        window.setTimeout(() => back?.focus?.({ preventScroll: true }), 60)
+      } else {
+        lastTrigger.current = trigger
+        navigate(`/projects/${project.id}`, { replace: !!activeId })
+      }
     },
-    [navigate],
+    [activeId, navigate],
   )
-  const close = useCallback(() => {
-    navigate('/projects')
-    const el = lastTrigger.current
-    window.setTimeout(() => el?.focus?.(), 40)
-  }, [navigate])
-  const goTo = useCallback((id: string) => navigate(`/projects/${id}`, { replace: true }), [navigate])
+
+  // Escape collapses the open row.
+  useEffect(() => {
+    if (!activeId) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      navigate('/projects', { replace: true })
+      window.setTimeout(() => lastTrigger.current?.focus?.({ preventScroll: true }), 60)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [activeId, navigate])
 
   useEffect(() => {
     setPageTitle('projects.meta')
@@ -202,7 +267,7 @@ export function ProjectsPage() {
       <section className="shell pb-24 sm:pb-32" aria-label={t('projects.title')}>
         <div className="mt-6">
           {filtered.map((project, i) => (
-            <ShowcaseRow key={project.id} project={project} index={i} onOpen={open} />
+            <ShowcaseRow key={project.id} project={project} index={i} expanded={activeId === project.id} onToggle={toggle} />
           ))}
         </div>
         {filtered.length === 0 && (
@@ -212,7 +277,6 @@ export function ProjectsPage() {
         )}
       </section>
 
-      <ProjectViewer projects={viewerProjects} activeId={activeId} onClose={close} onNavigate={goTo} />
     </main>
   )
 }

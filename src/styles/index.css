@@ -30,7 +30,7 @@
   --radius-card: 1.25rem;
   --font-latin: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-arabic: "Readex Pro", "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-arabic: "Tajawal", "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
 }
 
 :root[data-theme="dark"] {
@@ -142,6 +142,10 @@ img { max-width: 100%; height: auto; }
 /* Signal gradient text (Telegram blue → sky) */
 .text-signal {
   background-image: linear-gradient(95deg, var(--accent) 0%, var(--accent-2) 55%, var(--accent) 100%);
+  /* Inline padding widens the painted area without moving lines, so Arabic dots above/below the box keep their fill. */
+  padding-block: 0.3em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -152,6 +156,13 @@ img { max-width: 100%; height: auto; }
 .text-outline {
   color: transparent;
   -webkit-text-stroke: 1px color-mix(in oklab, var(--text) 55%, transparent);
+}
+
+/* Footer name watermark: tinted fill fading out (strokes show seams between joined Arabic letters). */
+.text-watermark {
+  color: color-mix(in oklab, var(--text) 13%, var(--bg));
+  -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
+  mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
 }
 
 /* Primary button: solid signal colour. */
@@ -205,16 +216,6 @@ img { max-width: 100%; height: auto; }
 .preserve-3d { transform-style: preserve-3d; }
 .perspective { perspective: 1000px; }
 
-/* Ticker (two rows, opposite directions, laid back in 3D) */
-@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.ticker-track {
-  display: flex;
-  width: max-content;
-  animation: ticker var(--ticker-duration, 40s) linear infinite;
-}
-.ticker-track[data-reverse="true"] { animation-direction: reverse; }
-.ticker:hover .ticker-track,
-.ticker:focus-within .ticker-track { animation-play-state: paused; }
 
 /* Floating layered plates (About visual) */
 @keyframes plate-float {
@@ -240,9 +241,20 @@ img { max-width: 100%; height: auto; }
 /* Reduced motion: stop decorative motion, disable smooth scroll */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .ticker-track, .plate { animation: none; }
+  .plate { animation: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Hero portrait: signal ripples and a slow light sweep across the arch */
+@keyframes ripple {
+  0% { transform: scale(0.3); opacity: 0; }
+  20% { opacity: 0.7; }
+  100% { transform: scale(1); opacity: 0; }
+}
+@keyframes sweep {
+  0%, 55% { transform: translateX(0) skewX(-12deg); }
+  100% { transform: translateX(450%) skewX(-12deg); }
+}

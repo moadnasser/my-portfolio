@@ -39,8 +39,8 @@ export function Footer() {
         </div>
       </div>
       {/* Watermark */}
-      <div className="shell pointer-events-none select-none pb-6 pt-4 sm:pb-8" aria-hidden="true">
-        <span className="font-display text-outline block whitespace-nowrap text-[clamp(2.25rem,8.6vw,8.5rem)] font-bold leading-[1.35] tracking-[-0.04em] opacity-50" dir="auto">
+      <div className="shell pointer-events-none select-none" aria-hidden="true">
+        <span className="font-display text-watermark block whitespace-nowrap text-center text-[clamp(2.75rem,11vw,10rem)] font-extrabold leading-[1.1] tracking-[-0.04em] py-[0.08em] rtl:pt-[0.2em] rtl:pb-0 rtl:leading-[1.2] rtl:tracking-normal">
           {localize(profile.name)}
         </span>
       </div>

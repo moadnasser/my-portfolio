@@ -18,7 +18,7 @@ export function Avatar({ size = 96, className = '' }: AvatarProps) {
     >
       <div className="themed flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-bg bg-surface-2">
         {profile.photo ? (
-          <img src={profile.photo} alt={t('hero.photoAlt')} width={size} height={size} className="h-full w-full object-cover" decoding="async" fetchPriority="high" />
+          <img src={profile.photo} alt={t('hero.photoAlt')} width={size} height={size} className="h-full w-full bg-[linear-gradient(160deg,var(--accent-2),var(--accent-deep))] object-cover object-top" decoding="async" loading="lazy" />
         ) : (
           <span role="img" aria-label={localize(profile.name)} className="latin font-display text-signal select-none font-bold tracking-tight" style={{ fontSize: size * 0.34 }}>
             {initials}

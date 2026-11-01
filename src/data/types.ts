@@ -8,6 +8,9 @@ export type ProjectCategory = 'web' | 'mobile' | 'backend' | 'uiux' | 'other'
 /** Controls how the cover is framed in the gallery grid. */
 export type CoverOrientation = 'landscape' | 'portrait' | 'square'
 
+/** Real screenshots for the device composition on cards. Phone apps show two phones; web apps a browser plus phone. */
+export type ProjectScreens = { kind: 'phones'; front: string; back: string } | { kind: 'web'; desktop: string; phone: string }
+
 export interface Project {
   id: string
   title: Localized
@@ -19,6 +22,8 @@ export interface Project {
   coverImage: string
   coverOrientation: CoverOrientation
   galleryImages: string[]
+  /** Device composition for cards. Falls back to the plain cover when omitted. */
+  screens?: ProjectScreens
   liveUrl?: string
   sourceUrl?: string
   year?: number
@@ -27,7 +32,7 @@ export interface Project {
 }
 
 export interface SocialLink {
-  id: 'github' | 'linkedin' | 'dribbble' | 'x' | 'instagram' | 'behance'
+  id: 'github' | 'telegram' | 'linkedin' | 'dribbble' | 'x' | 'instagram' | 'behance'
   label: string
   url: string
 }
@@ -40,7 +45,13 @@ export interface Profile {
   cvFile: string | null
   /** Path under /public to a square portrait. Null renders a monogram fallback. */
   photo: string | null
-  /** Full international number without spaces, e.g. "+218910000000". Null hides the WhatsApp CTA. */
+  /** Phone: `display` is shown as written, `tel` is the international dialable form. */
+  phone: { display: string; tel: string } | null
+  /** Full international number without spaces, e.g. "+218910000000". Null hides the WhatsApp link. */
   whatsapp: string | null
+  /** WhatsApp username (e.g. "@name"). Shown with a copy button, since usernames have no public link. */
+  whatsappUsername: string | null
+  /** Telegram profile URL. */
+  telegram: string | null
   socials: SocialLink[]
 }

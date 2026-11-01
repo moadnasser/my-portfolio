@@ -28,7 +28,8 @@ npm run lint      # oxlint
 
 1. Put the cover and any extra screenshots in `public/projects/` (WebP, ~1600px wide for landscape, ~800px for portrait).
 2. Append an entry to `src/data/projects.ts`. `coverOrientation` controls the grid framing (`landscape` spans two columns on desktop, `portrait` / `square` span one).
-3. Only add `liveUrl` / `sourceUrl` when they are real and public — the card and viewer hide the buttons otherwise.
+3. Only add `liveUrl` / `sourceUrl` when they are real and public — cards and the details panel hide the buttons otherwise.
+4. Optional `screens` places real screenshots in device frames on cards: two phones for mobile apps, a browser plus phone for web apps. Without it the plain cover is used.
 
 ## Supplying personal assets
 
@@ -46,12 +47,23 @@ the three.js scene mirrors them in `src/components/three/palette.ts` (three need
 ## Pages
 
 - `/` — home: hero, tech ticker, three featured projects, services, about, contact.
-- `/projects` — full catalogue with filters; `/projects/<id>` opens that project's detail viewer (shareable link). Unknown ids fall back to `/projects`, unknown paths to `/`.
+- `/projects` — full catalogue with filters; `/projects/<id>` expands that project's details inline and scrolls to it (shareable link). Unknown ids fall back to `/projects`, unknown paths to `/`.
 - Routing is `react-router` (`src/App.tsx`); pages live in `src/pages/`.
+
+## Live demos
+
+Four projects ship an interactive demo at `/projects/<id>/demo`: simplified rebuilds of the real apps with the same flows and rules, sample data, and nothing sent to a server.
+
+- Each demo lives in `src/demos/<id>/` with its own `en.json` / `ar.json` and loads as a separate chunk. `src/demos/registry.ts` lists them; cards, rows and the details panel show "Try live demo" only for registered ids.
+- Phone apps render in a true-size iPhone frame scaled to fit on large screens; web apps render in a browser window. Below 768×640 the demo takes over the screen with its own mobile layout.
+- Web demos use container queries (`@container`, `@4xl:`), so the same app shows its desktop layout inside the frame and its mobile layout on a phone.
+- Each demo defines a short "Try this" checklist that ticks itself as the visitor uses the app.
+- Playground thumbnails in `public/demos/thumbs/` are screenshots of the demos, one per theme. Recapture them after visual changes to a demo.
 
 ## 3D and motion
 
-- `src/components/three/HeroScene.tsx` — react-three-fiber scene (textured Earth with clouds, night lights and a blue atmosphere, inside a wireframe shell with orbit rings and an 1800-particle halo; textures in `public/textures/earth/`, NASA Blue Marble via three.js examples). Lazy-loaded into its own chunk, pointer parallax over the whole hero, paused when scrolled out of view, single still frame under `prefers-reduced-motion`, skipped entirely when WebGL is unavailable.
+- `src/components/sections/HeroPortrait.tsx` — hero portrait: a cut-out photo (`public/portrait.webp`, subject lifted locally with macOS Vision) in front of a lit portal, turning light ring, tilted orbit and glass chips. Each layer has its own pointer depth on desktop; still on touch and under `prefers-reduced-motion`.
+- `src/components/three/HeroScene.tsx` — lazy react-three-fiber particle field behind the hero, paused when scrolled out of view, skipped when WebGL is unavailable.
 - `src/components/ui/TiltCard.tsx` — pointer-following perspective tilt with glare (project and service cards). Off on touch devices and under reduced motion.
 - `src/components/ui/Magnetic.tsx` — magnetic pull for the two focal CTAs (hero, contact).
 - Tech ticker (`TechStrip.tsx`) is a CSS 3D plane with two counter-scrolling rows; the About visual (`About.tsx`) is a CSS 3D stack of floating plates. Both render static under reduced motion.
