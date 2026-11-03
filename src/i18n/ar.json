@@ -16,8 +16,6 @@
     "copyEmail": "نسخ البريد",
     "copied": "تم النسخ",
     "copyFailed": "تعذّر النسخ",
-    "downloadCv": "السيرة",
-    "downloadCvLabel": "تحميل السيرة الذاتية",
     "github": "GitHub",
     "linkedin": "LinkedIn",
     "language": "التبديل إلى الإنجليزية",
@@ -111,7 +109,8 @@
       "backend": "واجهات برمجية وFirebase ونماذج بيانات SQL متّسقة",
       "i18n": "تعريب عربي / إنجليزي ودعم RTL بالشكل الصحيح"
     },
-    "visualLabel": "عنصر بصري تجريدي"
+    "visualLabel": "عنصر بصري تجريدي",
+    "downloadCv": "تحميل السيرة الذاتية"
   },
   "contact": {
     "eyebrow": "تواصل",

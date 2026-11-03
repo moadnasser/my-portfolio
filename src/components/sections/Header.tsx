@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { FileDown, Menu, Moon, Sun, X } from 'lucide-react'
+import { Menu, Moon, Sun, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { profile } from '../../data/profile'
@@ -7,7 +7,7 @@ import type { SocialLink } from '../../data/types'
 import { useLanguage } from '../../i18n/context'
 import { useTheme } from '../../theme/context'
 import { BrandIcon } from '../ui/BrandIcon'
-import { ButtonLink, IconButton } from '../ui/Button'
+import { IconButton } from '../ui/Button'
 import { EASE } from '../../lib/motion'
 
 const navItems = [
@@ -74,12 +74,6 @@ export function Header() {
                 <span className="latin font-display grid size-full place-items-center rounded-full bg-accent text-sm font-bold text-on-accent">M</span>
               )}
             </Link>
-            {profile.cvFile && (
-              <ButtonLink href={profile.cvFile} download variant="secondary" size="sm" className="h-9 px-3.5 text-xs sm:text-sm" aria-label={t('header.downloadCvLabel')}>
-                <FileDown className="size-3.5" aria-hidden="true" />
-                {t('header.downloadCv')}
-              </ButtonLink>
-            )}
           </div>
 
           {/* Centre: nav (desktop) */}

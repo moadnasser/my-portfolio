@@ -1,7 +1,8 @@
-import { Code2, Globe2, Languages, Smartphone } from 'lucide-react'
+import { Code2, FileDown, Globe2, Languages, Smartphone } from 'lucide-react'
 import { profile } from '../../data/profile'
 import { technologies } from '../../data/technologies'
 import { useLanguage } from '../../i18n/context'
+import { ButtonLink } from '../ui/Button'
 import { Reveal } from '../ui/Reveal'
 
 const focusAreas = [
@@ -70,6 +71,12 @@ export function About() {
           </h2>
           <p className="mt-8 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p1')}</p>
           <p className="mt-4 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p2')}</p>
+          {profile.cvFile && (
+            <ButtonLink href={profile.cvFile} download variant="secondary" className="mt-8">
+              <FileDown className="size-4" aria-hidden="true" />
+              {t('about.downloadCv')}
+            </ButtonLink>
+          )}
 
           <h3 className="mt-10 text-xs font-semibold uppercase tracking-[0.18em] text-text-2">{t('about.focusTitle')}</h3>
           <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -16,8 +16,6 @@
     "copyEmail": "Copy email",
     "copied": "Copied",
     "copyFailed": "Copy failed",
-    "downloadCv": "CV",
-    "downloadCvLabel": "Download CV",
     "github": "GitHub",
     "linkedin": "LinkedIn",
     "language": "Switch to Arabic",
@@ -111,7 +109,8 @@
       "backend": "APIs, Firebase and SQL data models that stay consistent",
       "i18n": "Arabic / English localization and RTL done properly"
     },
-    "visualLabel": "Abstract visual"
+    "visualLabel": "Abstract visual",
+    "downloadCv": "Download CV"
   },
   "contact": {
     "eyebrow": "Contact",
