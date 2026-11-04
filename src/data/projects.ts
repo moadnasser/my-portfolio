@@ -12,8 +12,8 @@ export const projects: Project[] = [
     id: 'uab-shipping',
     title: { en: 'UAB Shipping', ar: 'أم البحار للشحن' },
     description: {
-      en: 'Customer app for a Libyan freight company: create sea and air orders, follow them on a live map and get push updates.',
-      ar: 'تطبيق العملاء لشركة شحن ليبية: إنشاء طلبات الشحن البحري والجوي، وتتبّعها على خريطة مباشرة، واستلام الإشعارات.',
+      en: 'Flutter customer app for a Libyan freight company: sea and air orders, live map tracking and FCM push updates.',
+      ar: 'تطبيق Flutter لعملاء شركة شحن ليبية: طلبات شحن بحري وجوي، وتتبّع على خريطة مباشرة، وإشعارات فورية عبر FCM.',
     },
     details: {
       en: 'A bilingual (Arabic-first) Flutter app for Um Albehar Shipping. Customers create freight orders from China, the UAE and Turkey to Libya, follow each shipment on a live map, estimate shipping costs and receive push notifications at every status change. Built with clean architecture per feature, Riverpod state, go_router navigation, dio networking and an encrypted Hive cache, with light and dark themes and a user-adjustable type scale.',
@@ -41,12 +41,12 @@ export const projects: Project[] = [
     id: 'travelyuk',
     title: { en: 'Travelyuk', ar: 'ترافليوك' },
     description: {
-      en: 'Travel agency platform: group trips, flights, hotels and visas with a customer area, staff dashboard and white-label theming.',
-      ar: 'منصة وكالة سفر: رحلات جماعية وطيران وفنادق وتأشيرات مع منطقة للعملاء ولوحة للموظفين وتخصيص كامل للهوية.',
+      en: 'React 19 + PHP/MySQL travel-agency platform: trips, flights, hotels and visas, a role-based staff dashboard and runtime white-label theming.',
+      ar: 'منصة وكالة سفر بـ React 19 و PHP/MySQL: رحلات وطيران وفنادق وتأشيرات، ولوحة موظفين بصلاحيات، وتخصيص للهوية أثناء التشغيل.',
     },
     details: {
       en: 'A full travel-agency web app and its backend. Customers book agency-run group trips (request, approval, payment) or reserve flights, hotel rooms and visas through a cart-and-hold flow, then manage bookings, refunds and visa applications. Staff get a permissions-aware dashboard, support chat and runtime white-label branding. Fully bilingual with RTL and light/dark themes. The frontend is React 19 with react-router; the API is a PHP/MySQL service I built alongside it.',
-      ar: 'تطبيق ويب متكامل لوكالة سفر مع نظامه الخلفي. يحجز العملاء رحلات جماعية تديرها الوكالة (طلب، موافقة، دفع) أو يحجزون الطيران والفنادق والتأشيرات عبر سلة وحجز مؤقت، ثم يديرون حجوزاتهم واسترداداتهم وطلبات التأشيرة. يحصل الموظفون على لوحة تحكم بصلاحيات دقيقة ودردشة دعم وتخصيص للهوية أثناء التشغيل. ثنائي اللغة بالكامل مع RTL ووضعين فاتح وداكن. الواجهة بـ React 19 وreact-router، والواجهة البرمجية خدمة PHP/MySQL بنيتها معه.',
+      ar: 'تطبيق ويب متكامل لوكالة سفر مع نظامه الخلفي. يحجز العملاء رحلات جماعية تديرها الوكالة (طلب، موافقة، دفع) أو يحجزون الطيران والفنادق والتأشيرات عبر سلة وحجز مؤقت، ثم يديرون حجوزاتهم واسترداداتهم وطلبات التأشيرة. يحصل الموظفون على لوحة تحكم بصلاحيات دقيقة ودردشة دعم وتخصيص للهوية أثناء التشغيل. ثنائي اللغة بالكامل مع RTL ووضعين فاتح وداكن. الواجهة بـ React 19 و react-router، والواجهة البرمجية خدمة PHP/MySQL بنيتها معه.',
     },
     category: 'web',
     technologies: ['React', 'Vite', 'React Router', 'PHP', 'MySQL', 'Playwright'],
@@ -62,12 +62,12 @@ export const projects: Project[] = [
     id: 'meezan',
     title: { en: 'Meezan', ar: 'ميزان' },
     description: {
-      en: 'Arabic-first personal management app: money, meals, workouts, goals and habits on a realtime Firestore backend.',
-      ar: 'تطبيق إدارة شخصية عربي أولًا: المال والوجبات والتمارين والأهداف والعادات على قاعدة Firestore لحظية.',
+      en: 'Arabic-first personal management app in React and TypeScript: money, meals, workouts, goals and habits synced in realtime via Firestore.',
+      ar: 'تطبيق إدارة شخصية عربي أولًا بـ React و TypeScript: المال والوجبات والتمارين والأهداف والعادات بمزامنة لحظية عبر Firestore.',
     },
     details: {
       en: 'A personal management web app combining personal finance, food and nutrition tracking, gym sessions, goals, tasks, habit programs and body measurements. Built with React, TypeScript and Tailwind on Firebase Authentication and Cloud Firestore, with realtime subscriptions, per-user data namespacing, integer money units and transactional writes.',
-      ar: 'تطبيق ويب للإدارة الشخصية يجمع بين المالية الشخصية وتتبّع الطعام والتغذية وجلسات التمرين والأهداف والمهام وبرامج العادات وقياسات الجسم. مبني بـ React وTypeScript وTailwind فوق Firebase Authentication وCloud Firestore، مع اشتراكات لحظية وفصل بيانات كل مستخدم ووحدات مالية صحيحة وعمليات كتابة ضمن معاملات.',
+      ar: 'تطبيق ويب للإدارة الشخصية يجمع بين المالية الشخصية وتتبّع الطعام والتغذية وجلسات التمرين والأهداف والمهام وبرامج العادات وقياسات الجسم. مبني بـ React و TypeScript و Tailwind فوق Firebase Authentication و Cloud Firestore، مع اشتراكات لحظية وفصل بيانات كل مستخدم ووحدات مالية صحيحة وعمليات كتابة ضمن معاملات.',
     },
     category: 'web',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Firebase Auth', 'Cloud Firestore'],
@@ -83,12 +83,12 @@ export const projects: Project[] = [
     id: 'jabal-al-hadeed',
     title: { en: 'Jabal Al Hadeed', ar: 'جبل الحديد' },
     description: {
-      en: 'Bilingual marketing site for a Tripoli power-tools and building-materials supplier, built with React and CSS Modules.',
-      ar: 'موقع تعريفي ثنائي اللغة لمورّد عدد كهربائية ومواد بناء في طرابلس، مبني بـ React وCSS Modules.',
+      en: 'Bilingual site for a Tripoli power-tools and building-materials supplier: React, CSS Modules over design tokens, MVC, no UI framework.',
+      ar: 'موقع ثنائي اللغة لمورّد عدد كهربائية ومواد بناء في طرابلس: React و CSS Modules فوق رموز التصميم، بنمط MVC ودون إطار واجهات.',
     },
     details: {
       en: 'A fast, bilingual (English / Arabic) marketing site with product ranges, brands, FAQ and a contact form. Laid out as MVC with one-way dependencies, plain CSS Modules over a design-token layer, responsive images with low-quality placeholders, and no UI framework.',
-      ar: 'موقع تعريفي سريع ثنائي اللغة (إنجليزي / عربي) يعرض فئات المنتجات والعلامات والأسئلة الشائعة ونموذج تواصل. مبني بنمط MVC بتبعيات أحادية الاتجاه، وCSS Modules فوق طبقة من رموز التصميم، وصور متجاوبة مع صور مصغّرة مؤقتة، ودون أي إطار واجهات.',
+      ar: 'موقع تعريفي سريع ثنائي اللغة (إنجليزي / عربي) يعرض فئات المنتجات والعلامات والأسئلة الشائعة ونموذج تواصل. مبني بنمط MVC بتبعيات أحادية الاتجاه، و CSS Modules فوق طبقة من رموز التصميم، وصور متجاوبة مع صور مصغّرة مؤقتة، ودون أي إطار واجهات.',
     },
     category: 'web',
     technologies: ['React 19', 'Vite', 'CSS Modules', 'PHP'],
@@ -106,8 +106,8 @@ export const projects: Project[] = [
     id: 'lati-report-studio',
     title: { en: 'LATI Report Studio', ar: 'استوديو التقارير — LATI' },
     description: {
-      en: 'Drop a training-course folder and get the final report: attendance, grades and certificates compiled into PowerPoint and PDF.',
-      ar: 'أفلت مجلد الدورة التدريبية واستلم التقرير الختامي: الحضور والدرجات والشهادات مجمّعة في PowerPoint وPDF.',
+      en: 'Local-first Next.js tool: parses a training-course folder and exports attendance, grades and certificates as PowerPoint and PDF, fully client-side.',
+      ar: 'أداة Next.js تعمل محليًا: تحلّل مجلد الدورة التدريبية وتصدّر الحضور والدرجات والشهادات إلى PowerPoint و PDF بالكامل داخل المتصفح.',
     },
     details: {
       en: 'A local-first Next.js tool for the Libyan Academy of Telecommunications and Informatics. It reads a course folder (spreadsheets, attendance sheets, photos, certificates), walks the user through a five-step flow and exports, for each company, a PowerPoint built on the academy template and a PDF with that company\'s certificates merged in — entirely in the browser, with nothing sent to a server.',

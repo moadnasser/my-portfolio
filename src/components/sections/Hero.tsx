@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { ArrowDown, ArrowUpRight } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, FileDown } from 'lucide-react'
 import { Suspense, lazy, useRef } from 'react'
 import { profile } from '../../data/profile'
 import { useLanguage, useLocalized } from '../../i18n/context'
@@ -95,6 +95,12 @@ export function Hero() {
                 {t('hero.secondaryCta')}
                 <ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden="true" />
               </ButtonLink>
+              {profile.cvFile && (
+                <ButtonLink href={profile.cvFile} download variant="secondary" size="lg" className="w-full sm:w-auto">
+                  {t('hero.downloadCv')}
+                  <FileDown className="size-4" aria-hidden="true" />
+                </ButtonLink>
+              )}
             </motion.div>
           </div>
         </div>

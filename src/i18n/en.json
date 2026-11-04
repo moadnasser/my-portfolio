@@ -25,21 +25,22 @@
     "telegram": "Telegram"
   },
   "hero": {
-    "intro": "Hi, I'm Moad — a software engineer building mobile and web products.",
-    "headline1": "Engineering digital",
-    "headline2": "experiences that",
-    "headline3": "move ideas forward.",
-    "paragraph": "I design and build Flutter apps, React web products and the backends behind them — bilingual, accessible and made to last.",
+    "intro": "Hi, I'm Moad — a software engineer shipping Flutter and React apps end to end.",
+    "headline1": "Production-ready",
+    "headline2": "mobile & web apps,",
+    "headline3": "from UI to API.",
+    "paragraph": "Cross-platform mobile apps in Flutter, web apps in React and TypeScript, and the REST APIs and databases behind them — built on clean architecture, Arabic-first and RTL-ready.",
     "primaryCta": "Explore My Work",
     "secondaryCta": "Get in Touch",
     "photoAlt": "Moad Almshirem in traditional Libyan dress",
     "location": "Libya",
-    "demosChip": "4 live demos"
+    "demosChip": "4 live demos",
+    "downloadCv": "Download CV"
   },
   "work": {
     "eyebrow": "Portfolio",
     "title": "Selected Work",
-    "subtitle": "A few of the products I've shipped recently, across mobile and web.",
+    "subtitle": "Recent production work across Flutter, React and the APIs behind them.",
     "filters": {
       "all": "All",
       "web": "Web",
@@ -70,52 +71,51 @@
     "counter": "{current} of {total}",
     "screenshotAlt": "{title} — screenshot {n}",
     "viewAll": "View all projects",
-    "featuredSubtitle": "Three highlights. The full catalogue, with filters and details, lives on its own page.",
+    "featuredSubtitle": "Three featured builds. The full catalogue, filterable by platform, lives on its own page.",
     "hideDetails": "Hide details",
     "noScreenshots": "Screenshots for this project are coming soon."
   },
   "services": {
     "eyebrow": "Services",
-    "title": "From concept to production.",
-    "subtitle": "Thoughtful engineering and design for products built to last.",
+    "title": "From spec to production.",
+    "subtitle": "Architecture, implementation and deployment for mobile and web products.",
     "items": {
       "product": {
         "title": "Product Engineering",
-        "description": "Building reliable, maintainable applications with clean architecture and real tests."
+        "description": "Maintainable codebases with clean architecture, clear module boundaries and automated tests."
       },
       "web": {
         "title": "Web Development",
-        "description": "Responsive, accessible, bilingual web experiences with React, TypeScript and Next.js."
+        "description": "Responsive, accessible web apps with React, TypeScript and Next.js — bilingual and RTL-ready."
       },
       "mobile": {
         "title": "Mobile Applications",
-        "description": "Polished iOS and Android apps with Flutter — offline-first, localized and production-ready."
+        "description": "Cross-platform iOS and Android apps in Flutter — offline-first, localized and store-ready."
       },
       "backend": {
         "title": "Backend & Systems",
-        "description": "APIs, data models, integrations and the infrastructure that keeps products running."
+        "description": "REST APIs, data modelling, third-party integrations and push notifications."
       }
     }
   },
   "about": {
     "eyebrow": "About",
-    "title": "Building for real people, in two languages.",
-    "p1": "I'm Moad Almshirem, a software engineer based in Libya. I build mobile apps with Flutter and web products with React, TypeScript and Next.js, usually with the backend and data layer alongside them.",
-    "p2": "Most of what I ship is Arabic-first and bilingual, so right-to-left layouts, Arabic typography and localization are part of how I work rather than an afterthought.",
+    "title": "Arabic-first apps, engineered end to end.",
+    "p1": "I'm Moad Almshirem, a software engineer based in Libya. I ship cross-platform mobile apps in Flutter (Riverpod, go_router, dio, Hive) and web apps in React, TypeScript and Next.js — usually owning the API and data layer too, from REST endpoints to SQL schemas and Firebase.",
+    "p2": "Most of what I ship is Arabic-first and bilingual: RTL layouts, Arabic typography, i18n and locale-aware formatting are part of the architecture from day one, not patched in later.",
     "focusTitle": "Focus areas",
     "focus": {
-      "mobile": "Flutter apps with clean architecture, Riverpod and offline-first data",
-      "web": "React and Next.js products with careful typography and motion",
-      "backend": "APIs, Firebase and SQL data models that stay consistent",
-      "i18n": "Arabic / English localization and RTL done properly"
+      "mobile": "Flutter with clean architecture, Riverpod state management and offline-first caching",
+      "web": "React, TypeScript and Next.js with type-safe data flow and smooth motion",
+      "backend": "REST APIs, Firebase and relational SQL schemas",
+      "i18n": "Arabic / English i18n with full RTL support"
     },
-    "visualLabel": "Abstract visual",
-    "downloadCv": "Download CV"
+    "visualLabel": "Abstract visual"
   },
   "contact": {
     "eyebrow": "Contact",
-    "title": "Have a good idea? Let's build it.",
-    "subtitle": "Tell me about the product you have in mind and I'll get back to you.",
+    "title": "Got a spec or an idea? Let's ship it.",
+    "subtitle": "Send me the scope — platforms, features, timeline — and I'll get back to you with how I'd build it.",
     "email": "Email me",
     "whatsapp": "WhatsApp",
     "copyEmail": "Copy email address",
@@ -130,14 +130,14 @@
     "copyEmailShort": "Copy email address"
   },
   "footer": {
-    "signoff": "Designed and built by Moad Almshirem.",
+    "signoff": "Designed and engineered by Moad Almshirem.",
     "rights": "All rights reserved.",
     "backToTop": "Back to top"
   },
   "projects": {
     "eyebrow": "Portfolio",
     "title": "All projects",
-    "subtitle": "Everything I've shipped recently — mobile apps, web products and the systems behind them.",
+    "subtitle": "Everything I've shipped recently — Flutter apps, React web apps and the backends behind them.",
     "count": {
       "one": "1 project",
       "two": "2 projects",
@@ -160,7 +160,7 @@
     "progress": "{done} of {total}",
     "stepDone": "Done",
     "stepTodo": "Not done yet",
-    "allDone": "Everything tried. That is the core of the real app.",
+    "allDone": "All flows covered. That's the core logic of the production app.",
     "notice": "A simplified rebuild with sample data. It runs entirely in your browser and nothing you enter is sent anywhere.",
     "reset": "Reset demo",
     "introTitle": "You are inside a live demo",
@@ -172,8 +172,8 @@
   },
   "playground": {
     "eyebrow": "Playground",
-    "title": "Don't take my word for it. Try them.",
-    "subtitle": "Simplified, working rebuilds of real apps I shipped. Same flows and rules, sample data, right in your browser.",
+    "title": "Don't take my word for it. Run them.",
+    "subtitle": "Simplified, working rebuilds of apps I shipped — same flows and business rules, seeded with sample data, running client-side in your browser.",
     "launch": "Launch demo",
     "phone": "Mobile app",
     "web": "Web app"

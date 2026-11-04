@@ -1,8 +1,6 @@
-import { Code2, FileDown, Globe2, Languages, Smartphone } from 'lucide-react'
-import { profile } from '../../data/profile'
+import { Code2, Globe2, Languages, Smartphone } from 'lucide-react'
 import { technologies } from '../../data/technologies'
 import { useLanguage } from '../../i18n/context'
-import { ButtonLink } from '../ui/Button'
 import { Reveal } from '../ui/Reveal'
 
 const focusAreas = [
@@ -12,7 +10,7 @@ const focusAreas = [
   { id: 'i18n', icon: Languages },
 ] as const
 
-/** Isometric stack of floating glass plates (CSS 3D). Used when no portrait is supplied. */
+/** Isometric stack of floating glass plates (CSS 3D). */
 function LayerStack({ label }: { label: string }) {
   const plates = [
     { z: '0px', delay: '0s', opacity: 0.9 },
@@ -71,12 +69,6 @@ export function About() {
           </h2>
           <p className="mt-8 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p1')}</p>
           <p className="mt-4 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p2')}</p>
-          {profile.cvFile && (
-            <ButtonLink href={profile.cvFile} download variant="secondary" className="mt-8">
-              <FileDown className="size-4" aria-hidden="true" />
-              {t('about.downloadCv')}
-            </ButtonLink>
-          )}
 
           <h3 className="mt-10 text-xs font-semibold uppercase tracking-[0.18em] text-text-2">{t('about.focusTitle')}</h3>
           <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -95,11 +87,7 @@ export function About() {
         </Reveal>
 
         <Reveal delay={0.1} className="mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
-          {profile.photo ? (
-            <img src={profile.photo} alt={t('hero.photoAlt')} className="themed aspect-[4/5] w-full rounded-card border border-border object-cover" loading="lazy" decoding="async" />
-          ) : (
-            <LayerStack label={t('about.visualLabel')} />
-          )}
+          <LayerStack label={t('about.visualLabel')} />
         </Reveal>
       </div>
     </section>
