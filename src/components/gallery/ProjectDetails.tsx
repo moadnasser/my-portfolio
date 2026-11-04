@@ -5,12 +5,13 @@ import { hasDemo } from '../../demos/registry'
 import { useLanguage, useLocalized } from '../../i18n/context'
 import { Button, ButtonLink } from '../ui/Button'
 import { DemoLink } from '../ui/DemoLink'
+import { CurvedCarousel } from './CurvedCarousel'
 
-/** Screenshot at its natural proportions; phone shots get a narrower column so they read at a sensible size. In a grid the cell sets the width. */
-function Shot({ src, alt, inGrid }: { src: string; alt: string; inGrid: boolean }) {
+/** A lone screenshot at its natural proportions; phone shots get a narrower column so they read at a sensible size. */
+function Shot({ src, alt }: { src: string; alt: string }) {
   const [portrait, setPortrait] = useState(src.includes('mobile') || src.includes('uab-'))
   return (
-    <figure className={`shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-bg shadow-[0_24px_50px_-30px_rgb(var(--shadow-color)/0.6)] ${inGrid ? 'w-[46%] sm:w-auto' : portrait ? 'w-[46%] sm:w-56' : 'w-[88%] sm:w-auto sm:flex-1'}`}>
+    <figure className={`shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-bg shadow-[0_24px_50px_-30px_rgb(var(--shadow-color)/0.6)] ${portrait ? 'w-[46%] sm:w-56' : 'w-[88%] sm:w-auto sm:flex-1'}`}>
       <img src={src} alt={alt} loading="lazy" decoding="async" onLoad={(e) => setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)} className="block h-auto w-full" />
     </figure>
   )
@@ -31,8 +32,6 @@ export function ProjectDetails({ project, onClose, variant, headingId }: Project
   const title = pick(project.title)
   const demo = hasDemo(project.id)
   const shots = project.galleryImages
-  // More shots than fit one row: swipe strip on phones, grid from sm up.
-  const grid = shots.length > 3
 
   return (
     <div className="flex flex-col gap-8">
@@ -88,11 +87,15 @@ export function ProjectDetails({ project, onClose, variant, headingId }: Project
             {t('work.gallery')}
           </h3>
         )}
-        <div className={`no-scrollbar -mx-1 flex snap-x items-start gap-4 overflow-x-auto px-1 pb-2 sm:overflow-visible ${grid ? 'sm:grid sm:grid-cols-3 lg:grid-cols-4' : ''}`}>
-          {shots.map((src, i) => (
-            <Shot key={src} src={src} alt={t('work.screenshotAlt', { title, n: i + 1 })} inGrid={grid} />
-          ))}
-        </div>
+        {shots.length > 1 ? (
+          <div className="-mx-5 sm:-mx-8">
+            <CurvedCarousel images={shots} label={t('work.gallery')} altFor={(i) => t('work.screenshotAlt', { title, n: i + 1 })} />
+          </div>
+        ) : (
+          <div className="flex">
+            <Shot src={shots[0]} alt={t('work.screenshotAlt', { title, n: 1 })} />
+          </div>
+        )}
       </section>
       )}
 

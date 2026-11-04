@@ -73,6 +73,8 @@
     "viewAll": "View all projects",
     "featuredSubtitle": "Three featured builds. The full catalogue, filterable by platform, lives on its own page.",
     "hideDetails": "Hide details",
+    "prevShot": "Previous screenshot",
+    "nextShot": "Next screenshot",
     "noScreenshots": "Screenshots for this project are coming soon."
   },
   "services": {
