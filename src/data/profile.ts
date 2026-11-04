@@ -21,7 +21,6 @@ export const profile: Profile = {
   whatsappUsername: '@moadnasser',
   telegram: 'https://t.me/moadalmshirem',
   socials: [
-    { id: 'github', label: 'GitHub', url: 'https://github.com/moadnasser' },
     { id: 'telegram', label: 'Telegram', url: 'https://t.me/moadalmshirem' },
   ],
 }

@@ -97,7 +97,6 @@ export const projects: Project[] = [
     galleryImages: ['/projects/jabal-cover.webp', '/projects/jabal-mobile.webp'],
     screens: { kind: 'web', desktop: '/projects/jabal-cover.webp', phone: '/projects/jabal-mobile.webp' },
     liveUrl: 'https://jabal.tools',
-    sourceUrl: 'https://github.com/moadnasser/jabal',
     year: 2026,
     featured: true,
     visibility: 'public',
