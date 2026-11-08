@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { useLanguage } from '../../i18n/context'
 import { IconButton } from '../ui/Button'
+import { LoadImg } from '../ui/LoadImg'
 
 /** Max tilt (deg) and growth for a slide one half-width away from the centre. */
 const TILT = 34
@@ -120,10 +121,10 @@ export function CurvedCarousel({ images, altFor, label }: { images: string[]; al
               data-slide
               className="h-[clamp(15rem,52vw,26rem)] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-bg shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.7)] will-change-transform"
             >
-              <img src={src} alt={altFor(i)} loading="lazy" decoding="async" draggable={false} onLoad={recentre}
+              <LoadImg src={src} alt={altFor(i)} loading="lazy" decoding="async" draggable={false} onLoad={recentre}
                 // Inline: the global `img { height: auto }` rule is unlayered and beats utilities.
                 style={{ height: '100%', width: 'auto', maxWidth: 'none' }}
-                className="block select-none"
+                className={`block select-none ${src.includes('mobile') || src.includes('uab-') ? '[&:not([data-loaded])]:aspect-[9/19]' : '[&:not([data-loaded])]:aspect-[16/10]'}`}
               />
             </figure>
           ))}

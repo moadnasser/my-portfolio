@@ -5,6 +5,7 @@ import { Header } from './components/sections/Header'
 import { ScrollProgress } from './components/ui/ScrollProgress'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { lazy, Suspense } from 'react'
+import { DemoSkeleton } from './pages/DemoSkeleton'
 import { HomePage } from './pages/HomePage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { ThemeProvider } from './theme/ThemeProvider'
@@ -59,7 +60,13 @@ function Page() {
       <Route
         path="/projects/:projectId/demo"
         element={
-          <Suspense fallback={<div className="h-dvh bg-bg" />}>
+          <Suspense
+            fallback={
+              <div className="grid h-dvh place-items-center bg-bg p-4">
+                <DemoSkeleton />
+              </div>
+            }
+          >
             <ScrollManager />
             <DemoPage />
           </Suspense>

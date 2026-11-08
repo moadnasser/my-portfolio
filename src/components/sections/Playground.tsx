@@ -8,6 +8,7 @@ import { useTheme } from '../../theme/context'
 import { Reveal } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
 import { TiltCard } from '../ui/TiltCard'
+import { LoadImg } from '../ui/LoadImg'
 
 /** Phone apps first, then web apps; spans make a 3 + 2 bento on large screens. */
 const demoProjects = [...visibleProjects.filter((p) => hasDemo(p.id))].sort((a, b) => (a.category === b.category ? 0 : a.category === 'mobile' ? -1 : 1))
@@ -59,7 +60,7 @@ function DemoCard({ project, wide }: { project: Project; wide: boolean }) {
           {phone ? (
             <div className="relative w-[56%] max-w-52 translate-y-6 rounded-t-[1.6rem] border-[5px] border-b-0 border-[#0b1218] bg-[#0b1218] shadow-[0_30px_50px_-20px_rgb(var(--shadow-color)/0.6)] transition-transform duration-500 ease-out group-hover:translate-y-2 motion-reduce:transition-none">
               <span className="absolute start-1/2 top-1.5 z-10 h-2.5 w-10 -translate-x-1/2 rounded-full bg-[#0b1218] rtl:translate-x-1/2" aria-hidden="true" />
-              <img src={thumb(project.id, theme)} alt="" loading="lazy" width={480} height={868} className="aspect-[9/16] w-full rounded-t-[1.2rem] object-cover object-top" />
+              <LoadImg src={thumb(project.id, theme)} alt="" loading="lazy" width={480} height={868} className="aspect-[9/16] w-full rounded-t-[1.2rem] object-cover object-top" />
             </div>
           ) : (
             <div className="relative w-[88%] translate-y-6 overflow-hidden rounded-t-xl border border-b-0 border-border bg-surface shadow-[0_30px_50px_-20px_rgb(var(--shadow-color)/0.5)] transition-transform duration-500 ease-out group-hover:translate-y-2 motion-reduce:transition-none">
@@ -68,7 +69,7 @@ function DemoCard({ project, wide }: { project: Project; wide: boolean }) {
                 <span className="size-1.5 rounded-full bg-text-2/25" />
                 <span className="size-1.5 rounded-full bg-text-2/15" />
               </div>
-              <img src={thumb(project.id, theme)} alt="" loading="lazy" width={960} height={431} className={`w-full object-cover object-top ${wide ? 'aspect-[16/8]' : 'aspect-[16/10]'}`} />
+              <LoadImg src={thumb(project.id, theme)} alt="" loading="lazy" width={960} height={431} className={`w-full object-cover object-top ${wide ? 'aspect-[16/8]' : 'aspect-[16/10]'}`} />
             </div>
           )}
           <span className="absolute start-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-surface/85 px-2.5 py-1 text-xs font-semibold text-text-2 backdrop-blur">

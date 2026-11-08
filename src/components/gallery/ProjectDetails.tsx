@@ -6,13 +6,14 @@ import { useLanguage, useLocalized } from '../../i18n/context'
 import { Button, ButtonLink } from '../ui/Button'
 import { DemoLink } from '../ui/DemoLink'
 import { CurvedCarousel } from './CurvedCarousel'
+import { LoadImg } from '../ui/LoadImg'
 
 /** A lone screenshot at its natural proportions; phone shots get a narrower column so they read at a sensible size. */
 function Shot({ src, alt }: { src: string; alt: string }) {
   const [portrait, setPortrait] = useState(src.includes('mobile') || src.includes('uab-'))
   return (
     <figure className={`shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-bg shadow-[0_24px_50px_-30px_rgb(var(--shadow-color)/0.6)] ${portrait ? 'w-[46%] sm:w-56' : 'w-[88%] sm:w-auto sm:flex-1'}`}>
-      <img src={src} alt={alt} loading="lazy" decoding="async" onLoad={(e) => setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)} className="block h-auto w-full" />
+      <LoadImg src={src} alt={alt} loading="lazy" decoding="async" onLoad={(e) => setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)} className={`block h-auto w-full ${portrait ? '[&:not([data-loaded])]:aspect-[9/19]' : '[&:not([data-loaded])]:aspect-[16/10]'}`} />
     </figure>
   )
 }

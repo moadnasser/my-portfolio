@@ -15,6 +15,7 @@ import { categoryOrder, visibleProjects } from '../data/projects'
 import type { Project } from '../data/types'
 import { useLanguage, useLocalized } from '../i18n/context'
 import { EASE } from '../lib/motion'
+import { LoadImg } from '../components/ui/LoadImg'
 
 function useProjectCount(n: number) {
   const { t } = useLanguage()
@@ -92,14 +93,14 @@ function ShowcaseRow({ project, index, expanded, onToggle }: ShowcaseRowProps) {
             ) : (
               <>
                 {portrait && <Ambient />}
-                <img
+                <LoadImg
                   src={project.coverImage}
                   alt={title}
                   loading={index < 1 ? 'eager' : 'lazy'}
                   decoding="async"
                   className={`transition-transform duration-700 ease-out motion-reduce:transition-none ${
                     portrait
-                      ? 'relative mx-auto h-full w-auto rounded-xl border border-border object-contain shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.8)] group-hover:-translate-y-1'
+                      ? 'relative mx-auto h-full w-auto [&:not([data-loaded])]:aspect-[9/19] rounded-xl border border-border object-contain shadow-[0_30px_60px_-30px_rgb(var(--shadow-color)/0.8)] group-hover:-translate-y-1'
                       : 'h-full w-full object-cover object-top group-hover:scale-[1.03]'
                   }`}
                 />

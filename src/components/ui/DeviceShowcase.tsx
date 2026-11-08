@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import type { ProjectScreens } from '../../data/types'
 import { useCanHover } from '../../hooks/useCanHover'
+import { LoadImg } from './LoadImg'
 
 interface DeviceShowcaseProps {
   screens: ProjectScreens
@@ -79,7 +80,7 @@ function IPhone({ src, alt, eager }: { src: string; alt: string; eager: boolean 
       <span className="absolute top-[27%] -left-[1.4%] h-[10%] w-[1.4%] rounded-l bg-[#1b2530]" />
       <span className="absolute top-[24%] -right-[1.4%] h-[13%] w-[1.4%] rounded-r bg-[#1b2530]" />
       <div className="relative size-full overflow-hidden rounded-[10.5%/4.9%] bg-white">
-        <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" className="size-full object-cover object-top" />
+        <LoadImg src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" className="size-full object-cover object-top" />
         <span className="absolute left-1/2 top-[1.6%] h-[3.2%] w-[30%] -translate-x-1/2 rounded-full bg-[#0b1218]" />
       </div>
     </div>
@@ -93,7 +94,7 @@ function AndroidPhone({ src, alt, eager }: { src: string; alt: string; eager: bo
       <span className="absolute top-[20%] -right-[1.2%] h-[8%] w-[1.2%] rounded-r bg-[#2a3743]" />
       <span className="absolute top-[31%] -right-[1.2%] h-[5%] w-[1.2%] rounded-r bg-[#2a3743]" />
       <div className="relative size-full overflow-hidden rounded-[7.5%/3.6%] bg-white">
-        <img src={src} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" className="size-full object-cover object-top" />
+        <LoadImg src={src} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" className="size-full object-cover object-top" />
         <span className="absolute left-1/2 top-[1.4%] size-[4.2%] -translate-x-1/2 rounded-full bg-[#0b1218] ring-2 ring-[#0b1218]/20" />
       </div>
       <span className="sr-only">{alt}</span>
@@ -109,7 +110,7 @@ function BrowserWindow({ src, alt, eager }: { src: string; alt: string; eager: b
         <span className="size-[0.45rem] rounded-full bg-black/10 dark:bg-white/18" />
         <span className="size-[0.45rem] rounded-full bg-black/8 dark:bg-white/12" />
       </div>
-      <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" className="block aspect-[16/10] w-full object-cover object-top" />
+      <LoadImg src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" className="block aspect-[16/10] w-full object-cover object-top" />
     </div>
   )
 }

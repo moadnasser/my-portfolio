@@ -11,6 +11,7 @@ import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useLanguage, useLocalized } from '../i18n/context'
 import { useTheme } from '../theme/context'
 import { EASE } from '../lib/motion'
+import { DemoSkeleton } from './DemoSkeleton'
 
 /** Frames need room: below this the demo takes over the whole screen with its own mobile layout. */
 const FRAMED_QUERY = '(min-width: 768px) and (min-height: 640px)'
@@ -49,11 +50,9 @@ export function DemoPage() {
 function DemoLoading() {
   const { t } = useLanguage()
   return (
-    <div className="grid h-dvh place-items-center bg-bg text-text-2" role="status">
-      <div className="flex items-center gap-3 text-sm">
-        <span className="size-5 animate-spin rounded-full border-2 border-accent/30 border-t-accent motion-reduce:animate-none" aria-hidden="true" />
-        {t('demo.loading')}
-      </div>
+    <div className="grid h-dvh place-items-center bg-bg p-4" role="status">
+      <span className="sr-only">{t('demo.loading')}</span>
+      <DemoSkeleton />
     </div>
   )
 }

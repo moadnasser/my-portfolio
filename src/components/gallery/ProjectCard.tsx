@@ -8,6 +8,7 @@ import { EASE } from '../../lib/motion'
 import { DeviceShowcase } from '../ui/DeviceShowcase'
 import { ProjectDetails } from './ProjectDetails'
 import { TiltCard } from '../ui/TiltCard'
+import { LoadImg } from '../ui/LoadImg'
 
 interface ProjectCardProps {
   project: Project
@@ -88,7 +89,7 @@ export const ProjectCard = forwardRef<HTMLElement, ProjectCardProps>(function Pr
               <DeviceShowcase screens={project.screens} alt={title} active={hover} eager={index < 2} />
             </>
           ) : (
-            <img
+            <LoadImg
               src={project.coverImage}
               alt={title}
               loading={index < 2 ? 'eager' : 'lazy'}

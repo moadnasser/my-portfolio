@@ -258,3 +258,28 @@ img { max-width: 100%; height: auto; }
   0%, 55% { transform: translateX(0) skewX(-12deg); }
   100% { transform: translateX(450%) skewX(-12deg); }
 }
+
+/* ---------- Loading skeletons ----------
+   A soft light band sweeps across a surface-2 block. Used for placeholders and for images still downloading. */
+:root { --skeleton-hi: rgba(255, 255, 255, 0.75); }
+:root[data-theme="dark"] { --skeleton-hi: rgba(255, 255, 255, 0.06); }
+
+@keyframes skeleton-sweep {
+  from { background-position: 150% 0, 0 0; }
+  to { background-position: -50% 0, 0 0; }
+}
+.skeleton,
+.load-img:not([data-loaded]) {
+  background-color: var(--surface-2);
+  background-image: linear-gradient(100deg, transparent 25%, var(--skeleton-hi) 50%, transparent 75%);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-sweep 1.5s ease-in-out infinite;
+}
+/* Fade the picture in once it arrives. */
+@keyframes img-in { from { opacity: 0.001; } }
+.load-img[data-loaded] { animation: img-in 450ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .load-img:not([data-loaded]), .load-img[data-loaded] { animation: none !important; }
+}
