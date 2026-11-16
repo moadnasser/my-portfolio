@@ -1,0 +1,4 @@
+# Everything is public. Add a Sitemap line here once the site's domain is final.
+User-agent: *
+Allow: /
+Disallow: /api/

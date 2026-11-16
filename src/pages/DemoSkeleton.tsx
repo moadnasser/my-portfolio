@@ -1,7 +1,7 @@
 /** Phone-shaped placeholder: status bar, header, a hero card and list rows. */
 export function DemoSkeleton() {
   return (
-    <div aria-hidden="true" className="flex aspect-[393/852] h-[min(88dvh,52rem)] max-w-full flex-col gap-4 overflow-hidden rounded-[2.6rem] border border-border bg-surface p-5 pt-6 shadow-[0_40px_80px_-40px_rgb(var(--shadow-color)/0.5)] max-sm:h-full max-sm:w-full max-sm:rounded-none max-sm:border-0">
+    <div aria-hidden="true" className="flex aspect-[393/852] h-[min(88dvh,52rem)] max-w-full flex-col gap-4 overflow-hidden rounded-[2.6rem] border border-hairline bg-surface p-5 pt-6 product-shadow max-sm:h-full max-sm:w-full max-sm:rounded-none max-sm:border-0">
       <div className="flex items-center justify-between">
         <span className="skeleton h-3 w-12 rounded-full" />
         <span className="skeleton h-3 w-16 rounded-full" />

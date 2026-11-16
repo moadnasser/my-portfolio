@@ -1,7 +1,12 @@
-import { Code2, Globe2, Languages, Smartphone } from 'lucide-react'
-import { technologies } from '../../data/technologies'
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
+import { Code2, FileDown, Globe2, Languages, Smartphone } from 'lucide-react'
+import { useRef } from 'react'
+import { profile } from '../../data/profile'
 import { useLanguage } from '../../i18n/context'
+import { ButtonLink } from '../ui/Button'
 import { Reveal } from '../ui/Reveal'
+import { ScrollWords } from '../ui/ScrollWords'
+import { Tile } from '../ui/Tile'
 
 const focusAreas = [
   { id: 'mobile', icon: Smartphone },
@@ -10,86 +15,65 @@ const focusAreas = [
   { id: 'i18n', icon: Languages },
 ] as const
 
-/** Isometric stack of floating glass plates (CSS 3D). */
-function LayerStack({ label }: { label: string }) {
-  const plates = [
-    { z: '0px', delay: '0s', opacity: 0.9 },
-    { z: '70px', delay: '-2.3s', opacity: 0.75 },
-    { z: '140px', delay: '-4.6s', opacity: 0.6 },
-  ]
-  const chips = technologies.slice(0, 6)
-  return (
-    <div role="img" aria-label={label} className="perspective relative aspect-square w-full">
-      <div className="ambient start-[10%] top-[10%] h-[70%] w-[70%]" style={{ background: 'var(--glow-a)' }} />
-      <div className="preserve-3d relative h-full w-full">
-        {plates.map((p, i) => (
-          <div
-            key={p.z}
-            className="plate glass themed shadow-[0_40px_80px_-40px_rgb(var(--shadow-color)/0.6)]"
-            style={{ '--z': p.z, '--delay': p.delay, opacity: p.opacity } as React.CSSProperties}
-          >
-            {i === 1 && (
-              <div className="absolute inset-0 flex flex-wrap content-start gap-2 p-5" aria-hidden="true">
-                {chips.map((c) => (
-                  <span key={c.id} className="latin rounded-full border border-border bg-surface/70 px-2.5 py-1 text-[11px] font-semibold text-text-2">
-                    {c.label}
-                  </span>
-                ))}
-              </div>
-            )}
-            {i === 2 && (
-              <div className="absolute inset-0 flex flex-col justify-between p-5" aria-hidden="true">
-                <span className="size-3 rounded-full bg-accent shadow-[0_0_24px_var(--accent)]" />
-                <div className="space-y-2">
-                  <span className="block h-2 w-3/5 rounded-full bg-text/60" />
-                  <span className="block h-2 w-2/5 rounded-full bg-text/30" />
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+/** Portrait cut-out size, so the image reserves its space before it loads. */
+const W = 760
+const H = 1220
 
 export function About() {
   const { t } = useLanguage()
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLElement>(null)
+  // The portrait stands on the tile's bottom edge and rises a little as the tile scrolls through.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
+  const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.5 })
+  const y = useTransform(smooth, [0, 1], [reduce ? '0%' : '12%', '0%'])
+
   return (
-    <section id="about" className="scroll-mt-24 border-y border-border bg-surface/40 py-24 sm:py-28 lg:py-36" aria-labelledby="about-title">
-      <div className="shell grid grid-cols-1 items-center gap-14 lg:grid-cols-12 lg:gap-16">
-        <Reveal className="lg:col-span-7">
-          <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-text-2">
-            <span className="latin font-display text-accent">03</span>
-            <span className="h-px w-8 bg-border" aria-hidden="true" />
-            <span>{t('about.eyebrow')}</span>
-          </div>
-          <h2 id="about-title" className="font-display mt-6 text-balance text-4xl font-bold leading-[1.02] tracking-[-0.03em] text-text sm:text-5xl lg:text-6xl">
+    <Tile ref={ref} id="about" tone="ink" aria-labelledby="about-title" className="scroll-mt-12 !pb-0">
+      <div className="shell grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
+        <Reveal className="pb-4 lg:col-span-7 lg:pb-[clamp(4.5rem,3rem+6vw,8.5rem)]">
+          <p className="t-eyebrow">{t('about.eyebrow')}</p>
+          <h2 id="about-title" className="t-display mt-3 text-balance text-text">
             {t('about.title')}
           </h2>
-          <p className="mt-8 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p1')}</p>
-          <p className="mt-4 text-pretty text-base leading-relaxed text-text-2 sm:text-lg">{t('about.p2')}</p>
+          <ScrollWords text={t('about.p1')} className="t-lead mt-8 text-pretty text-text" />
+          <p className="mt-5 text-pretty text-text-2">{t('about.p2')}</p>
 
-          <h3 className="mt-10 text-xs font-semibold uppercase tracking-[0.18em] text-text-2">{t('about.focusTitle')}</h3>
-          <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <h3 className="t-caption mt-12 font-semibold text-text-2">{t('about.focusTitle')}</h3>
+          <ul className="mt-3 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
             {focusAreas.map((area) => {
               const Icon = area.icon
               return (
-                <li key={area.id} className="glass themed flex items-start gap-3 rounded-2xl p-4 transition-[border-color] duration-200 hover:border-accent/60">
-                  <span className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent">
-                    <Icon className="size-4" strokeWidth={1.75} aria-hidden="true" />
-                  </span>
-                  <span className="text-sm leading-relaxed text-text">{t(`about.focus.${area.id}`)}</span>
+                <li key={area.id} className="flex items-start gap-3.5 border-t border-hairline py-4">
+                  <Icon className="mt-0.5 size-5 shrink-0 text-accent" strokeWidth={1.6} aria-hidden="true" />
+                  <span className="text-[15px] leading-relaxed text-text rtl:leading-loose">{t(`about.focus.${area.id}`)}</span>
                 </li>
               )
             })}
           </ul>
+
+          {profile.cvFile && (
+            <ButtonLink href={profile.cvFile} download variant="secondary" className="mt-8">
+              <FileDown className="size-4" aria-hidden="true" />
+              {t('hero.downloadCv')}
+            </ButtonLink>
+          )}
         </Reveal>
 
-        <Reveal delay={0.1} className="mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
-          <LayerStack label={t('about.visualLabel')} />
-        </Reveal>
+        <div className="flex items-end justify-center overflow-hidden lg:col-span-5">
+          <motion.img
+            src="/portrait.webp"
+            width={W}
+            height={H}
+            alt={t('hero.photoAlt')}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            style={{ y }}
+            className="block w-[min(78%,24rem)] select-none lg:w-full lg:max-w-[27rem]"
+          />
+        </div>
       </div>
-    </section>
+    </Tile>
   )
 }

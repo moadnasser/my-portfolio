@@ -1,12 +1,14 @@
 import { useReducedMotion } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
+import { Link } from 'react-router'
 import { profile } from '../../data/profile'
 import { useLanguage, useLocalized } from '../../i18n/context'
 import { BrandIcon } from '../ui/BrandIcon'
-import { IconButton } from '../ui/Button'
+import { navItems } from './navItems'
 
 const year = new Date().getFullYear()
 
+/** Dense, quiet footer on parchment: the one place the page stops giving things room. */
 export function Footer() {
   const { t } = useLanguage()
   const localize = useLocalized()
@@ -15,34 +17,29 @@ export function Footer() {
   const backToTop = () => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
 
   return (
-    <footer className="relative overflow-hidden border-t border-border">
-      <div className="shell flex flex-col items-center justify-between gap-5 py-8 sm:flex-row">
-        <p className="text-center text-sm text-text-2 sm:text-start">
-          <span dir="auto">
-            © <span className="latin">{year}</span> {localize(profile.name)}. {t('footer.rights')}
-          </span>
-          <span className="mt-1 block text-xs text-text-2/80">{t('footer.signoff')}</span>
+    <footer data-tone="parchment" className="tile themed t-fine text-text-2">
+      <div className="shell py-8">
+        <nav aria-label={t('footer.nav')} className="flex flex-wrap items-center gap-x-7 gap-y-2 border-b border-hairline pb-5">
+          {navItems.map((item) => (
+            <Link key={item.id} to={item.to} className="hover:text-text hover:underline">
+              {t(item.key)}
+            </Link>
+          ))}
+          <span className="grow" />
+          {profile.socials.map((s) => (
+            <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="latin inline-flex items-center gap-1.5 hover:text-text hover:underline">
+              <BrandIcon id={s.id} className="size-3.5" />
+              {s.label}
+            </a>
+          ))}
+          <button type="button" onClick={backToTop} className="inline-flex cursor-pointer items-center gap-1 hover:text-text hover:underline">
+            {t('footer.backToTop')}
+            <ArrowUp className="size-3.5" aria-hidden="true" />
+          </button>
+        </nav>
+        <p className="pt-5" dir="auto">
+          © <span className="latin">{year}</span> {localize(profile.name)}. {t('footer.rights')} <span className="opacity-80">{t('footer.signoff')}</span>
         </p>
-        <div className="flex items-center gap-3">
-          <ul className="flex items-center gap-2">
-            {profile.socials.map((s) => (
-              <li key={s.id}>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label} className="glass themed inline-flex size-11 items-center justify-center rounded-full text-text-2 transition-colors duration-200 hover:border-accent/60 hover:text-text">
-                  <BrandIcon id={s.id} className="size-4" />
-                </a>
-              </li>
-            ))}
-          </ul>
-          <IconButton onClick={backToTop} label={t('footer.backToTop')}>
-            <ArrowUp className="size-4" aria-hidden="true" />
-          </IconButton>
-        </div>
-      </div>
-      {/* Watermark */}
-      <div className="shell pointer-events-none select-none" aria-hidden="true">
-        <span className="font-display text-watermark block whitespace-nowrap text-center text-[clamp(2.75rem,11vw,10rem)] font-extrabold leading-[1.1] tracking-[-0.04em] py-[0.08em] rtl:pt-[0.2em] rtl:pb-0 rtl:leading-[1.2] rtl:tracking-normal">
-          {localize(profile.name)}
-        </span>
       </div>
     </footer>
   )

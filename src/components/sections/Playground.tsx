@@ -1,96 +1,97 @@
-import { ArrowUpRight, Monitor, Smartphone } from 'lucide-react'
-import { Link } from 'react-router'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { visibleProjects } from '../../data/projects'
-import type { Project } from '../../data/types'
-import { demoPath, hasDemo, preloadDemo } from '../../demos/registry'
-import { useLanguage, useLocalized } from '../../i18n/context'
-import { useTheme } from '../../theme/context'
+import { hasDemo } from '../../demos/registry'
+import { useLanguage } from '../../i18n/context'
+import { BuildCard } from '../gallery/BuildCard'
 import { Reveal } from '../ui/Reveal'
+import { TLink } from '../ui/TLink'
 import { SectionHeading } from '../ui/SectionHeading'
-import { TiltCard } from '../ui/TiltCard'
-import { LoadImg } from '../ui/LoadImg'
+import { Tile } from '../ui/Tile'
 
-/** Phone apps first, then web apps; spans make a 3 + 2 bento on large screens. */
-const demoProjects = [...visibleProjects.filter((p) => hasDemo(p.id))].sort((a, b) => (a.category === b.category ? 0 : a.category === 'mobile' ? -1 : 1))
+/** Everything except the two builds that have their own walkthroughs above. Builds with a live demo come first. */
+const builds = visibleProjects.filter((p) => p.id !== 'uab-shipping' && p.id !== 'travelyuk').sort((a, b) => Number(hasDemo(b.id)) - Number(hasDemo(a.id)))
 
-/** Screenshots captured from the demos themselves, one per theme. */
-const thumb = (id: string, theme: 'light' | 'dark') => `/demos/thumbs/${id}-${theme}.webp`
+const arrow =
+  'inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-chip text-text transition-[transform,opacity,background-color] duration-200 hover:bg-accent hover:text-on-accent active:scale-95 disabled:pointer-events-none disabled:opacity-30'
 
+/**
+ * The other builds as a shelf of large cards you swipe through. Native horizontal scrolling with
+ * snap points does the work, so it is smooth on touch and trackpads and mirrors itself in Arabic.
+ */
 export function Playground() {
-  const { t } = useLanguage()
-  if (!demoProjects.length) return null
+  const { t, dir } = useLanguage()
+  const track = useRef<HTMLUListElement>(null)
+  const [edges, setEdges] = useState({ start: true, end: false })
+
+  const measure = useCallback(() => {
+    const el = track.current
+    if (!el) return
+    // scrollLeft runs negative in RTL; the distance from the start edge is what matters.
+    const x = Math.abs(el.scrollLeft)
+    const max = el.scrollWidth - el.clientWidth
+    const next = { start: x < 8, end: x > max - 8 }
+    setEdges((e) => (e.start === next.start && e.end === next.end ? e : next))
+  }, [])
+
+  useEffect(() => {
+    const el = track.current
+    if (!el) return
+    measure()
+    el.addEventListener('scroll', measure, { passive: true })
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener('scroll', measure)
+      ro.disconnect()
+    }
+  }, [measure, dir])
+
+  const step = (forward: boolean) => {
+    const el = track.current
+    const card = el?.querySelector<HTMLElement>('[data-card]')
+    if (!el || !card) return
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0
+    const distance = (card.offsetWidth + gap) * (forward ? 1 : -1) * (dir === 'rtl' ? -1 : 1)
+    el.scrollBy({ left: distance, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }
+
+  if (!builds.length) return null
   return (
-    <section id="playground" aria-labelledby="playground-title" className="relative py-24 lg:py-32">
+    <Tile id="playground" tone="canvas" aria-labelledby="playground-title" className="scroll-mt-12">
       <div className="shell">
-        <SectionHeading id="playground-title" index="02" eyebrow={t('playground.eyebrow')} title={t('playground.title')} subtitle={t('playground.subtitle')} />
-        <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-6">
-          {demoProjects.map((p, i) => (
-            <li key={p.id} className={demoProjects.length % 3 === 0 || (demoProjects.length === 5 && i < 3) ? 'lg:col-span-2' : 'lg:col-span-3'}>
-              <Reveal delay={i * 0.06} className="h-full">
-                <DemoCard project={p} wide={!(demoProjects.length % 3 === 0 || (demoProjects.length === 5 && i < 3))} />
-              </Reveal>
+        <SectionHeading id="playground-title" eyebrow={t('playground.eyebrow')} title={t('playground.title')} subtitle={t('playground.subtitle')} />
+      </div>
+
+      <Reveal y={40}>
+        <ul
+          ref={track}
+          tabIndex={0}
+          aria-label={t('flagship.more')}
+          className="no-scrollbar mt-14 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-[max(1.25rem,calc((100vw-84rem)/2))] px-[max(1.25rem,calc((100vw-84rem)/2))] pb-2 outline-none md:scroll-px-[max(2rem,calc((100vw-84rem)/2))] md:px-[max(2rem,calc((100vw-84rem)/2))] lg:mt-20 lg:gap-6 xl:scroll-px-[max(3rem,calc((100vw-84rem)/2))] xl:px-[max(3rem,calc((100vw-84rem)/2))]"
+        >
+          {builds.map((project, i) => (
+            <li key={project.id} data-card className="w-[min(86vw,58rem)] shrink-0 snap-start">
+              <BuildCard project={project} blue={i % 3 === 1} />
             </li>
           ))}
         </ul>
-      </div>
-    </section>
-  )
-}
+      </Reveal>
 
-function DemoCard({ project, wide }: { project: Project; wide: boolean }) {
-  const { t } = useLanguage()
-  const pick = useLocalized()
-  const { theme } = useTheme()
-  const phone = project.category === 'mobile'
-  const title = pick(project.title)
-  const warm = () => preloadDemo(project.id)
-  return (
-    <TiltCard max={5} className="h-full rounded-card">
-      <Link
-        to={demoPath(project.id)}
-        onMouseEnter={warm}
-        onFocus={warm}
-        onTouchStart={warm}
-        aria-label={t('demo.tryFor', { title })}
-        className="group glass themed relative flex h-full flex-col overflow-hidden rounded-card transition-[border-color] duration-300 hover:border-accent/50"
-      >
-        {/* Device stage */}
-        <div className={`relative isolate flex items-end justify-center overflow-hidden bg-surface-2 px-6 pt-14 ${phone ? 'h-80 sm:h-[22rem]' : wide ? 'h-64 sm:h-72' : 'h-64'}`}>
-          <div className="pointer-events-none absolute inset-0 -z-10 opacity-80" aria-hidden="true" style={{ background: 'radial-gradient(60% 70% at 50% 100%, var(--glow-a), transparent 70%)' }} />
-          {phone ? (
-            <div className="relative w-[56%] max-w-52 translate-y-6 rounded-t-[1.6rem] border-[5px] border-b-0 border-[#0b1218] bg-[#0b1218] shadow-[0_30px_50px_-20px_rgb(var(--shadow-color)/0.6)] transition-transform duration-500 ease-out group-hover:translate-y-2 motion-reduce:transition-none">
-              <span className="absolute start-1/2 top-1.5 z-10 h-2.5 w-10 -translate-x-1/2 rounded-full bg-[#0b1218] rtl:translate-x-1/2" aria-hidden="true" />
-              <LoadImg src={thumb(project.id, theme)} alt="" loading="lazy" width={480} height={868} className="aspect-[9/16] w-full rounded-t-[1.2rem] object-cover object-top" />
-            </div>
-          ) : (
-            <div className="relative w-[88%] translate-y-6 overflow-hidden rounded-t-xl border border-b-0 border-border bg-surface shadow-[0_30px_50px_-20px_rgb(var(--shadow-color)/0.5)] transition-transform duration-500 ease-out group-hover:translate-y-2 motion-reduce:transition-none">
-              <div className="flex h-6 items-center gap-1 border-b border-border px-2.5" aria-hidden="true">
-                <span className="size-1.5 rounded-full bg-text-2/35" />
-                <span className="size-1.5 rounded-full bg-text-2/25" />
-                <span className="size-1.5 rounded-full bg-text-2/15" />
-              </div>
-              <LoadImg src={thumb(project.id, theme)} alt="" loading="lazy" width={960} height={431} className={`w-full object-cover object-top ${wide ? 'aspect-[16/8]' : 'aspect-[16/10]'}`} />
-            </div>
-          )}
-          <span className="absolute start-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-surface/85 px-2.5 py-1 text-xs font-semibold text-text-2 backdrop-blur">
-            {phone ? <Smartphone className="size-3.5" aria-hidden="true" /> : <Monitor className="size-3.5" aria-hidden="true" />}
-            {phone ? t('playground.phone') : t('playground.web')}
-          </span>
+      <div className="shell mt-8 flex items-center justify-between gap-4">
+        <TLink to="/projects" className="link-go text-[17px]">
+          {t('work.viewAll')}
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </TLink>
+        <div className="flex gap-3">
+          <button type="button" onClick={() => step(false)} disabled={edges.start} aria-label={t('flagship.prev')} className={arrow}>
+            <ChevronLeft className="size-5 rtl:-scale-x-100" aria-hidden="true" />
+          </button>
+          <button type="button" onClick={() => step(true)} disabled={edges.end} aria-label={t('flagship.next')} className={arrow}>
+            <ChevronRight className="size-5 rtl:-scale-x-100" aria-hidden="true" />
+          </button>
         </div>
-        {/* Copy */}
-        <div className="flex flex-1 flex-col gap-2 p-5 sm:p-6">
-          <h3 className="font-display text-xl font-semibold tracking-tight">{title}</h3>
-          <p className="line-clamp-2 text-sm leading-relaxed text-text-2">{pick(project.description)}</p>
-          <span className="mt-auto inline-flex items-center gap-2 pt-3 text-sm font-semibold text-accent">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full rounded-full bg-accent opacity-60 motion-safe:animate-ping" />
-              <span className="relative inline-flex size-2 rounded-full bg-accent" />
-            </span>
-            {t('playground.launch')}
-            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden="true" />
-          </span>
-        </div>
-      </Link>
-    </TiltCard>
+      </div>
+    </Tile>
   )
 }

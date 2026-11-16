@@ -6,7 +6,6 @@ import type { DemoDefinition } from './kit/types'
  */
 const loaders: Record<string, () => Promise<{ default: DemoDefinition }>> = {
   'uab-shipping': () => import('./uab-shipping'),
-  travelyuk: () => import('./travelyuk'),
   meezan: () => import('./meezan'),
   'lati-report-studio': () => import('./lati-report-studio'),
 }

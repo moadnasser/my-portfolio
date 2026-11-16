@@ -25,8 +25,8 @@ export function ProjectFilters({ options, value, onChange, align = 'center' }: P
             type="button"
             aria-pressed={active}
             onClick={() => onChange(opt)}
-            className={`themed relative shrink-0 cursor-pointer rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
-              active ? 'border-transparent text-on-accent' : 'glass text-text-2 hover:border-accent/60 hover:text-text'
+            className={`themed relative shrink-0 cursor-pointer rounded-full border px-[18px] py-2 text-[15px] transition-[color,background-color,transform] duration-200 active:scale-95 ${
+              active ? 'border-transparent text-on-accent' : 'border-transparent bg-chip text-text hover:bg-accent/15'
             }`}
           >
             {active && (

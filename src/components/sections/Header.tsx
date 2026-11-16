@@ -1,42 +1,32 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { Menu, Moon, Sun, X } from 'lucide-react'
+import { Menu, Moon, Search, Sun, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { profile } from '../../data/profile'
-import type { SocialLink } from '../../data/types'
-import { useLanguage } from '../../i18n/context'
+import { useActiveSection } from '../../hooks/useActiveSection'
+import { useInkUnderHeader } from '../../hooks/useInkUnderHeader'
+import { useLanguage, useLocalized } from '../../i18n/context'
+import { EASE } from '../../lib/motion'
 import { useTheme } from '../../theme/context'
 import { BrandIcon } from '../ui/BrandIcon'
-import { IconButton } from '../ui/Button'
-import { EASE } from '../../lib/motion'
+import { OPEN_PALETTE } from '../ui/CommandPalette'
+import { navItems } from './navItems'
 
-const navItems = [
-  { id: 'work', key: 'nav.work', to: '/projects' },
-  { id: 'playground', key: 'nav.playground', to: '/#playground' },
-  { id: 'services', key: 'nav.services', to: '/#services' },
-  { id: 'about', key: 'nav.about', to: '/#about' },
-  { id: 'contact', key: 'nav.contact', to: '/#contact' },
-] as const
+const sectionIds = navItems.map((n) => n.id)
+const control = 'inline-flex h-9 cursor-pointer items-center justify-center rounded-full text-text-2 transition-[color,background-color,transform] duration-200 hover:bg-chip hover:text-text active:scale-95'
 
-function SocialIcon({ id }: { id: SocialLink['id'] }) {
-  return <BrandIcon id={id} className="size-4" />
-}
-
-/** Floating glass bar. Fixed to the top, condenses once the page scrolls. */
+/** Slim frosted bar pinned to the top. The link for the section on screen is marked as you scroll. */
 export function Header() {
   const { t, lang, toggleLang } = useLanguage()
+  const localize = useLocalized()
   const { theme, toggleTheme } = useTheme()
+  const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const [hovered, setHovered] = useState<string | null>(null)
   const reduce = useReducedMotion()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const onHome = pathname === '/'
+  const section = useActiveSection(sectionIds, onHome)
+  const ink = useInkUnderHeader(pathname)
+  const active = onHome ? section : pathname.startsWith('/projects') ? 'work' : null
 
   useEffect(() => {
     if (!menuOpen) return
@@ -54,52 +44,40 @@ export function Header() {
     <header className="fixed inset-x-0 top-0 z-50">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-accent"
+        className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-14 focus:z-[70] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:text-on-accent"
       >
         {t('nav.skipToContent')}
       </a>
 
-      <div className={`shell transition-[padding] duration-300 ${scrolled ? 'pt-3' : 'pt-5 sm:pt-7'}`}>
-        <div
-          className={`themed flex items-center justify-between gap-3 rounded-full px-3 py-2 transition-[background-color,border-color,box-shadow] duration-300 sm:px-4 ${
-            scrolled || menuOpen ? 'glass shadow-[0_18px_50px_-30px_rgb(var(--shadow-color)/0.5)]' : 'border border-transparent'
-          }`}
-        >
-          {/* Start: monogram + CV */}
-          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <Link to="/" className="relative inline-flex size-10 shrink-0 rounded-full bg-[conic-gradient(from_200deg,var(--accent),var(--accent-2),var(--accent-deep),var(--accent))] p-[2px] transition-transform duration-200 hover:scale-105" aria-label={t('projects.backHome')}>
-              {profile.photo ? (
-                <img src={profile.photo} alt="" width={40} height={40} decoding="async" className="size-full rounded-full border-2 border-bg bg-[linear-gradient(160deg,var(--accent-2),var(--accent-deep))] object-cover object-top" />
-              ) : (
-                <span className="latin font-display grid size-full place-items-center rounded-full bg-accent text-sm font-bold text-on-accent">M</span>
-              )}
-            </Link>
-          </div>
+      <div data-theme={ink && !menuOpen ? 'dark' : undefined} className="frost-bar themed">
+        <div className="shell flex h-12 items-center justify-between gap-4">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5 text-text" aria-label={t('projects.backHome')}>
+            {profile.photo && <img src={profile.photo} alt="" width={28} height={28} decoding="async" className="size-7 shrink-0 rounded-full bg-accent object-cover object-top" />}
+            <span className="truncate text-[17px] font-semibold tracking-[-0.02em]" dir="auto">
+              {localize(profile.name)}
+            </span>
+          </Link>
 
-          {/* Centre: nav (desktop) */}
-          {/* A glowing pill glides between items as the pointer moves across the nav. */}
           <nav aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+            <ul className="flex items-center gap-8">
               {navItems.map((item) => {
-                const active = hovered === item.id
+                const current = active === item.id
                 return (
                   <li key={item.id}>
                     <Link
                       to={item.to}
-                      onMouseEnter={() => setHovered(item.id)}
-                      onFocus={() => setHovered(item.id)}
-                      onBlur={() => setHovered(null)}
-                      className={`relative block rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${active ? 'text-accent' : 'text-text-2'}`}
+                      aria-current={current ? 'true' : undefined}
+                      className={`relative block py-3.5 text-sm transition-colors duration-300 hover:text-text ${current ? 'text-text' : 'text-text-2'}`}
                     >
-                      {active && (
+                      {t(item.key)}
+                      {current && (
                         <motion.span
-                          layoutId="nav-pill"
+                          layoutId="nav-mark"
                           aria-hidden="true"
-                          className="absolute inset-0 rounded-full border border-accent/30 bg-accent/12 shadow-[0_0_24px_-6px_var(--ring)]"
-                          transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32 }}
+                          className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-accent"
+                          transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36 }}
                         />
                       )}
-                      <span className="relative">{t(item.key)}</span>
                     </Link>
                   </li>
                 )
@@ -107,41 +85,26 @@ export function Header() {
             </ul>
           </nav>
 
-          {/* End: socials + toggles */}
-          <div className="flex items-center gap-2">
-            <ul className="hidden items-center gap-4 sm:flex">
-              {profile.socials.map((s) => (
-                <li key={s.id}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="link-underline latin inline-flex items-center gap-1.5 text-sm font-medium text-text-2 hover:text-text">
-                    <SocialIcon id={s.id} />
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <span className="mx-1 hidden h-5 w-px bg-border sm:block" aria-hidden="true" />
-
-            <button
-              type="button"
-              onClick={toggleLang}
-              aria-label={t('header.language')}
-              title={t('header.language')}
-              className="glass themed latin inline-flex h-11 cursor-pointer items-center rounded-full p-1 text-xs font-bold transition-[border-color] duration-200 hover:border-accent/60"
-            >
-              <span className={`rounded-full px-2.5 py-1.5 transition-colors ${lang === 'en' ? 'bg-accent text-on-accent' : 'text-text-2'}`}>EN</span>
-              <span className={`rounded-full px-2.5 py-1.5 transition-colors ${lang === 'ar' ? 'bg-accent text-on-accent' : 'text-text-2'}`}>AR</span>
+          <div className="flex items-center gap-1">
+            <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE))} aria-label={t('palette.open')} title={t('palette.open')} aria-keyshortcuts="Meta+K Control+K" className={`${control} w-9`}>
+              <Search className="size-4" aria-hidden="true" />
             </button>
-
-            <IconButton onClick={toggleTheme} label={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')}>
+            <button type="button" onClick={toggleLang} aria-label={t('header.language')} title={t('header.language')} className={`${control} px-3 text-sm`}>
+              {/* Each language is named in its own script. */}
+              <span className={lang === 'en' ? 'font-arabic' : 'latin'}>{lang === 'en' ? 'العربية' : 'English'}</span>
+            </button>
+            <button type="button" onClick={toggleTheme} aria-label={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')} title={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')} className={`${control} w-9`}>
               <span className="relative block size-4">
                 <Sun className={`absolute inset-0 size-4 transition-[opacity,transform] duration-300 ${theme === 'dark' ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`} aria-hidden="true" />
                 <Moon className={`absolute inset-0 size-4 transition-[opacity,transform] duration-300 ${theme === 'dark' ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`} aria-hidden="true" />
               </span>
-            </IconButton>
-
-            <IconButton className="lg:hidden" onClick={() => setMenuOpen((o) => !o)} label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')} aria-expanded={menuOpen} aria-controls="mobile-menu">
+            </button>
+            <Link to="/#contact" className="btn-primary ms-2 hidden h-8 items-center rounded-full px-4 text-sm active:scale-95 sm:inline-flex">
+              {t('hero.secondaryCta')}
+            </Link>
+            <button type="button" className={`${control} w-9 lg:hidden`} onClick={() => setMenuOpen((o) => !o)} aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')} aria-expanded={menuOpen} aria-controls="mobile-menu">
               {menuOpen ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
-            </IconButton>
+            </button>
           </div>
         </div>
       </div>
@@ -155,32 +118,27 @@ export function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: EASE }}
-            className="fixed inset-0 -z-10 flex flex-col bg-bg/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 -z-10 flex flex-col bg-bg px-6 pb-10 pt-24 lg:hidden"
           >
             <nav aria-label="Mobile" className="grow">
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col">
                 {navItems.map((item, i) => (
-                  <motion.li
-                    key={item.id}
-                    initial={reduce ? false : { opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: 0.05 + i * 0.06, ease: EASE }}
-                  >
-                    <Link to={item.to} onClick={() => setMenuOpen(false)} className="font-display block py-3 text-4xl font-bold tracking-tight text-text transition-colors duration-200 hover:text-accent sm:text-5xl">
+                  <motion.li key={item.id} initial={reduce ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.04 + i * 0.05, ease: EASE }}>
+                    <Link to={item.to} onClick={() => setMenuOpen(false)} className={`t-display block py-2.5 ${active === item.id ? 'text-accent' : 'text-text'}`}>
                       {t(item.key)}
                     </Link>
                   </motion.li>
                 ))}
               </ul>
             </nav>
-            <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
-              <a href={`mailto:${profile.email}`} className="latin text-sm font-medium text-text-2">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-hairline pt-5 text-sm text-text-2">
+              <a href={`mailto:${profile.email}`} className="latin">
                 {profile.email}
               </a>
               <span className="grow" />
               {profile.socials.map((s) => (
-                <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="glass latin inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-sm font-medium text-text-2 hover:text-text">
-                  <SocialIcon id={s.id} />
+                <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="latin inline-flex items-center gap-1.5 text-accent">
+                  <BrandIcon id={s.id} className="size-4" />
                   {s.label}
                 </a>
               ))}

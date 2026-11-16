@@ -1,6 +1,7 @@
 {
   "meta": {
-    "title": "Moad Almshirem — Software Engineer"
+    "title": "Moad Almshirem — Software Engineer",
+    "description": "Moad Almshirem — software engineer in Libya. Cross-platform mobile apps in Flutter, web apps in React and TypeScript, and the REST APIs behind them. Arabic-first, RTL-ready, with live demos you can run."
   },
   "nav": {
     "work": "Work",
@@ -34,7 +35,7 @@
     "secondaryCta": "Get in Touch",
     "photoAlt": "Moad Almshirem in traditional Libyan dress",
     "location": "Libya",
-    "demosChip": "4 live demos",
+    "demosChip": "3 live demos",
     "downloadCv": "Download CV"
   },
   "work": {
@@ -109,7 +110,7 @@
     "focus": {
       "mobile": "Flutter with clean architecture, Riverpod state management and offline-first caching",
       "web": "React, TypeScript and Next.js with type-safe data flow and smooth motion",
-      "backend": "REST APIs, Firebase and relational SQL schemas",
+      "backend": "REST APIs, Python and Django, Firebase and relational SQL schemas",
       "i18n": "Arabic / English i18n with full RTL support"
     },
     "visualLabel": "Abstract visual"
@@ -134,7 +135,8 @@
   "footer": {
     "signoff": "Designed and engineered by Moad Almshirem.",
     "rights": "All rights reserved.",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "nav": "Footer"
   },
   "projects": {
     "eyebrow": "Portfolio",
@@ -179,5 +181,136 @@
     "launch": "Launch demo",
     "phone": "Mobile app",
     "web": "Web app"
+  },
+  "flagship": {
+    "eyebrow": "Flagship build",
+    "steps": {
+      "s1": {
+        "title": "One home for every shipment.",
+        "body": "Per-country rates, quick actions and the latest orders on one screen, served from an encrypted Hive cache."
+      },
+      "s2": {
+        "title": "Sea or air, in a few steps.",
+        "body": "Customers create freight orders from China, the UAE and Turkey to Libya. Riverpod holds the form state and dio submits it."
+      },
+      "s3": {
+        "title": "Every shipment on a live map.",
+        "body": "flutter_map follows each shipment, and Firebase Messaging pushes a notification at every status change."
+      },
+      "s4": {
+        "title": "The cost before the commitment.",
+        "body": "A shipping calculator estimates the price by route and method before the order is placed."
+      }
+    },
+    "stepLabel": "Step {current} of {total}",
+    "prev": "Previous",
+    "next": "Next",
+    "more": "More builds"
+  },
+  "web": {
+    "eyebrow": "Web build",
+    "note": "Screenshots from the running app.",
+    "steps": {
+      "s1": {
+        "title": "Group trips, from request to payment.",
+        "body": "Customers request seats on agency-run trips, staff approve, and payment confirms the booking."
+      },
+      "s2": {
+        "title": "Flights, hotels and visas in one cart.",
+        "body": "Everything goes into a single cart and is held on a timer while the customer pays."
+      },
+      "s3": {
+        "title": "The API is mine too.",
+        "body": "React 19 and react-router on the front end, a PHP/MySQL service behind it — bilingual, RTL, with white-label theming at runtime."
+      }
+    }
+  },
+  "stats": {
+    "label": "In numbers",
+    "projects": "Shipped projects",
+    "demos": "Live demos you can run",
+    "languages": "Languages, with full RTL",
+    "tech": "Technologies in the stack"
+  },
+  "process": {
+    "eyebrow": "Process",
+    "title": "How a build runs.",
+    "subtitle": "Four stages, the same on every project.",
+    "items": {
+      "spec": {
+        "title": "Spec",
+        "lead": "Scope before code.",
+        "body": "User flows, the data model and the API contract are written down first, so the estimate is real and nothing is discovered halfway through.",
+        "points": [
+          "User flows",
+          "Data model",
+          "API contract"
+        ]
+      },
+      "architecture": {
+        "title": "Architecture",
+        "lead": "Structure that survives change.",
+        "body": "Clean architecture per feature and clear module boundaries, with state management chosen for the app: Riverpod in Flutter, typed data flow in React.",
+        "points": [
+          "Feature modules",
+          "State management",
+          "Typed data layer"
+        ]
+      },
+      "build": {
+        "title": "Build",
+        "lead": "Both languages from the first commit.",
+        "body": "Arabic and English, RTL and LTR, light and dark are built alongside the features, not patched in at the end.",
+        "points": [
+          "i18n and RTL",
+          "Offline cache",
+          "Automated tests"
+        ]
+      },
+      "ship": {
+        "title": "Ship",
+        "lead": "To the store and to the server.",
+        "body": "Store-ready Flutter builds, web deploys through CI, and the API and database running behind them.",
+        "points": [
+          "Store builds",
+          "CI deploys",
+          "API and database"
+        ]
+      }
+    }
+  },
+  "form": {
+    "title": "Or write to me here.",
+    "name": "Your name",
+    "email": "Your email",
+    "message": "What do you want to build?",
+    "send": "Send message",
+    "sending": "Sending…",
+    "sent": "Message sent. I will reply by email.",
+    "failed": "Could not send from here. Email me directly instead:",
+    "required": "Please fill in this field.",
+    "invalidEmail": "Enter a valid email address.",
+    "tooShort": "A sentence or two helps me reply properly."
+  },
+  "palette": {
+    "label": "Quick search",
+    "open": "Search",
+    "placeholder": "Jump to a section, project or action",
+    "empty": "Nothing matches that.",
+    "groups": {
+      "goTo": "Go to",
+      "projects": "Projects",
+      "demos": "Live demos",
+      "actions": "Actions"
+    },
+    "hints": {
+      "move": "to move",
+      "open": "to open"
+    }
+  },
+  "notFound": {
+    "meta": "Page not found",
+    "title": "This page doesn't exist.",
+    "body": "The address may be mistyped, or the page has moved."
   }
 }

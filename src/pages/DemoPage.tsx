@@ -1,7 +1,8 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, Check, Info, ListChecks, Moon, RotateCcw, Sparkles, Sun, X } from 'lucide-react'
 import { Suspense, use, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { Link, Navigate, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
+import { TLink } from '../components/ui/TLink'
 import { visibleProjects } from '../data/projects'
 import { DemoContext } from '../demos/kit/DemoContext'
 import { BrowserFrame, PhoneFrame } from '../demos/kit/Frames'
@@ -116,8 +117,7 @@ function FramedLayout({ def, title, projectId, done, reset, toast, children }: L
   const { t } = useLanguage()
   const isPhone = def.frame === 'phone'
   return (
-    <div className="relative flex h-dvh flex-col overflow-hidden bg-bg text-text">
-      <div className="ambient pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
+    <div className="stage-glow relative flex h-dvh flex-col overflow-hidden bg-bg text-text">
       <div
         className={`relative mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-rows-[minmax(0,1fr)_auto] gap-6 lg:grid-rows-1 lg:gap-10 ${isPhone ? 'px-6 py-4 lg:px-10 lg:py-5' : 'p-6 lg:p-8'} ${
           isPhone ? 'grid-cols-1 lg:grid-cols-[minmax(18rem,26rem)_auto] lg:justify-center lg:gap-20 xl:gap-28' : 'grid-cols-1 lg:grid-cols-[19rem_1fr] xl:grid-cols-[21rem_1fr]'
@@ -147,14 +147,14 @@ function FullscreenLayout({ def, title, projectId, done, reset, toast, children 
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-bg text-text">
-      <header className="z-30 flex shrink-0 items-center gap-1 border-b border-border bg-surface/90 px-2 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-        <Link
+      <header className="frost-bar z-30 flex shrink-0 items-center gap-1 px-2 pt-[env(safe-area-inset-top)]">
+        <TLink
           to={`/projects/${projectId}`}
           aria-label={t('demo.back')}
           className="inline-flex size-11 items-center justify-center rounded-full text-text-2 transition-colors active:bg-surface-2"
         >
           <ArrowLeft className="size-5 rtl:-scale-x-100" aria-hidden="true" />
-        </Link>
+        </TLink>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="truncate text-sm font-semibold">{title}</span>
           <span className="shrink-0 rounded-full bg-accent/12 px-2 py-0.5 text-[11px] font-semibold text-accent">{t('demo.badge')}</span>
@@ -202,7 +202,7 @@ function IntroCard({ text, onDismiss, onGuide }: { text: string; onDismiss: () =
   return (
     <motion.div
       role="note"
-      className="pointer-events-auto fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom,env(safe-area-inset-bottom)))] z-40 rounded-2xl border border-border bg-surface p-4 shadow-[0_24px_60px_-20px_rgb(var(--shadow-color)/0.45)]"
+      className="pointer-events-auto fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom,env(safe-area-inset-bottom)))] z-40 rounded-[1.375rem] border border-hairline bg-surface p-4 product-shadow"
       initial={reduce ? false : { opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: EASE, delay: 0.5 }}
@@ -215,7 +215,7 @@ function IntroCard({ text, onDismiss, onGuide }: { text: string; onDismiss: () =
           <p className="text-sm font-semibold">{t('demo.introTitle')}</p>
           <p className="mt-1 text-sm leading-relaxed text-text-2">{text}</p>
           <div className="mt-3 flex gap-2">
-            <button type="button" onClick={onGuide} className="btn-primary inline-flex h-10 items-center rounded-full px-4 text-sm font-semibold">
+            <button type="button" onClick={onGuide} className="btn-primary inline-flex h-10 items-center rounded-full px-4 text-sm active:scale-95">
               {t('demo.showSteps')}
             </button>
             <button type="button" onClick={onDismiss} className="inline-flex h-10 items-center rounded-full px-4 text-sm font-medium text-text-2 active:bg-surface-2">
@@ -281,10 +281,10 @@ function GuideSheet({ open, onClose, children }: { open: boolean; onClose: () =>
 function BackLink({ projectId }: { projectId: string }) {
   const { t } = useLanguage()
   return (
-    <Link to={`/projects/${projectId}`} className="link-underline inline-flex w-fit items-center gap-2 text-sm font-medium text-text-2 hover:text-text">
+    <TLink to={`/projects/${projectId}`} className="t-caption inline-flex w-fit items-center gap-1.5 text-text-2 hover:text-text">
       <ArrowLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
       {t('demo.back')}
-    </Link>
+    </TLink>
   )
 }
 
@@ -299,35 +299,30 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="inline-flex items-center gap-2 rounded-full bg-accent/12 px-3 py-1 text-xs font-semibold text-accent">
-          <span className="size-1.5 rounded-full bg-accent motion-safe:animate-pulse" aria-hidden="true" />
-          {t('demo.badgeLong')}
-        </p>
-        <h1 className={`font-display mt-4 font-semibold tracking-tight text-balance ${compact ? 'text-2xl' : 'text-3xl xl:text-4xl'}`}>{title}</h1>
+        <p className="t-eyebrow">{t('demo.badgeLong')}</p>
+        <h1 className={`mt-2 text-balance ${compact ? 't-title' : 't-display !text-[clamp(2rem,1.4rem+1.6vw,2.75rem)]'}`}>{title}</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-text-2">{pick(def.intro)}</p>
       </div>
 
       <section aria-labelledby="demo-steps">
         <div className="flex items-baseline justify-between gap-3">
-          <h2 id="demo-steps" className="text-sm font-semibold">
+          <h2 id="demo-steps" className="t-caption font-semibold">
             {t('demo.guideTitle')}
           </h2>
           <span className="text-xs text-text-2 tabular-nums" aria-live="polite">
             {t('demo.progress', { done: done.length, total: def.tasks.length })}
           </span>
         </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2" aria-hidden="true">
+        <div className="mt-3 h-0.5 overflow-hidden rounded-full bg-chip" aria-hidden="true">
           <motion.div className="h-full rounded-full bg-accent" initial={false} animate={{ width: `${progress * 100}%` }} transition={{ duration: reduce ? 0 : 0.45, ease: EASE }} />
         </div>
-        <ol className="mt-4 flex flex-col gap-2">
+        <ol className="mt-2 flex flex-col">
           {def.tasks.map((task, i) => {
             const isDone = done.includes(task.id)
             return (
               <li
                 key={task.id}
-                className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 text-sm transition-colors duration-300 ${
-                  isDone ? 'border-accent/30 bg-accent/8 text-text' : 'border-border bg-surface/60 text-text-2'
-                }`}
+                className={`flex items-start gap-3 border-b border-hairline py-3 text-[15px] transition-colors duration-300 ${isDone ? 'text-text-2' : 'text-text'}`}
               >
                 <span
                   className={`latin mt-px grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold transition-colors duration-300 ${
@@ -346,7 +341,7 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
         {allDone && <p className="mt-3 text-sm font-medium text-accent">{t('demo.allDone')}</p>}
       </section>
 
-      <p className="flex gap-2.5 rounded-xl bg-surface-2 p-3.5 text-[13px] leading-relaxed text-text-2">
+      <p className="flex gap-2.5 text-[13px] leading-relaxed text-text-2">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         {t('demo.notice')}
       </p>
@@ -355,7 +350,7 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
         <button
           type="button"
           onClick={reset}
-          className="glass inline-flex h-11 cursor-pointer items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors hover:border-accent/60 active:scale-[0.98]"
+          className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-chip px-4 text-sm transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
         >
           <RotateCcw className="size-4" aria-hidden="true" />
           {t('demo.reset')}
@@ -364,15 +359,15 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
           type="button"
           onClick={toggleLang}
           aria-label={t('header.language')}
-          className="glass latin inline-flex h-11 cursor-pointer items-center rounded-full px-4 text-sm font-semibold transition-colors hover:border-accent/60"
+          className="inline-flex h-11 cursor-pointer items-center rounded-full bg-chip px-4 text-sm transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
         >
-          {lang === 'en' ? 'العربية' : 'English'}
+          <span className={lang === 'en' ? 'font-arabic' : 'latin'}>{lang === 'en' ? 'العربية' : 'English'}</span>
         </button>
         <button
           type="button"
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')}
-          className="glass inline-flex size-11 cursor-pointer items-center justify-center rounded-full transition-colors hover:border-accent/60"
+          className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-chip transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
         >
           {theme === 'dark' ? <Sun className="size-4.5" aria-hidden="true" /> : <Moon className="size-4.5" aria-hidden="true" />}
         </button>
@@ -396,7 +391,7 @@ function Toast({ message, placement }: { message: string | null; placement: 'top
         {message && (
           <motion.div
             key={message}
-            className="flex max-w-sm items-center gap-2.5 rounded-full border border-accent/30 bg-surface px-4 py-2.5 text-sm font-medium shadow-[0_18px_40px_-16px_rgb(var(--shadow-color)/0.5)]"
+            className="flex max-w-sm items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2.5 text-sm product-shadow"
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: offset, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: offset }}

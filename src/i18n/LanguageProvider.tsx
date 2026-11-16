@@ -44,6 +44,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const base = dictionaries[lang].meta.title
     const prefix = pageTitle ? lookup(dictionaries[lang], pageTitle) : undefined
     document.title = prefix ? `${prefix} — ${base}` : base
+    // Keep the description and social tags in the visitor's language too.
+    const description = dictionaries[lang].meta.description
+    for (const selector of ['meta[name="description"]', 'meta[property="og:description"]']) document.querySelector(selector)?.setAttribute('content', description)
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title)
+    document.querySelector('meta[property="og:locale"]')?.setAttribute('content', lang === 'ar' ? 'ar_LY' : 'en_US')
     try {
       localStorage.setItem(LANG_STORAGE_KEY, lang)
     } catch {

@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router'
+import { Route, Routes, useLocation } from 'react-router'
 import { Footer } from './components/sections/Footer'
 import { Header } from './components/sections/Header'
-import { ScrollProgress } from './components/ui/ScrollProgress'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { lazy, Suspense } from 'react'
 import { DemoSkeleton } from './pages/DemoSkeleton'
+import { CommandPalette } from './components/ui/CommandPalette'
 import { HomePage } from './pages/HomePage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { ProjectPage } from './pages/ProjectPage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { ThemeProvider } from './theme/ThemeProvider'
 
@@ -17,14 +19,14 @@ function ScrollManager() {
   useEffect(() => {
     const from = prev.current
     prev.current = pathname
-    // Opening or closing a project inline on /projects keeps the reader where they are.
-    const catalogue = (p: string) => /^\/projects(\/[^/]+)?$/.test(p)
-    if (catalogue(from) && catalogue(pathname) && from !== pathname) return
+    // First load or refresh (no route change, no hash): leave the browser's own scroll restoration alone.
+    if (from === pathname && !hash) return
     if (hash) {
       const el = document.querySelector(hash)
       if (el) {
-        // Instant: the target page has just mounted, so a smooth scroll would race the lazy hero chunk.
-        el.scrollIntoView({ block: 'start', behavior: 'instant' })
+        // Arriving from another page is instant: the target has just mounted, so a smooth scroll would race the lazy hero chunk.
+        const smooth = from === pathname && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'instant' })
         return
       }
     }
@@ -38,17 +40,17 @@ const DemoPage = lazy(() => import('./pages/DemoPage').then((m) => ({ default: m
 /** Regular pages share the header, footer and scroll chrome. */
 function SitePages() {
   return (
-    <div className="grain relative min-h-svh">
-      <ScrollProgress />
+    <div className="relative min-h-svh">
       <ScrollManager />
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/projects/:projectId" element={<ProjectsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/projects/:projectId" element={<ProjectPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Footer />
+      <CommandPalette />
     </div>
   )
 }

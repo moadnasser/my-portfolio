@@ -6,56 +6,73 @@
 @custom-variant touch (@media (hover: none));
 
 /* ---------- Design tokens (single source of truth) ----------
-   Palette rule: cool hues only (Telegram blue / graphite). No purple, no warm colours. */
+   Palette rule: cool hues only (Telegram blue / graphite). No purple, no warm colours.
+   One accent carries every interactive element. Depth comes from surface changes, not shadows. */
 :root {
   color-scheme: light;
-  --bg: #f1f5f8;
+  --bg: #f1f5f8;            /* parchment: page canvas and alternating light tiles */
   --surface: #ffffff;
   --surface-2: #e6edf2;
   --text: #0b1218;
   --text-2: #56646f;
-  --accent: #0a7cbd;        /* Telegram blue, darkened for 4.6:1 on white */
-  --accent-2: #2aabee;      /* Telegram brand blue for gradients / glows */
+  --accent: #0872ad;        /* Telegram blue, darkened to pass 4.5:1 on both white and parchment */
+  --accent-2: #2aabee;      /* Telegram brand blue */
   --accent-deep: #005f8f;
   --on-accent: #ffffff;
   --border: #d2dbe3;
-  --glass: rgba(255, 255, 255, 0.72);
+  --hairline: rgba(11, 18, 24, 0.09);
+  --glass: rgba(241, 245, 248, 0.8);
   --glass-border: rgba(11, 18, 24, 0.08);
-  --ring: rgba(10, 124, 189, 0.45);
+  --ring: rgba(8, 114, 173, 0.45);
   --shadow-color: 11 18 24;
   --overlay: rgba(7, 11, 16, 0.78);
   --glow-a: rgba(42, 171, 238, 0.18);
   --glow-b: rgba(10, 124, 189, 0.10);
+  --chip: rgba(11, 18, 24, 0.06);
+  --skeleton-hi: rgba(255, 255, 255, 0.75);
 
-  --radius-card: 1.25rem;
-  --font-latin: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-arabic: "Tajawal", "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  /* Full-bleed tile surfaces. The colour change between tiles is the section divider. */
+  --tile-canvas: #ffffff;
+  --tile-parchment: #f1f5f8;
+  /* The one drop shadow in the system: device renders resting on a tile. */
+  --product-shadow: 3px 5px 30px rgba(0, 0, 0, 0.22);
+
+  --radius-card: 1.125rem;
+  --font-latin: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-arabic: "Tajawal", "SF Arabic", "Noto Sans Arabic", system-ui, sans-serif;
 }
 
-:root[data-theme="dark"] {
+/* Not scoped to :root on purpose: an "ink" tile sets data-theme="dark" on itself so it stays
+   graphite inside the light theme, and every token and dark: utility below it follows. */
+[data-theme="dark"] {
   color-scheme: dark;
   --bg: #080c12;
   --surface: #0e141b;
   --surface-2: #141c25;
   --text: #edf2f7;
-  --text-2: #8b98a6;
+  --text-2: #94a1ae;
   --accent: #2aabee;        /* Telegram brand blue */
   --accent-2: #6ccbfa;
   --accent-deep: #0088cc;
   --on-accent: #04202f;
-  --border: rgba(255, 255, 255, 0.08);
-  --glass: rgba(14, 20, 27, 0.62);
+  --border: rgba(255, 255, 255, 0.1);
+  --hairline: rgba(255, 255, 255, 0.1);
+  --glass: rgba(10, 15, 21, 0.72);
   --glass-border: rgba(255, 255, 255, 0.10);
   --ring: rgba(42, 171, 238, 0.55);
   --shadow-color: 0 0 0;
   --overlay: rgba(4, 7, 11, 0.82);
   --glow-a: rgba(42, 171, 238, 0.18);
   --glow-b: rgba(0, 136, 204, 0.18);
-}
+  --chip: rgba(255, 255, 255, 0.08);
+  --skeleton-hi: rgba(255, 255, 255, 0.06);
 
-@media (max-width: 640px) {
-  :root { --radius-card: 1rem; }
+  --tile-canvas: #080c12;
+  --tile-parchment: #0b1017;
+  --tile-ink: #0f161e;
+  --product-shadow: 3px 5px 40px rgba(0, 0, 0, 0.5);
+  color: var(--text);
 }
 
 /* Expose tokens to Tailwind utilities (bg-surface, text-text-2, border-border, ...). */
@@ -70,6 +87,8 @@
   --color-accent-deep: var(--accent-deep);
   --color-on-accent: var(--on-accent);
   --color-border: var(--border);
+  --color-hairline: var(--hairline);
+  --color-chip: var(--chip);
   --radius-card: var(--radius-card);
   --font-sans: var(--font-latin);
   --font-display: var(--font-display);
@@ -87,7 +106,11 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-latin);
+  font-size: 1.0625rem;
+  line-height: 1.47;
+  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   transition: background-color 320ms ease, color 320ms ease;
@@ -96,8 +119,10 @@ body {
 :root[lang="ar"] body,
 :root[lang="ar"] .font-display {
   font-family: var(--font-arabic);
-  letter-spacing: 0 !important;
 }
+/* Arabic letters join: any tracking, positive or negative, breaks the script. */
+:root[lang="ar"] body, :root[lang="ar"] body *:not(.latin, .latin *) { letter-spacing: 0 !important; }
+:root[lang="ar"] body { line-height: 1.7; }
 
 /* Keep Latin brand / tech / email text in the Latin face even inside Arabic layouts. */
 .latin {
@@ -135,8 +160,16 @@ img { max-width: 100%; height: auto; }
 .glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Top navigation bar: frosted parchment with a single hairline underneath. */
+.frost-bar {
+  background: var(--glass);
+  border-bottom: 1px solid var(--hairline);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
 }
 
 /* Signal gradient text (Telegram blue → sky) */
@@ -152,24 +185,11 @@ img { max-width: 100%; height: auto; }
   -webkit-text-fill-color: transparent;
 }
 
-/* Outlined display text */
-.text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1px color-mix(in oklab, var(--text) 55%, transparent);
-}
-
-/* Footer name watermark: tinted fill fading out (strokes show seams between joined Arabic letters). */
-.text-watermark {
-  color: color-mix(in oklab, var(--text) 13%, var(--bg));
-  -webkit-mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
-  mask-image: linear-gradient(180deg, #000 20%, transparent 95%);
-}
-
 /* Primary button: solid signal colour. */
 .btn-primary {
   background-color: var(--accent);
   color: var(--on-accent);
-  transition: background-color 220ms ease, color 220ms ease, transform 180ms ease, box-shadow 220ms ease;
+  transition: background-color 220ms ease, color 220ms ease, transform 180ms var(--ease-out-expo);
 }
 .btn-primary:hover { background-color: var(--accent-2); }
 
@@ -200,70 +220,22 @@ img { max-width: 100%; height: auto; }
   will-change: transform;
 }
 
-/* Film grain */
-.grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-:root[data-theme="dark"] .grain::before { opacity: 0.07; mix-blend-mode: screen; }
-
 /* 3D helpers */
 .preserve-3d { transform-style: preserve-3d; }
 .perspective { perspective: 1000px; }
 
 
-/* Floating layered plates (About visual) */
-@keyframes plate-float {
-  0%, 100% { transform: translate3d(0, 0, var(--z)) rotateX(58deg) rotateZ(-38deg); }
-  50% { transform: translate3d(0, -10px, var(--z)) rotateX(58deg) rotateZ(-38deg); }
-}
-.plate {
-  position: absolute;
-  inset: 18% 12%;
-  border-radius: 1.25rem;
-  transform: translate3d(0, 0, var(--z)) rotateX(58deg) rotateZ(-38deg);
-  animation: plate-float 7s ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-  border: 1px solid color-mix(in oklab, var(--accent) 28%, var(--glass-border));
-  box-shadow:
-    0 0 0 1px color-mix(in oklab, var(--accent) 10%, transparent),
-    0 40px 80px -40px rgb(var(--shadow-color) / 0.6);
-}
-:root[data-theme="dark"] .plate {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
-}
-
 /* Reduced motion: stop decorative motion, disable smooth scroll */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .plate { animation: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* Hero portrait: signal ripples and a slow light sweep across the arch */
-@keyframes ripple {
-  0% { transform: scale(0.3); opacity: 0; }
-  20% { opacity: 0.7; }
-  100% { transform: scale(1); opacity: 0; }
-}
-@keyframes sweep {
-  0%, 55% { transform: translateX(0) skewX(-12deg); }
-  100% { transform: translateX(450%) skewX(-12deg); }
-}
-
 /* ---------- Loading skeletons ----------
    A soft light band sweeps across a surface-2 block. Used for placeholders and for images still downloading. */
-:root { --skeleton-hi: rgba(255, 255, 255, 0.75); }
-:root[data-theme="dark"] { --skeleton-hi: rgba(255, 255, 255, 0.06); }
-
 @keyframes skeleton-sweep {
   from { background-position: 150% 0, 0 0; }
   to { background-position: -50% 0, 0 0; }
@@ -283,3 +255,128 @@ img { max-width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .skeleton, .load-img:not([data-loaded]), .load-img[data-loaded] { animation: none !important; }
 }
+
+/* ---------- Type scale ----------
+   Latin: tight tracking at display sizes, weight 600 headlines, 17px body.
+   Arabic: its own leading and weights, never tracked (see the letter-spacing rule in Base). */
+.t-hero {
+  font-family: var(--font-display);
+  /* Capped by viewport height too, so three lines and the actions always fit above the fold. */
+  font-size: min(clamp(2.75rem, 1rem + 7vw, 6.5rem), 10.5svh);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+}
+.t-display {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.2rem + 3.6vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.07;
+  letter-spacing: -0.024em;
+}
+.t-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3125rem, 1.15rem + 0.6vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.19;
+  letter-spacing: -0.012em;
+}
+.t-lead {
+  font-size: clamp(1.1875rem, 1rem + 0.9vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.38;
+  letter-spacing: -0.012em;
+}
+.t-eyebrow {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: -0.012em;
+  color: var(--accent);
+}
+.t-caption { font-size: 0.875rem; line-height: 1.43; letter-spacing: -0.01em; }
+.t-fine { font-size: 0.75rem; line-height: 1.5; }
+
+:root[lang="ar"] .t-hero,
+:root[lang="ar"] .t-display,
+:root[lang="ar"] .t-title { font-family: var(--font-arabic); }
+:root[lang="ar"] .t-hero { font-weight: 800; line-height: 1.3; font-size: min(clamp(2.5rem, 1rem + 6.2vw, 5.75rem), 8.6svh); }
+:root[lang="ar"] .t-display { font-weight: 700; line-height: 1.34; }
+:root[lang="ar"] .t-title { line-height: 1.5; font-weight: 700; }
+:root[lang="ar"] .t-eyebrow { font-weight: 700; }
+/* Tajawal has no 600: map semibold to bold so Arabic never falls back to a synthesised weight. */
+:root[lang="ar"] .font-semibold:not(.latin, .latin *) { font-weight: 700; }
+:root[lang="ar"] .t-lead { line-height: 1.75; }
+:root[lang="ar"] .t-eyebrow { line-height: 1.6; }
+:root[lang="ar"] .t-caption { line-height: 1.7; }
+:root[lang="ar"] .latin.t-hero,
+:root[lang="ar"] .latin.t-display,
+:root[lang="ar"] .latin.t-title { font-family: var(--font-display); }
+
+/* ---------- Tiles ----------
+   Full-bleed, square-cornered sections. Alternate tones instead of drawing borders. */
+.tile { position: relative; isolation: isolate; overflow: clip; background: var(--tile-canvas); color: var(--text); }
+.tile[data-tone="parchment"] { background: var(--tile-parchment); }
+.tile[data-tone="ink"] { background: var(--tile-ink); }
+.tile-pad { padding-block: clamp(4.5rem, 3rem + 6vw, 8.5rem); }
+
+/* Utility card: hairline, 18px radius, no shadow. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+}
+
+/* Device renders are the "product photography"; they alone carry a shadow. */
+.product-shadow { box-shadow: var(--product-shadow); }
+
+/* Inline action link with a trailing chevron that nudges forward (mirrored in RTL). */
+.link-go { display: inline-flex; align-items: center; gap: 0.2em; color: var(--accent); cursor: pointer; }
+.link-go:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.link-go > svg { transition: transform 260ms var(--ease-out-expo); }
+.link-go:hover > svg { transform: translateX(3px); }
+:root[dir="rtl"] .link-go > svg { transform: scaleX(-1); }
+:root[dir="rtl"] .link-go:hover > svg { transform: scaleX(-1) translateX(3px); }
+
+/* Bento / showcase card: big radius, no border, no shadow. Tone comes from its own surface. */
+.bento { position: relative; isolation: isolate; overflow: hidden; border-radius: 1.75rem; background: var(--surface); color: var(--text); }
+.bento[data-theme="dark"] { background: var(--tile-ink); }
+[data-theme="dark"] .bento[data-theme="dark"] { background: var(--surface-2); }
+/* Telegram blue, one step deeper so white body text clears 4.5:1. */
+.bento-blue { background: #0077b5; color: #fff; }
+@media (max-width: 640px) { .bento { border-radius: 1.375rem; } }
+
+/* Soft Telegram-blue light pooled behind the 3D phone. The only glow on the page. */
+.stage-glow {
+  background:
+    radial-gradient(38% 34% at 50% 58%, rgba(42, 171, 238, 0.16), transparent 70%),
+    radial-gradient(60% 50% at 50% 100%, rgba(42, 171, 238, 0.2), transparent 72%);
+}
+[data-theme="dark"] .stage-glow {
+  background:
+    radial-gradient(38% 34% at 50% 58%, rgba(42, 171, 238, 0.28), transparent 70%),
+    radial-gradient(60% 50% at 50% 100%, rgba(0, 136, 204, 0.22), transparent 72%);
+}
+/* Card that sits one step off its tile in either theme. */
+.bento-soft { background: var(--bg); }
+[data-theme="dark"] .bento-soft { background: var(--surface); }
+
+/* ---------- Page transitions (View Transitions API, see TLink) ----------
+   The page cross-fades; a project's device shot is named, so it travels and resizes
+   from its card to its page instead of fading. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 320ms; animation-timing-function: ease; }
+::view-transition-group(*) { animation-duration: 560ms; animation-timing-function: var(--ease-out-expo); }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* Command palette: a native modal dialog, so the dimmed page behind is inert. */
+.palette { box-shadow: 0 24px 80px rgb(0 0 0 / 0.35), 0 0 0 1px var(--hairline); }
+.palette::backdrop { background: rgb(0 0 0 / 0.42); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: no-preference) {
+  .palette[open] { animation: palette-in 220ms var(--ease-out-expo); }
+  .palette[open]::backdrop { animation: palette-fade 220ms ease; }
+}
+@keyframes palette-in { from { opacity: 0; transform: translateY(-10px) scale(0.98); } }
+@keyframes palette-fade { from { opacity: 0; } }

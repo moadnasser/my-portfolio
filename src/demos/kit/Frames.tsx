@@ -33,7 +33,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
         <div
           dir="ltr"
           style={{ width: outer.w, height: outer.h, transform: `scale(${scale})`, padding: BEZEL }}
-          className="absolute top-0 left-0 origin-top-left rounded-[3.6rem] bg-[#0b1218] shadow-[0_50px_100px_-30px_rgb(var(--shadow-color)/0.6),inset_0_0_0_1.5px_rgba(255,255,255,0.09)] ring-1 ring-black/40"
+          className="absolute top-0 left-0 origin-top-left rounded-[3.6rem] bg-[#0b1218] product-shadow"
         >
           {/* Side buttons */}
           <span className="absolute -left-[3px] top-[150px] h-8 w-[3px] rounded-l bg-[#1b2530]" aria-hidden="true" />
@@ -61,7 +61,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
 /** Browser window chrome for the web demos. The label is plain text, never a link. */
 export function BrowserFrame({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex h-full max-h-[860px] w-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_40px_90px_-40px_rgb(var(--shadow-color)/0.5)]">
+    <div className="flex h-full max-h-[860px] w-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface product-shadow">
       <div className="flex h-11 shrink-0 items-center gap-3 border-b border-border bg-surface-2 px-4" aria-hidden="true">
         <span className="flex gap-1.5">
           <span className="size-3 rounded-full bg-text-2/35" />

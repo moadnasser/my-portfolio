@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Full-size source screenshots (web-sized copies live in public/projects)
+screenshots-src
+
+# Contact form SMTP password
+public/api/contact.config.php

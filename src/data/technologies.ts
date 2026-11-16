@@ -1,4 +1,4 @@
-/** Technologies that actually appear in the portfolio projects. Rendered as a monochrome text strip. */
+/** The working stack: what the portfolio projects use, plus skills Moad listed himself (Python, Django). */
 export interface Technology {
   id: string
   label: string
@@ -12,6 +12,8 @@ export const technologies: Technology[] = [
   { id: 'nextjs', label: 'Next.js' },
   { id: 'tailwind', label: 'Tailwind CSS' },
   { id: 'firebase', label: 'Firebase' },
+  { id: 'python', label: 'Python' },
+  { id: 'django', label: 'Django' },
   { id: 'php', label: 'PHP' },
   { id: 'mysql', label: 'MySQL' },
   { id: 'sqlite', label: 'SQLite' },
