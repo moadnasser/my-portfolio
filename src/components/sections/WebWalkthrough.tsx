@@ -1,15 +1,13 @@
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
-import { Suspense, lazy, useRef, useState } from 'react'
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { visibleProjects } from '../../data/projects'
 import { useLanguage, useLocalized } from '../../i18n/context'
-import { EASE } from '../../lib/motion'
-import { INTRO } from '../three/timeline'
-import { useWebGL } from '../three/useWebGL'
+import { CINE, EASE } from '../../lib/motion'
 import { LoadImg } from '../ui/LoadImg'
+import { Reveal } from '../ui/Reveal'
+import { StepCopy } from '../ui/StepCopy'
 import { TLink } from '../ui/TLink'
-
-const LaptopScene = lazy(() => import('../three/LaptopScene'))
 
 const project = visibleProjects.find((p) => p.id === 'travelyuk')
 const steps = [
@@ -17,7 +15,13 @@ const steps = [
   { id: 's2', screen: '/projects/travelyuk-screen-flights.jpg' },
   { id: 's3', screen: '/projects/travelyuk-screen-messages.jpg' },
 ] as const
-const screens = steps.map((s) => s.screen)
+/** The captures are all 1158×814. */
+const SHOT = { w: 1158, h: 814 }
+
+function useStepCopy() {
+  const { t } = useLanguage()
+  return steps.map((s) => ({ id: s.id, title: t(`web.steps.${s.id}.title`), body: t(`web.steps.${s.id}.body`) }))
+}
 
 function Actions() {
   const { t } = useLanguage()
@@ -25,79 +29,86 @@ function Actions() {
   if (!project) return null
   const title = localize(project.title)
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 lg:justify-start">
-      <TLink to={`/projects/${project.id}`} className="link-go text-[17px]" aria-label={t('work.openDetails', { title })}>
-        {t('projects.details')}
-        <ChevronRight className="size-4" aria-hidden="true" />
-      </TLink>
-    </div>
+    <TLink to={`/projects/${project.id}`} className="link-go" aria-label={t('work.openDetails', { title })}>
+      {t('projects.details')}
+      <ArrowUpRight className="size-4" aria-hidden="true" />
+    </TLink>
   )
 }
 
 /**
- * The web counterpart to the hero: a pinned stage where a 3D laptop opens and steps through the
- * web app's screens while the copy beside it changes. Plain stacked layout without WebGL or
- * under reduced motion.
+ * The web counterpart to the flagship stage: a pinned reel. The screen stays in place while each
+ * new capture wipes up over the last one and the copy beside it changes with it; the whole plate
+ * turns a few degrees as the reel runs. Plain stacked layout under reduced motion.
  */
 export function WebWalkthrough() {
   const reduce = useReducedMotion()
-  const webgl = useWebGL()
   if (!project) return null
-  return webgl && !reduce ? <Pinned /> : <Static />
+  return reduce ? <Static /> : <Pinned />
 }
 
 function Pinned() {
   const { t, dir } = useLanguage()
   const localize = useLocalized()
+  const copy = useStepCopy()
   const sectionRef = useRef<HTMLElement>(null)
   const [step, setStep] = useState(0)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
-    const next = Math.min(steps.length - 1, Math.floor(Math.max(0, (p - INTRO) / (1 - INTRO)) * steps.length))
+    const next = Math.min(steps.length - 1, Math.floor(p * steps.length))
     setStep((s) => (s === next ? s : next))
   })
-  const railScale = useTransform(scrollYProgress, [INTRO, 1], [0, 1])
+  const smooth = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.6 })
+  const side = dir === 'rtl' ? -1 : 1
+  const rotateY = useTransform(smooth, [0, 1], [-9 * side, 5 * side])
+  const rotateX = useTransform(smooth, [0, 1], [5, -2])
+  const title = localize(project!.title)
 
   return (
-    <section ref={sectionRef} id="web" data-tone="parchment" className="tile themed" style={{ height: `${100 + steps.length * 90}svh` }} aria-labelledby="web-title">
-      <div className="sticky top-0 h-svh overflow-hidden">
-        <div className="stage-glow pointer-events-none absolute inset-0" aria-hidden="true" />
-        <Suspense fallback={null}>
-          <LaptopScene eventSource={sectionRef} progress={scrollYProgress} screens={screens} rtl={dir === 'rtl'} />
-        </Suspense>
+    <section ref={sectionRef} id="web" data-tone="surface" className="sec themed" style={{ height: `${100 + steps.length * 75}svh` }} aria-labelledby="web-title">
+      <div className="sticky top-0 flex h-svh items-center overflow-hidden">
+        <div className="shell grid grid-cols-1 items-center gap-x-14 gap-y-8 lg:grid-cols-12">
+          <div className="order-2 text-center lg:order-1 lg:col-span-4 lg:text-start">
+            <h2 id="web-title" className="t-eyebrow">
+              <span className="font-semibold text-text">{title}</span>
+              <span className="opacity-50" aria-hidden="true">/</span>
+              {t('web.eyebrow')}
+            </h2>
+            <div className="mt-4">
+              <StepCopy steps={copy} step={step} label={t('flagship.stepLabel', { current: step + 1, total: steps.length })} />
+            </div>
+            <div className="mt-6 flex justify-center lg:mt-9 lg:justify-start">
+              <Actions />
+            </div>
+            <p className="t-fine mt-5 text-text-2 max-lg:hidden">{t('web.note')}</p>
+          </div>
 
-        <div className="shell absolute inset-x-0 bottom-0 flex flex-col items-center pb-[max(1.75rem,4svh)] text-center lg:inset-y-0 lg:items-start lg:justify-center lg:pb-0 lg:text-start">
-          <div className="w-full lg:max-w-[min(32rem,40%)]">
-            <p className="t-eyebrow" id="web-title">
-              {localize(project!.title)} <span className="text-text-2">· {t('web.eyebrow')}</span>
-            </p>
-            <div className="mt-3 grid" aria-live="polite">
+          <div className="order-1 [perspective:1600px] lg:order-2 lg:col-span-8" dir="ltr">
+            <motion.div style={{ rotateY, rotateX, aspectRatio: `${SHOT.w} / ${SHOT.h}` }} className="shot relative mx-auto max-h-[46svh] overflow-hidden will-change-transform lg:max-h-[74svh]">
               {steps.map((s, i) => (
                 <motion.div
                   key={s.id}
                   aria-hidden={i !== step}
                   initial={false}
-                  animate={{ opacity: i === step ? 1 : 0, y: i === step ? 0 : i < step ? -18 : 18 }}
-                  transition={{ duration: 0.5, ease: EASE }}
-                  className="[grid-area:1/1]"
+                  animate={{ clipPath: i <= step ? 'inset(0% 0% 0% 0%)' : 'inset(100% 0% 0% 0%)' }}
+                  transition={{ duration: 0.95, ease: CINE }}
+                  className="absolute inset-0"
                 >
-                  <h2 className="t-display text-balance text-text max-lg:!text-[1.75rem]">{t(`web.steps.${s.id}.title`)}</h2>
-                  <p className="t-lead mt-4 text-pretty text-text-2 max-lg:mt-2 max-lg:!text-[1rem]">{t(`web.steps.${s.id}.body`)}</p>
+                  <motion.img
+                    src={s.screen}
+                    alt=""
+                    width={SHOT.w}
+                    height={SHOT.h}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    initial={false}
+                    animate={{ scale: i === step ? 1 : i < step ? 1 : 1.16 }}
+                    transition={{ duration: 1.3, ease: EASE }}
+                    className="size-full object-cover object-top"
+                  />
                 </motion.div>
               ))}
-            </div>
-            <div className="mt-6 flex items-center justify-center gap-4 lg:mt-9 lg:justify-start" role="img" aria-label={t('flagship.stepLabel', { current: step + 1, total: steps.length })}>
-              <span className="latin t-caption tabular-nums text-text">
-                0{step + 1} <span className="text-text-2">/ 0{steps.length}</span>
-              </span>
-              <span className="h-0.5 w-32 overflow-hidden rounded-full bg-chip">
-                <motion.span style={{ scaleX: railScale }} className="block size-full origin-left rounded-full bg-accent rtl:origin-right" />
-              </span>
-            </div>
-            <div className="mt-6 lg:mt-9">
-              <Actions />
-            </div>
-            <p className="t-fine mt-5 text-text-2 max-lg:hidden">{t('web.note')}</p>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -108,22 +119,27 @@ function Pinned() {
 function Static() {
   const { t } = useLanguage()
   const localize = useLocalized()
+  const copy = useStepCopy()
   return (
-    <section id="web" data-tone="parchment" className="tile themed tile-pad" aria-labelledby="web-title">
+    <section id="web" data-tone="surface" className="sec themed sec-pad" aria-labelledby="web-title">
       <div className="shell">
-        <p className="t-eyebrow text-center" id="web-title">
-          {localize(project!.title)} <span className="text-text-2">· {t('web.eyebrow')}</span>
-        </p>
-        <ol className="mt-10 grid gap-x-8 gap-y-14 lg:grid-cols-3">
-          {steps.map((s) => (
-            <li key={s.id} className="flex flex-col">
-              <LoadImg src={s.screen} alt="" loading="lazy" decoding="async" width={1158} height={814} className="product-shadow w-full rounded-xl" />
-              <h2 className="t-title mt-7 text-text">{t(`web.steps.${s.id}.title`)}</h2>
-              <p className="mt-2 text-pretty text-text-2">{t(`web.steps.${s.id}.body`)}</p>
+        <p className="t-eyebrow">{t('web.eyebrow')}</p>
+        <h2 id="web-title" className="t-hero mt-3 text-text">
+          {localize(project!.title)}
+        </h2>
+        <ol className="mt-12 grid gap-x-8 gap-y-14 lg:grid-cols-3">
+          {copy.map((s, i) => (
+            <li key={s.id}>
+              <Reveal delay={i * 0.06}>
+                <LoadImg src={steps[i].screen} alt="" loading="lazy" decoding="async" width={SHOT.w} height={SHOT.h} className="shot w-full" />
+                <p className="t-code mt-6 text-accent">0{i + 1}</p>
+                <h3 className="t-title mt-2 text-text">{s.title}</h3>
+                <p className="mt-2 text-pretty text-text-2">{s.body}</p>
+              </Reveal>
             </li>
           ))}
         </ol>
-        <div className="mt-12 flex justify-center">
+        <div className="mt-12">
           <Actions />
         </div>
       </div>

@@ -3,42 +3,73 @@ import { ArrowUp } from 'lucide-react'
 import { Link } from 'react-router'
 import { profile } from '../../data/profile'
 import { useLanguage, useLocalized } from '../../i18n/context'
+import { scrollToTarget } from '../../lib/scroll'
 import { BrandIcon } from '../ui/BrandIcon'
 import { navItems } from './navItems'
 
 const year = new Date().getFullYear()
 
-/** Dense, quiet footer on parchment: the one place the page stops giving things room. */
+/**
+ * Ink in both themes: the sign-off, navigation, socials and the way back up on one ruled line,
+ * with the copyright beneath.
+ */
 export function Footer() {
   const { t } = useLanguage()
   const localize = useLocalized()
   const reduce = useReducedMotion()
-
-  const backToTop = () => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+  const name = localize(profile.name)
 
   return (
-    <footer data-tone="parchment" className="tile themed t-fine text-text-2">
-      <div className="shell py-8">
-        <nav aria-label={t('footer.nav')} className="flex flex-wrap items-center gap-x-7 gap-y-2 border-b border-hairline pb-5">
-          {navItems.map((item) => (
-            <Link key={item.id} to={item.to} className="hover:text-text hover:underline">
-              {t(item.key)}
-            </Link>
-          ))}
-          <span className="grow" />
-          {profile.socials.map((s) => (
-            <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" className="latin inline-flex items-center gap-1.5 hover:text-text hover:underline">
-              <BrandIcon id={s.id} className="size-3.5" />
-              {s.label}
-            </a>
-          ))}
-          <button type="button" onClick={backToTop} className="inline-flex cursor-pointer items-center gap-1 hover:text-text hover:underline">
-            {t('footer.backToTop')}
-            <ArrowUp className="size-3.5" aria-hidden="true" />
-          </button>
-        </nav>
-        <p className="pt-5" dir="auto">
-          © <span className="latin">{year}</span> {localize(profile.name)}. {t('footer.rights')} <span className="opacity-80">{t('footer.signoff')}</span>
+    <footer data-theme="dark" data-tone="ink" className="sec overflow-hidden text-text-2">
+      <div className="shell pt-16 lg:pt-24">
+        <div className="grid grid-cols-2 gap-x-10 gap-y-10 border-t border-hairline pt-8 lg:grid-cols-12">
+          <p className="col-span-2 max-w-[30ch] text-text lg:col-span-5">
+            <span className="t-title block">{t('footer.signoff')}</span>
+            <span className="t-caption mt-3 block text-text-2">{t('footer.based')}</span>
+          </p>
+
+          <nav aria-label={t('footer.nav')} className="lg:col-span-2">
+            <ul className="flex flex-col gap-2.5">
+              {navItems.map((item) => (
+                <li key={item.id}>
+                  <Link to={item.to} className="link-underline text-text">
+                    {t(item.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <ul className="flex min-w-0 flex-col gap-2.5 lg:col-span-3">
+            {profile.socials.map((s) => (
+              <li key={s.id}>
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="latin link-underline inline-flex items-center gap-2 text-text">
+                  <BrandIcon id={s.id} className="size-4" />
+                  {s.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href={`mailto:${profile.email}`} className="latin link-underline text-text max-lg:break-all">
+                {profile.email}
+              </a>
+            </li>
+          </ul>
+
+          <div className="col-span-2 flex lg:col-span-2 lg:justify-end">
+            <button type="button" onClick={() => scrollToTarget(0, Boolean(reduce))} className="group inline-flex h-fit cursor-pointer items-center gap-3 text-text">
+              {t('footer.backToTop')}
+              <span className="arch-mark grid h-12 w-10 place-items-center  text-on-accent transition-transform duration-500 ease-out-expo group-hover:-translate-y-1.5">
+                <ArrowUp className="size-4" aria-hidden="true" />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-14 border-t border-hairline lg:mt-20">
+        <p className="shell t-fine py-5" dir="auto">
+          © <span className="latin">{year}</span> {name}. {t('footer.rights')}
         </p>
       </div>
     </footer>

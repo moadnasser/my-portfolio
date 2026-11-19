@@ -1,19 +1,18 @@
-import { ChevronLeft, ChevronRight, Code2, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Code2, ExternalLink } from 'lucide-react'
 import { useEffect } from 'react'
 import { Navigate, useParams } from 'react-router'
-import { CurvedCarousel } from '../components/gallery/CurvedCarousel'
-import { FullStage } from '../components/gallery/DeviceStage'
-import { ButtonLink } from '../components/ui/Button'
+import { ShotStrip } from '../components/gallery/ShotStrip'
 import { DemoLink } from '../components/ui/DemoLink'
 import { LoadImg } from '../components/ui/LoadImg'
+import { Plate } from '../components/ui/Plate'
 import { Reveal } from '../components/ui/Reveal'
-import { Tile } from '../components/ui/Tile'
+import { RiseText } from '../components/ui/RiseText'
 import { TLink } from '../components/ui/TLink'
 import { visibleProjects } from '../data/projects'
 import { hasDemo } from '../demos/registry'
 import { useLanguage, useLocalized } from '../i18n/context'
 
-/** /projects/:projectId — one build: what it is, the stack, its actions, the device shot and every screenshot. */
+/** /projects/:projectId — one build: what it is, its actions, the plate, the story, the stack and every screenshot. */
 export function ProjectPage() {
   const { t, setPageTitle } = useLanguage()
   const localize = useLocalized()
@@ -35,97 +34,114 @@ export function ProjectPage() {
   const shots = project.galleryImages
 
   return (
-    <main id="main">
-      <Tile tone="canvas" aria-labelledby="project-title" className="!pb-0 !pt-24 sm:!pt-28">
+    // Keyed by project so the entrance replays when moving from one build to the next.
+    <main id="main" key={project.id}>
+      <section className="sec themed pb-[clamp(4rem,3rem+5vw,8rem)] pt-28 sm:pt-32" aria-labelledby="project-title">
         <div className="shell">
-          <TLink to="/projects" className="t-caption inline-flex items-center gap-1 text-text-2 hover:text-text">
-            <ChevronLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+          <TLink to="/projects" className="link-go t-caption text-text-2">
+            <ArrowLeft className="size-4" aria-hidden="true" />
             {t('projects.title')}
           </TLink>
 
-          <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center text-center">
-            <p className="t-eyebrow">
-              {t(`work.categories.${project.category}`)}
-              {project.year && <span className="text-text-2"> · <span className="latin">{project.year}</span></span>}
-            </p>
-            <h1 id="project-title" className="t-hero mt-3 text-balance text-text">
-              {title}
-            </h1>
-            <p className="t-lead mt-6 text-pretty text-text-2">{localize(project.description)}</p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              {demo && <DemoLink projectId={project.id} title={title} />}
-              {project.liveUrl && (
-                <ButtonLink href={project.liveUrl} external variant={demo ? 'secondary' : 'primary'}>
-                  <ExternalLink className="size-4" aria-hidden="true" />
-                  {t('work.viewLive')}
-                </ButtonLink>
-              )}
-              {project.sourceUrl && (
-                <ButtonLink href={project.sourceUrl} external variant="secondary">
-                  <Code2 className="size-4" aria-hidden="true" />
-                  {t('work.viewSource')}
-                </ButtonLink>
-              )}
-            </div>
-          </div>
-        </div>
+          <h1 id="project-title" className="t-hero mt-8 text-text">
+            <RiseText immediate delay={0.1} stagger={0.1} text={title} />
+          </h1>
 
-        {project.screens && (
-          <div className="mt-14 pb-16 sm:mt-20 sm:pb-24">
-            <FullStage screens={project.screens} alt={title} transitionName={`shot-${project.id}`} eager />
-          </div>
-        )}
-      </Tile>
+          <Reveal delay={0.3} className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 border-t border-hairline pt-8 lg:grid-cols-12">
+            <dl className="flex gap-10 lg:col-span-3 lg:flex-col lg:gap-5">
+              <div>
+                <dt className="t-caption text-text-2">{t('work.category')}</dt>
+                <dd className="mt-0.5 font-semibold text-text">{t(`work.categories.${project.category}`)}</dd>
+              </div>
+              {project.year && (
+                <div>
+                  <dt className="t-caption text-text-2">{t('work.year')}</dt>
+                  <dd className="latin mt-0.5 font-semibold text-text">{project.year}</dd>
+                </div>
+              )}
+            </dl>
+            <div className="lg:col-span-9">
+              <p className="t-lead max-w-[48ch] text-pretty text-text">{localize(project.description)}</p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                {demo && <DemoLink projectId={project.id} title={title} />}
+                {project.liveUrl && (
+                  <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className={`btn ${demo ? 'btn-secondary' : 'btn-primary'}`}>
+                    {t('work.viewLive')}
+                    <ExternalLink className="size-4" aria-hidden="true" />
+                  </a>
+                )}
+                {project.sourceUrl && (
+                  <a href={project.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+                    <Code2 className="size-4" aria-hidden="true" />
+                    {t('work.viewSource')}
+                  </a>
+                )}
+              </div>
+            </div>
+          </Reveal>
+
+          {project.screens && (
+            <div className="group mt-14 lg:mt-20">
+              <Plate screens={project.screens} alt={title} tone="blue" transitionName={`shot-${project.id}`} eager className="max-sm:aspect-[4/3.4] lg:aspect-[16/8.4]" />
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* The story and the stack, side by side. */}
-      <Tile tone="parchment" aria-label={t('work.technologies')}>
-        <div className="shell grid gap-x-16 gap-y-10 lg:grid-cols-12">
-          <Reveal className="lg:col-span-8">
-            <p className="t-lead text-pretty text-text">{localize(project.details ?? project.description)}</p>
-          </Reveal>
-          <Reveal delay={0.08} className="lg:col-span-4">
-            <h2 className="t-caption font-semibold text-text-2">{t('work.technologies')}</h2>
-            <ul className="mt-2">
-              {project.technologies.map((tech) => (
-                <li key={tech} className="latin t-title border-b border-hairline py-3 text-text" dir="ltr">
-                  {tech}
+      <section data-tone="surface" className="sec themed sec-pad" aria-label={t('work.technologies')}>
+        <div className="shell grid gap-x-10 gap-y-12 lg:grid-cols-12">
+          <Reveal className="lg:col-span-4">
+            <h2 className="t-eyebrow">{t('work.technologies')}</h2>
+            <ul className="mt-6 border-b border-hairline">
+              {project.technologies.map((tech, i) => (
+                <li key={tech} className="flex items-baseline justify-between gap-4 border-t border-hairline py-3.5" dir="ltr">
+                  <span className="latin t-title text-text">{tech}</span>
+                  <span className="t-code text-text-2" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                 </li>
               ))}
             </ul>
           </Reveal>
+          <Reveal delay={0.1} className="lg:col-span-7 lg:col-start-6">
+            <p className="font-display text-pretty text-[clamp(1.25rem,1rem+0.8vw,1.625rem)] font-medium leading-[1.4] tracking-[-0.02em] text-text [font-variation-settings:'wdth'_92] rtl:leading-[1.7] rtl:[font-variation-settings:normal]">
+              {localize(project.details ?? project.description)}
+            </p>
+          </Reveal>
         </div>
-      </Tile>
+      </section>
 
       {shots.length > 0 && (
-        <Tile tone="canvas" aria-labelledby="shots-title">
+        <section className="sec themed sec-pad overflow-x-clip" aria-labelledby="shots-title">
           <div className="shell">
-            <h2 id="shots-title" className="t-display text-center text-text">
-              {t('work.gallery')}
+            <h2 id="shots-title" className="t-display text-text">
+              <RiseText text={t('work.gallery')} />
             </h2>
           </div>
-          <div className="mt-8">
+          <Reveal className="mt-8 lg:mt-12">
             {shots.length > 1 ? (
-              <CurvedCarousel images={shots} label={t('work.gallery')} altFor={(i) => t('work.screenshotAlt', { title, n: i + 1 })} />
+              <ShotStrip images={shots} label={t('work.gallery')} altFor={(i) => t('work.screenshotAlt', { title, n: i + 1 })} />
             ) : (
-              <div className="shell flex justify-center">
-                <LoadImg src={shots[0]} alt={t('work.screenshotAlt', { title, n: 1 })} loading="lazy" decoding="async" className="product-shadow max-h-[70svh] w-auto rounded-2xl" />
+              <div className="shell">
+                <LoadImg src={shots[0]} alt={t('work.screenshotAlt', { title, n: 1 })} loading="lazy" decoding="async" className="shot max-h-[70svh] w-auto" />
               </div>
             )}
-          </div>
-        </Tile>
+          </Reveal>
+        </section>
       )}
 
       {/* Onward: the next build, as one large link. */}
       {next && next.id !== project.id && (
-        <Tile tone="ink">
-          <TLink to={`/projects/${next.id}`} className="shell group flex flex-col items-center text-center">
+        <section data-theme="dark" data-tone="ink" className="sec border-b border-hairline">
+          <TLink to={`/projects/${next.id}`} data-cursor={t('cursor.open')} className="shell group flex flex-col py-[clamp(4rem,3rem+5vw,7.5rem)]">
             <span className="t-eyebrow">{t('work.next')}</span>
-            <span className="t-hero mt-3 inline-flex items-center gap-3 text-text transition-colors duration-300 group-hover:text-accent">
+            <span className="t-hero mt-5 flex items-end justify-between gap-6 text-text transition-colors duration-500 group-hover:text-accent">
               {localize(next.title)}
-              <ChevronRight className="size-[0.7em] shrink-0 transition-transform duration-500 ease-out-expo group-hover:translate-x-2 rtl:-scale-x-100 rtl:group-hover:-translate-x-2" aria-hidden="true" />
+              <ArrowUpRight className="mb-[0.08em] size-[0.62em] shrink-0 transition-transform duration-700 ease-out-expo group-hover:-translate-y-[0.1em] group-hover:translate-x-[0.1em] rtl:-scale-x-100 rtl:group-hover:-translate-x-[0.1em]" strokeWidth={1.5} aria-hidden="true" />
             </span>
           </TLink>
-        </Tile>
+        </section>
       )}
     </main>
   )

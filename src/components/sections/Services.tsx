@@ -1,103 +1,80 @@
-import type { ReactNode } from 'react'
+import { services } from '../../data/services'
 import { technologies } from '../../data/technologies'
 import { useLanguage } from '../../i18n/context'
-import { AndroidPhone, BrowserWindow, IPhone } from '../ui/DeviceShowcase'
-import { Reveal } from '../ui/Reveal'
+import { Reveal, Unmask } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
-import { Tile } from '../ui/Tile'
 
-/** What is on offer, as a bento grid: each card states one service and shows evidence for it. */
+/** One band of the stack. The list is doubled so the loop has no seam; the copy is hidden from assistive tech. */
+function Band({ reverse = false }: { reverse?: boolean }) {
+  const items = reverse ? [...technologies].reverse() : technologies
+  return (
+    <div className="marquee" data-reverse={reverse || undefined} style={{ ['--marquee-time' as string]: reverse ? '58s' : '46s' }}>
+      {[0, 1].map((copy) => (
+        <ul key={copy} aria-hidden={copy === 1 || undefined} className="flex shrink-0 items-center">
+          {items.map((tech, i) => (
+            <li key={tech.id} className="latin t-hero flex items-center whitespace-nowrap !text-[clamp(1.75rem,1.2rem+2vw,3.25rem)]">
+              <span className={i % 3 === 1 ? 't-outline' : 'text-text'}>{tech.label}</span>
+              <span aria-hidden="true" className="arch-mark mx-[0.45em] inline-block h-[0.34em] w-[0.26em] shrink-0 " />
+            </li>
+          ))}
+        </ul>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * What is on offer. The four services read as a ruled list beside a blue plate carrying the two
+ * scripts every build ships in; below, the working stack crosses the page in two bands running
+ * in opposite directions.
+ */
 export function Services() {
   const { t } = useLanguage()
   return (
-    <Tile id="services" tone="parchment" aria-labelledby="services-title" className="scroll-mt-12">
+    <section id="services" className="sec themed sec-pad scroll-mt-4 overflow-x-clip" aria-labelledby="services-title">
       <div className="shell">
         <SectionHeading id="services-title" eyebrow={t('services.eyebrow')} title={t('services.title')} subtitle={t('services.subtitle')} />
 
-        <ul className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-6 lg:mt-20 lg:gap-6">
-          {/* Mobile: the wide ink card, two phones standing on its edge. */}
-          <Card className="md:col-span-6 lg:col-span-4" dark>
-            <div className="grid h-full sm:grid-cols-2">
-              <Copy id="mobile" />
-              <div className="relative h-64 overflow-hidden sm:h-auto sm:min-h-[24rem]" dir="ltr">
-                <div className="absolute left-[8%] top-16 h-[120%]">
-                  <AndroidPhone src="/projects/uab-track.jpg" alt="" />
-                </div>
-                <div className="absolute right-[8%] top-6 h-[120%]">
-                  <IPhone src="/projects/uab-order-details.jpg" alt="" />
-                </div>
+        <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-10 lg:mt-24 lg:grid-cols-12">
+          {/* Bilingual plate: Arabic and Latin, side by side. */}
+          <div className="lg:col-span-5">
+            <Unmask className="lg:sticky lg:top-24">
+              <div data-theme="dark" data-tone="blue" className="plate flex aspect-[4/3] flex-col justify-between p-7 text-white sm:p-9 lg:aspect-[4/3.4]">
+                <p className="flex items-baseline gap-4 leading-none" aria-hidden="true">
+                  <span className="font-arabic text-[clamp(4.5rem,8vw,7rem)] font-black leading-[1.1]">ع</span>
+                  <span className="latin font-display text-[clamp(4rem,7vw,6rem)] font-bold tracking-[-0.05em] text-white/45 [font-variation-settings:'wdth'_75]">Aa</span>
+                </p>
+                <p className="t-title max-w-[18ch] text-balance">{t('about.focus.i18n')}</p>
               </div>
-            </div>
-          </Card>
+            </Unmask>
+          </div>
 
-          {/* Bilingual: solid Telegram blue, the two scripts side by side. */}
-          <Card className="bento-blue md:col-span-3 lg:col-span-2" delay={0.08}>
-            <div className="flex h-full min-h-[22rem] flex-col justify-between p-7 sm:p-9">
-              <p className="flex items-baseline gap-3 leading-none" aria-hidden="true">
-                <span className="font-arabic text-[7.5rem] font-extrabold leading-[1.1]">ع</span>
-                <span className="latin font-display text-[6.5rem] font-semibold tracking-[-0.04em] text-white/55">Aa</span>
-              </p>
-              <h3 className="t-title text-balance">{t('about.focus.i18n')}</h3>
-            </div>
-          </Card>
-
-          {/* Web: a live site in a browser frame. */}
-          <Card className="md:col-span-3 lg:col-span-2">
-            <Copy id="web" />
-            <div className="relative mt-auto h-44 overflow-hidden" dir="ltr">
-              <div className="absolute inset-x-7 top-0 sm:inset-x-9">
-                <BrowserWindow src="/projects/jabal-cover.webp" alt="" />
-              </div>
-            </div>
-          </Card>
-
-          {/* Backend: the protocols and stores actually used, set as type. */}
-          <Card className="md:col-span-3 lg:col-span-2" delay={0.08}>
-            <Copy id="backend" />
-            <p className="latin font-display mt-auto flex flex-wrap gap-x-4 px-7 pb-7 text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.03em] sm:px-9 sm:pb-9" dir="ltr" aria-hidden="true">
-              <span className="text-accent">REST</span>
-              <span className="text-text/70">Django</span>
-              <span className="text-text/50">MySQL</span>
-              <span className="text-text/35">Firestore</span>
-              <span className="text-text/20">FCM</span>
-            </p>
-          </Card>
-
-          {/* Product engineering: the stack. */}
-          <Card className="md:col-span-3 lg:col-span-2" delay={0.16}>
-            <Copy id="product" />
-            <ul className="mt-auto flex flex-wrap gap-2 px-7 pb-7 sm:px-9 sm:pb-9" dir="ltr">
-              {technologies.map((tech) => (
-                <li key={tech.id} className="latin t-caption rounded-full bg-chip px-3 py-1.5 text-text">
-                  {tech.label}
+          <ul className="lg:col-span-7">
+            {services.map((service, i) => {
+              const Icon = service.icon
+              return (
+                <li key={service.id}>
+                  <Reveal delay={i * 0.05} className="group grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-hairline py-8 last:border-b sm:grid-cols-[4.5rem_1fr] lg:py-10">
+                    <span className="mt-1 grid size-11 place-items-center rounded-lg border border-hairline text-text-2 transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent" aria-hidden="true">
+                      <Icon className="size-5" strokeWidth={1.6} />
+                    </span>
+                    <div>
+                      <h3 className="t-display text-text !text-[clamp(1.375rem,1.15rem+0.9vw,2rem)]">{t(`services.items.${service.id}.title`)}</h3>
+                      <p className="mt-3 max-w-[48ch] text-pretty text-text-2">{t(`services.items.${service.id}.description`)}</p>
+                    </div>
+                  </Reveal>
                 </li>
-              ))}
-            </ul>
-          </Card>
-        </ul>
-      </div>
-    </Tile>
-  )
-}
-
-function Card({ children, className = '', dark = false, delay = 0 }: { children: ReactNode; className?: string; dark?: boolean; delay?: number }) {
-  return (
-    <li className={className.split(' ').filter((c) => c.includes('col-span')).join(' ')}>
-      <Reveal delay={delay} y={32} className="h-full">
-        <div data-theme={dark ? 'dark' : undefined} className={`bento themed flex h-full flex-col ${className.split(' ').filter((c) => !c.includes('col-span')).join(' ')}`}>
-          {children}
+              )
+            })}
+          </ul>
         </div>
-      </Reveal>
-    </li>
-  )
-}
+      </div>
 
-function Copy({ id }: { id: 'product' | 'web' | 'mobile' | 'backend' }) {
-  const { t } = useLanguage()
-  return (
-    <div className="p-7 pb-8 sm:p-9 sm:pb-10">
-      <h3 className="t-title text-text">{t(`services.items.${id}.title`)}</h3>
-      <p className="mt-3 text-pretty text-text-2">{t(`services.items.${id}.description`)}</p>
-    </div>
+      {/* The stack. Latin names, so the strip is always laid out left to right. */}
+      <div className="marquee-wrap mt-20 flex flex-col gap-3 overflow-hidden py-2 lg:mt-32" dir="ltr" role="group" aria-label={t('work.technologies')}>
+        <Band />
+        <Band reverse />
+      </div>
+    </section>
   )
 }

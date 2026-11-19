@@ -76,7 +76,8 @@
     "hideDetails": "Hide details",
     "prevShot": "Previous screenshot",
     "nextShot": "Next screenshot",
-    "noScreenshots": "Screenshots for this project are coming soon."
+    "noScreenshots": "Screenshots for this project are coming soon.",
+    "index": "Index of builds"
   },
   "services": {
     "eyebrow": "Services",
@@ -130,13 +131,19 @@
     "emailLabel": "Email",
     "copied": "Copied",
     "copyFailed": "Copy failed",
-    "copyEmailShort": "Copy email address"
+    "copyEmailShort": "Copy email address",
+    "direct": "Direct lines",
+    "copyPhone": "Copy phone number",
+    "copyTelegram": "Copy Telegram link",
+    "callMe": "Call me",
+    "whatsappMe": "Find me on WhatsApp"
   },
   "footer": {
     "signoff": "Designed and engineered by Moad Almshirem.",
     "rights": "All rights reserved.",
     "backToTop": "Back to top",
-    "nav": "Footer"
+    "nav": "Footer",
+    "based": "Based in Libya"
   },
   "projects": {
     "eyebrow": "Portfolio",
@@ -312,5 +319,10 @@
     "meta": "Page not found",
     "title": "This page doesn't exist.",
     "body": "The address may be mistyped, or the page has moved."
+  },
+  "cursor": {
+    "view": "View",
+    "drag": "Drag",
+    "open": "Open"
   }
 }

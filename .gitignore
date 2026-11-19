@@ -28,3 +28,5 @@ screenshots-src
 
 # Contact form SMTP password
 public/api/contact.config.php
+public/api/portfolio-contact.config.php
+portfolio-contact.config.php

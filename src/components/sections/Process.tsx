@@ -1,93 +1,64 @@
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { motion, useInView, useReducedMotion, useScroll, useSpring } from 'framer-motion'
+import { useRef } from 'react'
 import { useLanguage } from '../../i18n/context'
-import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { Reveal } from '../ui/Reveal'
 import { SectionHeading } from '../ui/SectionHeading'
-import { Tile } from '../ui/Tile'
 
 const stages = ['spec', 'architecture', 'build', 'ship'] as const
 
 function Stage({ id, index }: { id: (typeof stages)[number]; index: number }) {
   const { t } = useLanguage()
+  const ref = useRef<HTMLLIElement>(null)
+  // A stage counts as reached once its top passes the middle of the screen.
+  const reached = useInView(ref, { margin: '0px 0px -50% 0px', once: false })
   return (
-    <article className="bento bento-soft themed flex h-full flex-col p-7 sm:p-10">
-      <p className="latin t-hero text-signal !py-0" aria-hidden="true">
+    <li ref={ref} className="relative grid grid-cols-1 gap-x-10 gap-y-4 border-t border-hairline py-10 ps-8 lg:grid-cols-12 lg:py-14 lg:ps-0">
+      {/* The numeral is drawn in outline and fills in when the stage is reached. */}
+      <p aria-hidden="true" className={`latin t-hero transition-[color,-webkit-text-stroke-color] duration-700 lg:col-span-3 lg:ps-14 ${reached ? 'text-accent [-webkit-text-stroke:1.5px_var(--accent)]' : 't-outline'}`}>
         0{index + 1}
       </p>
-      <h3 className="t-eyebrow mt-6">{t(`process.items.${id}.title`)}</h3>
-      <p className="t-display mt-2 text-balance text-text !text-[clamp(1.75rem,1.2rem+1.6vw,2.5rem)]">{t(`process.items.${id}.lead`)}</p>
-      <p className="mt-4 text-pretty text-text-2">{t(`process.items.${id}.body`)}</p>
-      <ul className="mt-auto pt-8">
-        {[0, 1, 2].map((n) => (
-          <li key={n} className="border-t border-hairline py-3 text-[15px] text-text">
-            {t(`process.items.${id}.points.${n}`)}
-          </li>
-        ))}
-      </ul>
-    </article>
+      <div className="lg:col-span-4">
+        <h3 className="t-caption font-semibold text-accent">{t(`process.items.${id}.title`)}</h3>
+        <p className="t-display mt-2 text-balance text-text !text-[clamp(1.375rem,1.15rem+0.9vw,2rem)]">{t(`process.items.${id}.lead`)}</p>
+      </div>
+      <div className="lg:col-span-5">
+        <p className="text-pretty text-text-2">{t(`process.items.${id}.body`)}</p>
+        <ul className="mt-6 flex flex-wrap gap-2">
+          {[0, 1, 2].map((n) => (
+            <li key={n} className="rounded-md border border-hairline px-3 py-1.5 text-[14px] text-text">
+              {t(`process.items.${id}.points.${n}`)}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
   )
 }
 
 /**
- * The four stages of a build. On wide screens the section is pinned and vertical scrolling
- * drives the row sideways (mirrored in Arabic); on small screens, or under reduced motion,
- * it is an ordinary stack.
+ * The four stages of a build, read top to bottom. A blue line down the start edge is drawn by
+ * the scroll, and each stage's numeral fills in as the line reaches it.
  */
 export function Process() {
-  const { t, dir } = useLanguage()
+  const { t } = useLanguage()
   const reduce = useReducedMotion()
-  const wide = useMediaQuery('(min-width: 1024px) and (min-height: 640px)')
-  const sectionRef = useRef<HTMLElement>(null)
-  const trackRef = useRef<HTMLOListElement>(null)
-  const [distance, setDistance] = useState(0)
-  const pinned = wide && !reduce
-
-  useEffect(() => {
-    const track = trackRef.current
-    if (!track || !pinned) return
-    const measure = () => setDistance(Math.max(0, track.scrollWidth - track.clientWidth))
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(track)
-    return () => ro.disconnect()
-  }, [pinned, dir])
-
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
-  const smooth = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 })
-  const x = useTransform(smooth, [0.05, 0.95], [0, dir === 'rtl' ? distance : -distance])
-
-  if (!pinned)
-    return (
-      <Tile id="process" tone="canvas" aria-labelledby="process-title" className="scroll-mt-12">
-        <div className="shell">
-          <SectionHeading id="process-title" eyebrow={t('process.eyebrow')} title={t('process.title')} subtitle={t('process.subtitle')} />
-          <ol className="mt-14 grid gap-5 sm:grid-cols-2">
-            {stages.map((id, i) => (
-              <li key={id}>
-                <Stage id={id} index={i} />
-              </li>
-            ))}
-          </ol>
-        </div>
-      </Tile>
-    )
+  const listRef = useRef<HTMLOListElement>(null)
+  const { scrollYProgress } = useScroll({ target: listRef, offset: ['start 0.5', 'end 0.5'] })
+  const scaleY = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.4 })
 
   return (
-    <section ref={sectionRef} id="process" data-tone="canvas" className="tile themed scroll-mt-12" style={{ height: '320svh' }} aria-labelledby="process-title">
-      <div className="sticky top-0 flex h-svh flex-col justify-center overflow-hidden pt-12">
-        <div className="shell">
-          <p className="t-eyebrow">{t('process.eyebrow')}</p>
-          <h2 id="process-title" className="t-display mt-2 text-text">
-            {t('process.title')}
-          </h2>
-        </div>
-        <motion.ol ref={trackRef} style={{ x }} className="mt-6 flex gap-6 px-[max(3rem,calc((100vw-84rem)/2))] will-change-transform">
-          {stages.map((id, i) => (
-            <li key={id} className="h-[min(64svh,38rem)] w-[min(42vw,34rem)] shrink-0">
-              <Stage id={id} index={i} />
-            </li>
-          ))}
-        </motion.ol>
+    <section id="process" data-tone="surface" className="sec themed sec-pad scroll-mt-4" aria-labelledby="process-title">
+      <div className="shell">
+        <SectionHeading id="process-title" eyebrow={t('process.eyebrow')} title={t('process.title')} subtitle={t('process.subtitle')} />
+        <Reveal className="relative mt-14 lg:mt-20">
+          <span aria-hidden="true" className="absolute inset-y-0 start-0 w-px bg-hairline" />
+          <motion.span aria-hidden="true" style={{ scaleY: reduce ? 1 : scaleY }} className="absolute inset-y-0 start-0 w-0.5 origin-top bg-accent" />
+          <ol ref={listRef} className="border-b border-hairline">
+            {stages.map((id, i) => (
+              <Stage key={id} id={id} index={i} />
+            ))}
+          </ol>
+        </Reveal>
       </div>
     </section>
   )

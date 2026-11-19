@@ -15,12 +15,12 @@ const figures = [
 
 function Count({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const seen = useInView(ref, { once: true, margin: '0px 0px -15% 0px' })
+  const seen = useInView(ref, { once: true })
   const reduce = useReducedMotion()
   useEffect(() => {
     const el = ref.current
     if (!el || !seen || reduce) return
-    const controls = animate(0, to, { duration: 1.1, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => (el.textContent = String(Math.round(v))) })
+    const controls = animate(0, to, { duration: 1.4, delay: 0.9, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => (el.textContent = String(Math.round(v))) })
     return () => controls.stop()
   }, [seen, to, reduce])
   return (
@@ -30,21 +30,19 @@ function Count({ to }: { to: number }) {
   )
 }
 
-/** A quiet band of four numbers between the two walkthroughs. */
+/** Four figures in a row: a compact strip that closes the opening frame. */
 export function Stats() {
   const { t } = useLanguage()
   return (
-    <section data-tone="canvas" className="tile themed py-14 sm:py-20" aria-label={t('stats.label')}>
-      <dl className="shell grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
-        {figures.map((f) => (
-          <div key={f.id} className="flex flex-col-reverse items-center gap-1 text-center">
-            <dt className="t-caption max-w-[14ch] text-text-2">{t(`stats.${f.id}`)}</dt>
-            <dd className="t-hero text-signal !py-0">
-              <Count to={f.value} />
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
+    <dl aria-label={t('stats.label')} className="grid grid-cols-2 gap-x-6 gap-y-6 py-8 lg:grid-cols-4 lg:py-9">
+      {figures.map((f) => (
+        <div key={f.id} className="flex items-center gap-4">
+          <dd className="font-display order-first text-[2rem] font-bold leading-none text-accent lg:text-[2.25rem]">
+            <Count to={f.value} />
+          </dd>
+          <dt className="t-caption max-w-[16ch] text-text-2">{t(`stats.${f.id}`)}</dt>
+        </div>
+      ))}
+    </dl>
   )
 }

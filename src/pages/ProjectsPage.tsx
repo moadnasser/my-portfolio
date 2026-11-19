@@ -1,11 +1,14 @@
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
-import { BuildCard } from '../components/gallery/BuildCard'
+import { ProjectActions } from '../components/gallery/ProjectActions'
 import { ProjectFilters, type FilterValue } from '../components/gallery/ProjectFilters'
+import { Plate, type PlateShape, type PlateTone } from '../components/ui/Plate'
 import { Reveal } from '../components/ui/Reveal'
-import { Tile } from '../components/ui/Tile'
+import { RiseText } from '../components/ui/RiseText'
+import { TLink } from '../components/ui/TLink'
 import { categoryOrder, visibleProjects } from '../data/projects'
-import { useLanguage } from '../i18n/context'
+import type { Project } from '../data/types'
+import { useLanguage, useLocalized } from '../i18n/context'
 import { EASE } from '../lib/motion'
 
 function useProjectCount(n: number) {
@@ -16,15 +19,65 @@ function useProjectCount(n: number) {
   return t('projects.count.many', { n })
 }
 
-/** /projects — the full catalogue as a grid of build cards, filterable by platform. Each card opens its own page. */
+/**
+ * How each entry is cut, by its position in the list: the plate changes side, size, shape and
+ * ground from one build to the next, so the catalogue reads as a sequence of spreads, not a grid.
+ */
+const cuts: { plate: string; text: string; shape: PlateShape; tone: PlateTone }[] = [
+  { plate: 'lg:col-span-8', text: 'lg:col-span-4', shape: 'wide', tone: 'blue' },
+  { plate: 'lg:col-span-5 lg:col-start-8 lg:row-start-1', text: 'lg:col-span-6 lg:col-start-1 lg:row-start-1', shape: 'tall', tone: 'neutral' },
+  { plate: 'lg:col-span-7', text: 'lg:col-span-4 lg:col-start-9', shape: 'wide', tone: 'ink' },
+  { plate: 'lg:col-span-6 lg:col-start-7 lg:row-start-1', text: 'lg:col-span-5 lg:col-start-1 lg:row-start-1', shape: 'wide', tone: 'neutral' },
+]
+
+function Entry({ project, index, eager }: { project: Project; index: number; eager: boolean }) {
+  const { t } = useLanguage()
+  const localize = useLocalized()
+  const title = localize(project.title)
+  const cut = cuts[index % cuts.length]
+  return (
+    <article className="grid grid-cols-1 items-end gap-x-10 gap-y-7 lg:grid-cols-12">
+      {project.screens && (
+        <TLink to={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" data-cursor={t('cursor.view')} className={`group block ${cut.plate}`}>
+          <Plate screens={project.screens} alt="" shape={cut.shape} tone={cut.tone} transitionName={`shot-${project.id}`} eager={eager} />
+        </TLink>
+      )}
+      <div className={`${cut.text} lg:pb-4`}>
+        <p className="t-caption text-text-2">
+          {t(`work.categories.${project.category}`)}
+          {project.year && <span className="latin t-code ms-2">{project.year}</span>}
+        </p>
+        <h2 className="mt-3">
+          <TLink to={`/projects/${project.id}`} className="t-display text-text transition-colors duration-300 hover:text-accent" aria-label={t('work.openDetails', { title })}>
+            {title}
+          </TLink>
+        </h2>
+        <p className="mt-4 max-w-[46ch] text-pretty text-text-2">{localize(project.description)}</p>
+        <ul className="mt-6 flex flex-wrap gap-1.5" aria-label={t('work.technologies')}>
+          {project.technologies.map((tech) => (
+            <li key={tech} className="tag">
+              {tech}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8">
+          <ProjectActions project={project} />
+        </div>
+      </div>
+    </article>
+  )
+}
+
+/** /projects — the full catalogue, filterable by platform. Each entry opens its own page. */
 export function ProjectsPage() {
   const { t, setPageTitle } = useLanguage()
   const reduce = useReducedMotion()
   const [filter, setFilter] = useState<FilterValue>('all')
 
-  const filterOptions = useMemo<FilterValue[]>(() => {
-    const present = new Set(visibleProjects.map((p) => p.category))
-    return ['all', ...categoryOrder.filter((c) => present.has(c))]
+  const { options, counts } = useMemo(() => {
+    const tally: Partial<Record<FilterValue, number>> = { all: visibleProjects.length }
+    for (const p of visibleProjects) tally[p.category] = (tally[p.category] ?? 0) + 1
+    return { options: ['all', ...categoryOrder.filter((c) => tally[c])] as FilterValue[], counts: tally }
   }, [])
   const filtered = useMemo(() => (filter === 'all' ? visibleProjects : visibleProjects.filter((p) => p.category === filter)), [filter])
   const countLabel = useProjectCount(filtered.length)
@@ -35,54 +88,48 @@ export function ProjectsPage() {
   }, [setPageTitle])
 
   return (
-    <main id="main">
-      <Tile tone="canvas" aria-labelledby="projects-title" className="!pb-10 !pt-28 sm:!pt-36">
-        <div className="shell">
-          <Reveal className="mx-auto flex max-w-4xl flex-col items-center text-center">
-            <p className="t-eyebrow">{t('projects.eyebrow')}</p>
-            <h1 id="projects-title" className="t-hero mt-3 text-balance text-text">
-              {t('projects.title')}
-            </h1>
-            <p className="t-lead mt-6 max-w-2xl text-pretty text-text-2">{t('projects.subtitle')}</p>
-          </Reveal>
-          <Reveal delay={0.08} className="mt-10 flex flex-col items-center gap-4">
-            <LayoutGroup id="projects-filters">
-              <ProjectFilters options={filterOptions} value={filter} onChange={setFilter} />
-            </LayoutGroup>
-            <span className="t-caption tabular-nums text-text-2" aria-live="polite">
-              {countLabel}
-            </span>
-          </Reveal>
-        </div>
-      </Tile>
+    <main id="main" className="sec themed">
+      <header className="shell pb-10 pt-32 sm:pt-40 lg:pb-14">
+        <p className="t-eyebrow">{t('projects.eyebrow')}</p>
+        <h1 id="projects-title" className="t-hero mt-5 text-text">
+          <RiseText immediate delay={0.1} stagger={0.06} text={t('projects.title')} />
+        </h1>
+        <Reveal delay={0.25} className="mt-6 flex flex-wrap items-end justify-between gap-x-12 gap-y-8">
+          <p className="t-lead max-w-[44ch] text-pretty text-text-2">{t('projects.subtitle')}</p>
+          <span className="t-caption tabular-nums text-text-2" aria-live="polite">
+            {countLabel}
+          </span>
+        </Reveal>
+        <Reveal delay={0.3} className="mt-12 border-b border-hairline">
+          <LayoutGroup id="projects-filters">
+            <ProjectFilters options={options} value={filter} onChange={setFilter} counts={counts} />
+          </LayoutGroup>
+        </Reveal>
+      </header>
 
-      <Tile tone="canvas" aria-label={t('projects.title')} className="!pt-4">
-        <div className="shell">
-          <ul className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
-            <AnimatePresence mode="popLayout" initial={false}>
-              {filtered.map((project, i) => (
-                <motion.li
-                  key={project.id}
-                  layout={!reduce}
-                  initial={reduce ? false : { opacity: 0, y: 28 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduce ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
-                  transition={{ duration: 0.55, delay: Math.min(i * 0.06, 0.24), ease: EASE }}
-                  // An odd card out at the end takes the full row instead of leaving a hole.
-                  className={i === filtered.length - 1 && filtered.length % 2 === 1 ? 'lg:col-span-2' : ''}
-                >
-                  <BuildCard project={project} blue={i % 4 === 1} eager={i < 2} />
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </ul>
-          {filtered.length === 0 && (
-            <p className="py-16 text-center text-text-2" role="status">
-              {t('work.empty')}
-            </p>
-          )}
-        </div>
-      </Tile>
+      <section aria-labelledby="projects-title" className="shell pb-[clamp(5rem,3rem+8vw,11rem)] pt-8 lg:pt-14">
+        <ul className="flex flex-col gap-y-20 lg:gap-y-36">
+          <AnimatePresence mode="popLayout" initial={false}>
+            {filtered.map((project, i) => (
+              <motion.li
+                key={project.id}
+                layout={reduce ? false : 'position'}
+                initial={reduce ? false : { opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.2 } }}
+                transition={{ duration: 0.8, delay: Math.min(i * 0.07, 0.21), ease: EASE }}
+              >
+                <Entry project={project} index={i} eager={i < 2} />
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
+        {filtered.length === 0 && (
+          <p className="py-16 text-center text-text-2" role="status">
+            {t('work.empty')}
+          </p>
+        )}
+      </section>
     </main>
   )
 }

@@ -1,12 +1,9 @@
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { Code2, FileDown, Globe2, Languages, Smartphone } from 'lucide-react'
-import { useRef } from 'react'
 import { profile } from '../../data/profile'
-import { useLanguage } from '../../i18n/context'
-import { ButtonLink } from '../ui/Button'
+import { useLanguage, useLocalized } from '../../i18n/context'
 import { Reveal } from '../ui/Reveal'
+import { RiseText } from '../ui/RiseText'
 import { ScrollWords } from '../ui/ScrollWords'
-import { Tile } from '../ui/Tile'
 
 const focusAreas = [
   { id: 'mobile', icon: Smartphone },
@@ -15,65 +12,67 @@ const focusAreas = [
   { id: 'i18n', icon: Languages },
 ] as const
 
-/** Portrait cut-out size, so the image reserves its space before it loads. */
-const W = 760
-const H = 1220
-
+/**
+ * The biography on an ink ground: the claim set large in the start column with a small signed
+ * portrait under it, the two paragraphs and the focus areas in the reading column beside it.
+ */
 export function About() {
   const { t } = useLanguage()
-  const reduce = useReducedMotion()
-  const ref = useRef<HTMLElement>(null)
-  // The portrait stands on the tile's bottom edge and rises a little as the tile scrolls through.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
-  const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.5 })
-  const y = useTransform(smooth, [0, 1], [reduce ? '0%' : '12%', '0%'])
-
+  const localize = useLocalized()
   return (
-    <Tile ref={ref} id="about" tone="ink" aria-labelledby="about-title" className="scroll-mt-12 !pb-0">
-      <div className="shell grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-12">
-        <Reveal className="pb-4 lg:col-span-7 lg:pb-[clamp(4.5rem,3rem+6vw,8.5rem)]">
-          <p className="t-eyebrow">{t('about.eyebrow')}</p>
-          <h2 id="about-title" className="t-display mt-3 text-balance text-text">
-            {t('about.title')}
-          </h2>
-          <ScrollWords text={t('about.p1')} className="t-lead mt-8 text-pretty text-text" />
-          <p className="mt-5 text-pretty text-text-2">{t('about.p2')}</p>
+    <section id="about" data-theme="dark" data-tone="ink" className="sec sec-pad scroll-mt-4" aria-labelledby="about-title">
+      <div className="shell grid grid-cols-1 gap-x-10 gap-y-12 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-28">
+            <p className="t-eyebrow">{t('about.eyebrow')}</p>
+            <h2 id="about-title" className="t-display mt-5 max-w-[14ch] text-balance text-text">
+              <RiseText text={t('about.title')} />
+            </h2>
+            <Reveal delay={0.2} className="mt-10 flex items-center gap-4">
+              {profile.photo && <img src={profile.photo} alt="" width={56} height={68} loading="lazy" decoding="async" className="arch h-[4.25rem] w-14 shrink-0 object-cover object-top" />}
+              <p className="leading-snug">
+                <span className="block font-semibold text-text" dir="auto">
+                  {localize(profile.name)}
+                </span>
+                <span className="t-caption text-text-2">
+                  {localize(profile.role)}, {t('hero.location')}
+                </span>
+              </p>
+            </Reveal>
+          </div>
+        </div>
 
-          <h3 className="t-caption mt-12 font-semibold text-text-2">{t('about.focusTitle')}</h3>
-          <ul className="mt-3 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-            {focusAreas.map((area) => {
+        <div className="lg:col-span-7">
+          <ScrollWords text={t('about.p1')} className="t-lead text-pretty text-text" />
+          <Reveal>
+            <p className="mt-6 max-w-[62ch] text-pretty text-text-2">{t('about.p2')}</p>
+          </Reveal>
+
+          <h3 className="t-caption mt-14 font-semibold text-text-2">{t('about.focusTitle')}</h3>
+          <ul className="mt-4 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+            {focusAreas.map((area, i) => {
               const Icon = area.icon
               return (
-                <li key={area.id} className="flex items-start gap-3.5 border-t border-hairline py-4">
-                  <Icon className="mt-0.5 size-5 shrink-0 text-accent" strokeWidth={1.6} aria-hidden="true" />
-                  <span className="text-[15px] leading-relaxed text-text rtl:leading-loose">{t(`about.focus.${area.id}`)}</span>
+                <li key={area.id}>
+                  <Reveal delay={i * 0.05} className="flex h-full items-start gap-4 border-t border-hairline py-5">
+                    <Icon className="mt-0.5 size-5 shrink-0 text-accent" strokeWidth={1.6} aria-hidden="true" />
+                    <span className="text-[15px] leading-relaxed text-text rtl:leading-loose">{t(`about.focus.${area.id}`)}</span>
+                  </Reveal>
                 </li>
               )
             })}
           </ul>
 
           {profile.cvFile && (
-            <ButtonLink href={profile.cvFile} download variant="secondary" className="mt-8">
-              <FileDown className="size-4" aria-hidden="true" />
-              {t('hero.downloadCv')}
-            </ButtonLink>
+            <Reveal className="mt-10">
+              <a href={profile.cvFile} download className="btn btn-secondary">
+                <FileDown className="size-4" aria-hidden="true" />
+                {t('hero.downloadCv')}
+              </a>
+            </Reveal>
           )}
-        </Reveal>
-
-        <div className="flex items-end justify-center overflow-hidden lg:col-span-5">
-          <motion.img
-            src="/portrait.webp"
-            width={W}
-            height={H}
-            alt={t('hero.photoAlt')}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-            style={{ y }}
-            className="block w-[min(78%,24rem)] select-none lg:w-full lg:max-w-[27rem]"
-          />
         </div>
       </div>
-    </Tile>
+    </section>
   )
 }

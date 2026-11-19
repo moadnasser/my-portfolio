@@ -6,8 +6,8 @@
     <title>Moad Almshirem — Software Engineer</title>
     <meta name="description" content="Moad Almshirem — software engineer in Libya. Cross-platform mobile apps in Flutter, web apps in React and TypeScript, and the REST APIs behind them. Arabic-first, RTL-ready, with live demos you can run." />
     <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#080C12" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EDF1F4" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070B10" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Moad Almshirem — Software Engineer" />
     <meta property="og:description" content="Moad Almshirem — software engineer in Libya. Cross-platform mobile apps in Flutter, web apps in React and TypeScript, and the REST APIs behind them. Arabic-first, RTL-ready, with live demos you can run." />
@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fonts never block first paint: the sheet loads as a preload and is switched on when it arrives. -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Tajawal:wght@400;500;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Tajawal:wght@400;500;700;800&display=swap" /></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800;900&display=swap" /></noscript>
     <script>
       // Apply theme and language before first paint to avoid a flash of the wrong theme.
       (function () {
@@ -43,22 +43,20 @@
         } catch (e) {}
       })();
     </script>
-    <link rel="preload" as="image" href="/projects/uab-home.jpg" />
+    <link rel="preload" as="image" href="/portrait.webp" fetchpriority="high" />
     <style>
       /* Boot skeleton: painted from HTML alone while the JS bundle downloads, in the shape of the hero
-         (bar, centred statement, two actions, the phone rising from below). React replaces it on mount. */
-      .boot { --b-bg: #ffffff; --b-bar: #f1f5f8; --b-block: #e6edf2; --b-hi: rgba(255,255,255,.85); height: 100svh; overflow: hidden; background: var(--b-bg); display: flex; flex-direction: column; align-items: center; }
-      [data-theme="dark"] .boot { --b-bg: #080c12; --b-bar: #0a0f15; --b-block: #141c25; --b-hi: rgba(255,255,255,.06); }
+         (two floating capsules, the name as two bars, the doorway rising from the bottom edge). React replaces it on mount. */
+      .boot { --b-bg: #edf1f4; --b-block: #dde5eb; --b-hi: rgba(255,255,255,.8); --b-arch: #2aabee; position: relative; height: 100svh; overflow: hidden; background: var(--b-bg); padding: 1rem max(1.25rem, calc((100vw - 92rem) / 2)) 0; box-sizing: border-box; }
+      [data-theme="dark"] .boot { --b-bg: #070b10; --b-block: #141c25; --b-hi: rgba(255,255,255,.06); }
       /* Before the stylesheet arrives there is no reset: without this the page shows a margin in the wrong colour. */
-      html, body { margin: 0; background: #ffffff; }
-      html[data-theme="dark"], [data-theme="dark"] body { background: #080c12; }
-      .boot-bar { align-self: stretch; height: 3rem; background: var(--b-bar); display: flex; align-items: center; justify-content: space-between; padding-inline: max(1.25rem, calc((100vw - 84rem) / 2)); }
-      .boot-row { display: flex; gap: .75rem; align-items: center; }
-      .boot-hero { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding-top: max(2.5rem, 8svh); width: min(100% - 2.5rem, 60rem); }
-      .sk { display: block; border-radius: 999px; background: var(--b-block) linear-gradient(100deg, transparent 25%, var(--b-hi) 50%, transparent 75%) no-repeat; background-size: 200% 100%; animation: sk 1.5s ease-in-out infinite; }
-      /* After .sk so their corner radii win. */
-      .boot-line { height: min(clamp(2.4rem, 6vw, 5.4rem), 9svh); border-radius: 1rem; }
-      .boot-phone { margin-top: auto; width: min(64vw, 19rem); height: 30svh; border-radius: 2.6rem 2.6rem 0 0; flex: none; }
+      html, body { margin: 0; background: #edf1f4; }
+      html[data-theme="dark"], [data-theme="dark"] body { background: #070b10; }
+      .boot-bar { display: flex; align-items: center; justify-content: space-between; }
+      .sk { display: block; border-radius: .75rem; background: var(--b-block) linear-gradient(100deg, transparent 25%, var(--b-hi) 50%, transparent 75%) no-repeat; background-size: 200% 100%; animation: sk 1.5s ease-in-out infinite; }
+      .boot-name { margin-top: max(2.25rem, 6svh); display: flex; flex-direction: column; gap: 1.6vw; }
+      .boot-name .sk { height: 13.5vw; max-height: 13.5rem; }
+      .boot-arch { position: absolute; bottom: 0; left: 50%; width: clamp(15rem, 25.5vw, 26rem); height: 60svh; margin-left: calc(clamp(15rem, 25.5vw, 26rem) / -2); border-radius: 999px 999px 0 0; background: var(--b-arch); opacity: .9; }
       @keyframes sk { from { background-position: 150% 0; } to { background-position: -50% 0; } }
       @media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
     </style>
@@ -67,17 +65,14 @@
     <div id="root">
       <div class="boot" aria-busy="true" aria-label="Loading">
         <div class="boot-bar">
-          <span class="boot-row"><span class="sk" style="width:1.75rem;height:1.75rem"></span><span class="sk" style="width:8rem;height:1rem"></span></span>
-          <span class="boot-row"><span class="sk" style="width:3.5rem;height:1rem"></span><span class="sk" style="width:5.5rem;height:2rem"></span></span>
+          <span class="sk" style="width:11rem;height:3rem"></span>
+          <span class="sk" style="width:12rem;height:3rem"></span>
         </div>
-        <div class="boot-hero">
-          <span class="sk" style="width:14rem;height:1.1rem"></span>
-          <span class="sk boot-line" style="width:min(100%,46rem)"></span>
-          <span class="sk boot-line" style="width:min(92%,50rem)"></span>
-          <span class="sk boot-line" style="width:min(74%,36rem)"></span>
-          <span class="boot-row" style="margin-top:1rem"><span class="sk" style="width:10rem;height:2.75rem"></span><span class="sk" style="width:7rem;height:1rem"></span></span>
+        <div class="boot-name">
+          <span class="sk" style="width:42%"></span>
+          <span class="sk" style="width:100%"></span>
         </div>
-        <span class="sk boot-phone"></span>
+        <span class="boot-arch"></span>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

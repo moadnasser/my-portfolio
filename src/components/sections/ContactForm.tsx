@@ -6,7 +6,8 @@ import { useLanguage } from '../../i18n/context'
 type Status = 'idle' | 'sending' | 'sent' | 'failed'
 type Field = 'name' | 'email' | 'message'
 
-const field = 'themed w-full rounded-[0.875rem] border border-hairline bg-surface px-4 py-3 text-[17px] text-text outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-text-2/70 focus:border-accent focus:shadow-[0_0_0_3px_var(--ring)] aria-[invalid=true]:border-[#c4281c]'
+/** Fields are a single ruled line that turns blue on focus; the label sits above in the caption size. */
+const field = 'themed w-full rounded-none border-0 border-b border-border bg-transparent px-0 py-3 text-[1.125rem] text-text outline-none transition-[border-color,box-shadow] duration-300 placeholder:text-text-2/70 focus:border-accent focus:shadow-[0_1px_0_0_var(--accent)] aria-[invalid=true]:border-danger'
 
 /**
  * Posts to /api/contact.php on the same host (see public/api/contact.php). If the request
@@ -48,44 +49,44 @@ export function ContactForm() {
   const describe = (f: Field) => (errors[f] ? { 'aria-invalid': true, 'aria-describedby': `${id}-${f}-error` } : {})
   const error = (f: Field) =>
     errors[f] && (
-      <p id={`${id}-${f}-error`} className="t-caption mt-1.5 text-[#c4281c] dark:text-[#ff8a80]">
+      <p id={`${id}-${f}-error`} className="t-caption mt-1.5 text-danger">
         {errors[f]}
       </p>
     )
 
   return (
-    <form onSubmit={submit} noValidate className="bento bento-soft themed mx-auto mt-16 max-w-3xl p-6 text-start sm:p-10" aria-labelledby={`${id}-title`}>
+    <form onSubmit={submit} noValidate className="themed relative rounded-plate border border-hairline bg-surface p-6 text-start sm:p-10 lg:p-12" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`} className="t-title text-text">
         {t('form.title')}
       </h3>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+      <div className="mt-8 grid gap-x-8 gap-y-7 sm:grid-cols-2">
         <div>
-          <label htmlFor={`${id}-name`} className="t-caption mb-1.5 block font-semibold text-text-2">
+          <label htmlFor={`${id}-name`} className="t-caption block text-text-2">
             {t('form.name')}
           </label>
           <input id={`${id}-name`} name="name" autoComplete="name" maxLength={100} className={field} {...describe('name')} />
           {error('name')}
         </div>
         <div>
-          <label htmlFor={`${id}-email`} className="t-caption mb-1.5 block font-semibold text-text-2">
+          <label htmlFor={`${id}-email`} className="t-caption block text-text-2">
             {t('form.email')}
           </label>
           <input id={`${id}-email`} name="email" type="email" inputMode="email" autoComplete="email" maxLength={200} dir="ltr" className={`${field} latin rtl:text-right`} {...describe('email')} />
           {error('email')}
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor={`${id}-message`} className="t-caption mb-1.5 block font-semibold text-text-2">
+          <label htmlFor={`${id}-message`} className="t-caption block text-text-2">
             {t('form.message')}
           </label>
-          <textarea id={`${id}-message`} name="message" rows={5} maxLength={5000} className={`${field} resize-y`} {...describe('message')} />
+          <textarea id={`${id}-message`} name="message" rows={4} maxLength={5000} className={`${field} resize-y`} {...describe('message')} />
           {error('message')}
         </div>
         {/* Honeypot: hidden from people and assistive tech, irresistible to bots. */}
-        <input name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] size-px opacity-0" />
+        <input name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="pointer-events-none absolute start-0 top-0 size-px opacity-0 [clip-path:inset(50%)]" />
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-        <button type="submit" disabled={status === 'sending'} className="btn-primary inline-flex h-11 cursor-pointer items-center gap-2 rounded-full px-[22px] text-[17px] active:scale-95 disabled:opacity-60">
+      <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <button type="submit" disabled={status === 'sending'} className="btn btn-primary">
           {status === 'sending' ? t('form.sending') : t('form.send')}
           <ArrowUp className="size-4" aria-hidden="true" />
         </button>

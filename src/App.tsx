@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { Route, Routes, useLocation } from 'react-router'
 import { Footer } from './components/sections/Footer'
 import { Header } from './components/sections/Header'
-import { LanguageProvider } from './i18n/LanguageProvider'
-import { lazy, Suspense } from 'react'
-import { DemoSkeleton } from './pages/DemoSkeleton'
 import { CommandPalette } from './components/ui/CommandPalette'
+import { Cursor } from './components/ui/Cursor'
+import { LanguageProvider } from './i18n/LanguageProvider'
+import { scrollToTarget, startSmoothScroll } from './lib/scroll'
+import { DemoSkeleton } from './pages/DemoSkeleton'
 import { HomePage } from './pages/HomePage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ProjectPage } from './pages/ProjectPage'
@@ -22,23 +23,23 @@ function ScrollManager() {
     // First load or refresh (no route change, no hash): leave the browser's own scroll restoration alone.
     if (from === pathname && !hash) return
     if (hash) {
-      const el = document.querySelector(hash)
+      const el = document.querySelector<HTMLElement>(hash)
       if (el) {
-        // Arriving from another page is instant: the target has just mounted, so a smooth scroll would race the lazy hero chunk.
-        const smooth = from === pathname && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'instant' })
+        // Arriving from another page is instant: the target has just mounted, so an animated scroll would race the page's own entrance.
+        scrollToTarget(el, from !== pathname)
         return
       }
     }
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    scrollToTarget(0, true)
   }, [pathname, hash])
   return null
 }
 
 const DemoPage = lazy(() => import('./pages/DemoPage').then((m) => ({ default: m.DemoPage })))
 
-/** Regular pages share the header, footer and scroll chrome. */
+/** Regular pages share the header, footer, smooth scrolling and the cursor. */
 function SitePages() {
+  useEffect(() => startSmoothScroll(), [])
   return (
     <div className="relative min-h-svh">
       <ScrollManager />
@@ -51,6 +52,7 @@ function SitePages() {
       </Routes>
       <Footer />
       <CommandPalette />
+      <Cursor />
     </div>
   )
 }

@@ -31,7 +31,7 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label: string
 }
 
-/** Round icon-only control. `label` becomes the accessible name and tooltip. */
+/** Square icon-only control. `label` becomes the accessible name and tooltip. */
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
   { label, className = '', type = 'button', children, ...rest },
   ref,
@@ -43,8 +43,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       aria-label={label}
       title={label}
       className={
-        'glass themed inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-text-2 ' +
-        'transition-[background-color,color,border-color,transform] duration-200 hover:border-accent/60 hover:text-text active:scale-95 ' +
+        'themed inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-text ' +
+        'transition-[background-color,color,border-color,transform] duration-300 hover:border-text hover:bg-text hover:text-bg active:scale-95 ' +
         className
       }
       {...rest}

@@ -157,7 +157,7 @@ function FullscreenLayout({ def, title, projectId, done, reset, toast, children 
         </TLink>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="truncate text-sm font-semibold">{title}</span>
-          <span className="shrink-0 rounded-full bg-accent/12 px-2 py-0.5 text-[11px] font-semibold text-accent">{t('demo.badge')}</span>
+          <span className="shrink-0 rounded bg-accent/12 px-2 py-0.5 text-[11px] font-semibold text-accent">{t('demo.badge')}</span>
         </div>
         <button
           type="button"
@@ -202,7 +202,7 @@ function IntroCard({ text, onDismiss, onGuide }: { text: string; onDismiss: () =
   return (
     <motion.div
       role="note"
-      className="pointer-events-auto fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom,env(safe-area-inset-bottom)))] z-40 rounded-[1.375rem] border border-hairline bg-surface p-4 product-shadow"
+      className="pointer-events-auto fixed inset-x-3 bottom-[calc(5.5rem+var(--safe-bottom,env(safe-area-inset-bottom)))] z-40 rounded-plate border border-hairline bg-surface p-4 product-shadow"
       initial={reduce ? false : { opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: EASE, delay: 0.5 }}
@@ -215,10 +215,10 @@ function IntroCard({ text, onDismiss, onGuide }: { text: string; onDismiss: () =
           <p className="text-sm font-semibold">{t('demo.introTitle')}</p>
           <p className="mt-1 text-sm leading-relaxed text-text-2">{text}</p>
           <div className="mt-3 flex gap-2">
-            <button type="button" onClick={onGuide} className="btn-primary inline-flex h-10 items-center rounded-full px-4 text-sm active:scale-95">
+            <button type="button" onClick={onGuide} className="btn btn-primary btn-sm">
               {t('demo.showSteps')}
             </button>
-            <button type="button" onClick={onDismiss} className="inline-flex h-10 items-center rounded-full px-4 text-sm font-medium text-text-2 active:bg-surface-2">
+            <button type="button" onClick={onDismiss} className="btn btn-ghost btn-sm">
               {t('demo.explore')}
             </button>
           </div>
@@ -281,7 +281,7 @@ function GuideSheet({ open, onClose, children }: { open: boolean; onClose: () =>
 function BackLink({ projectId }: { projectId: string }) {
   const { t } = useLanguage()
   return (
-    <TLink to={`/projects/${projectId}`} className="t-caption inline-flex w-fit items-center gap-1.5 text-text-2 hover:text-text">
+    <TLink to={`/projects/${projectId}`} className="link-go t-caption w-fit text-text-2">
       <ArrowLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
       {t('demo.back')}
     </TLink>
@@ -350,7 +350,7 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
         <button
           type="button"
           onClick={reset}
-          className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-chip px-4 text-sm transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
+          className="btn btn-secondary btn-sm"
         >
           <RotateCcw className="size-4" aria-hidden="true" />
           {t('demo.reset')}
@@ -359,7 +359,7 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
           type="button"
           onClick={toggleLang}
           aria-label={t('header.language')}
-          className="inline-flex h-11 cursor-pointer items-center rounded-full bg-chip px-4 text-sm transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
+          className="btn btn-secondary btn-sm"
         >
           <span className={lang === 'en' ? 'font-arabic' : 'latin'}>{lang === 'en' ? 'العربية' : 'English'}</span>
         </button>
@@ -367,7 +367,7 @@ function PanelBody({ def, title, done, reset, compact = false }: { def: DemoDefi
           type="button"
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')}
-          className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full bg-chip transition-[transform,background-color] hover:bg-accent/15 active:scale-95"
+          className="btn btn-secondary btn-sm !px-0 w-10"
         >
           {theme === 'dark' ? <Sun className="size-4.5" aria-hidden="true" /> : <Moon className="size-4.5" aria-hidden="true" />}
         </button>
@@ -391,7 +391,7 @@ function Toast({ message, placement }: { message: string | null; placement: 'top
         {message && (
           <motion.div
             key={message}
-            className="flex max-w-sm items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2.5 text-sm product-shadow"
+            className="flex max-w-sm items-center gap-2.5 rounded-lg border border-hairline bg-surface px-4 py-2.5 text-sm product-shadow"
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: offset, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: offset }}

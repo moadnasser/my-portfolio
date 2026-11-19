@@ -9,14 +9,16 @@ interface ProjectFiltersProps {
   options: FilterValue[]
   value: FilterValue
   onChange: (value: FilterValue) => void
-  align?: 'center' | 'start'
+  /** Number of projects behind each option, shown as a small figure beside it. */
+  counts?: Partial<Record<FilterValue, number>>
 }
 
-export function ProjectFilters({ options, value, onChange, align = 'center' }: ProjectFiltersProps) {
+/** Category switch set as a row of words; a blue rule slides under the active one. */
+export function ProjectFilters({ options, value, onChange, counts }: ProjectFiltersProps) {
   const { t } = useLanguage()
   const reduce = useReducedMotion()
   return (
-    <div role="group" aria-label={t('work.category')} className={`no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0 ${align === 'center' ? 'sm:justify-center' : ''}`}>
+    <div role="group" aria-label={t('work.category')} className="no-scrollbar -mx-5 flex gap-7 overflow-x-auto px-5 sm:mx-0 sm:px-0">
       {options.map((opt) => {
         const active = opt === value
         return (
@@ -25,20 +27,13 @@ export function ProjectFilters({ options, value, onChange, align = 'center' }: P
             type="button"
             aria-pressed={active}
             onClick={() => onChange(opt)}
-            className={`themed relative shrink-0 cursor-pointer rounded-full border px-[18px] py-2 text-[15px] transition-[color,background-color,transform] duration-200 active:scale-95 ${
-              active ? 'border-transparent text-on-accent' : 'border-transparent bg-chip text-text hover:bg-accent/15'
-            }`}
+            className={`t-title relative shrink-0 cursor-pointer pb-2 transition-colors duration-300 ${active ? 'text-text' : 'text-text-2 hover:text-text'}`}
           >
-            {active && (
-              <motion.span
-                layoutId="filter-pill"
-                transition={reduce ? { duration: 0 } : { duration: 0.35, ease: EASE }}
-                className="absolute inset-0 -z-10 rounded-full"
-                style={{ backgroundColor: 'var(--accent)' }}
-                aria-hidden="true"
-              />
-            )}
             {t(`work.filters.${opt}`)}
+            {counts?.[opt] !== undefined && <sup className="latin t-code ms-1 text-text-2">{counts[opt]}</sup>}
+            {active && (
+              <motion.span layoutId="filter-rule" transition={reduce ? { duration: 0 } : { duration: 0.5, ease: EASE }} className="absolute inset-x-0 bottom-0 h-0.5 bg-accent" aria-hidden="true" />
+            )}
           </button>
         )
       })}
