@@ -3,9 +3,9 @@
  * Contact form endpoint for the portfolio. Accepts a JSON POST {name, email, message, company}
  * and mails it to the site owner.
  *
- * Delivery: if a config file exists, the message goes through that SMTP account (reliable, and the
- * only way it works on a machine with no mail server, such as local dev). Without one it falls back
- * to PHP's mail(), which cPanel hosts provide. The config is looked for next to this file
+ * Delivery: if a config file exists, the message goes through that SMTP account (the only way it
+ * works on a machine with no mail server, such as local dev). Without one, or when that account
+ * cannot be reached, it falls back to PHP's mail(), which cPanel hosts provide. The config is looked for next to this file
  * (contact.config.php) and one level above the web root (portfolio-contact.config.php); it holds a
  * password, so it is git-ignored and never part of the build. See contact.config.example.php in the repo root.
  *
@@ -99,7 +99,13 @@ function smtpSend(array $cfg, string $to, string $replyTo, string $subject, stri
     $port = (int)($cfg['port'] ?? 465);
     $secure = (string)($cfg['secure'] ?? ($port === 465 ? 'ssl' : ($port === 25 ? 'none' : 'tls')));
     $from = (string)($cfg['from'] ?? $cfg['user']);
-    $socket = @stream_socket_client(($secure === 'ssl' ? 'ssl://' : 'tcp://') . $cfg['host'] . ':' . $port, $errno, $errstr, 12);
+    // Connect over IPv4. Hosts without an IPv6 route fail with "Network is unreachable" when the
+    // name resolves to an IPv6 address first (smtp.gmail.com does). The certificate is still checked
+    // against the host name.
+    $host = (string)$cfg['host'];
+    $address = gethostbyname($host);
+    $context = stream_context_create(['ssl' => ['peer_name' => $host, 'SNI_enabled' => true, 'verify_peer' => true, 'verify_peer_name' => true]]);
+    $socket = @stream_socket_client(($secure === 'ssl' ? 'ssl://' : 'tcp://') . $address . ':' . $port, $errno, $errstr, 12, STREAM_CLIENT_CONNECT, $context);
     if (!$socket) {
         return "connect: {$errstr}";
     }
@@ -146,7 +152,8 @@ function smtpSend(array $cfg, string $to, string $replyTo, string $subject, stri
         if ($err = $cmd(base64_encode((string)$cfg['user']), 334)) {
             return "auth user: {$err}";
         }
-        if ($err = $cmd(base64_encode((string)$cfg['pass']), 235)) {
+        // App passwords are often pasted with spaces or a trailing line break; neither is part of the password.
+        if ($err = $cmd(base64_encode(preg_replace('/\s+/', '', (string)$cfg['pass'])), 235)) {
             return "auth pass: {$err}";
         }
         if ($err = $cmd("MAIL FROM:<{$from}>", 250)) {
@@ -184,26 +191,49 @@ function smtpSend(array $cfg, string $to, string $replyTo, string $subject, stri
     return $result;
 }
 
-$cfg = smtpConfig();
-if ($cfg !== null) {
-    $error = smtpSend($cfg, (string)($cfg['to'] ?? RECIPIENT), $email, $subject, $body);
-    if ($error !== null) {
-        error_log('portfolio contact: smtp failed: ' . $error);
-    }
-    $sent = $error === null;
-} else {
-    $headers = [
-        'From: Portfolio <no-reply@' . $host . '>',
-        'Reply-To: ' . $email,
+/** PHP's own mailer. On cPanel this hands the message to the local mail server without any network connection. */
+function localMail(string $fromAddress, string $replyTo, string $subject, string $body): bool
+{
+    $headers = implode("\r\n", [
+        "From: Portfolio <{$fromAddress}>",
+        "Reply-To: <{$replyTo}>",
         'MIME-Version: 1.0',
         'Content-Type: text/plain; charset=UTF-8',
         'Content-Transfer-Encoding: 8bit',
-    ];
-    $sent = mail(RECIPIENT, $subject, $body, implode("\r\n", $headers));
+    ]);
+    // -f sets the envelope sender to the same address, which keeps SPF aligned. Some hosts forbid it, so retry without.
+    return @mail(RECIPIENT, $subject, $body, $headers, '-f' . $fromAddress) || @mail(RECIPIENT, $subject, $body, $headers);
+}
+
+$domain = preg_replace('/^www\./i', '', $host) ?: 'localhost';
+$cfg = smtpConfig();
+$sent = false;
+$reason = null;
+
+if ($cfg !== null) {
+    $error = smtpSend($cfg, (string)($cfg['to'] ?? RECIPIENT), $email, $subject, $body);
+    $sent = $error === null;
+    if (!$sent) {
+        error_log('portfolio contact: smtp failed: ' . $error);
+        // Coarse stage only (connect, auth, ...): enough to diagnose, nothing sensitive.
+        $reason = 'smtp-' . preg_replace('/[^a-z ]/', '', strtolower(strtok($error, ':')));
+    }
+}
+
+if (!$sent) {
+    // No SMTP account, or it could not be reached (shared hosts often block outgoing SMTP): use the local mailer.
+    $user = (string)($cfg['user'] ?? '');
+    $fromAddress = str_ends_with(strtolower($user), '@' . strtolower($domain)) ? $user : 'no-reply@' . $domain;
+    $sent = localMail($fromAddress, $email, $subject, $body);
+    if (!$sent) {
+        error_log('portfolio contact: mail() failed');
+        $reason = ($reason ?? 'no-config') . '+mail';
+    }
 }
 
 if (!$sent) {
     // Let the visitor retry straight away after a failure on our side.
     @unlink($stamp);
+    respond(502, ['ok' => false, 'reason' => $reason]);
 }
-respond($sent ? 200 : 502, ['ok' => $sent]);
+respond(200, ['ok' => true]);
