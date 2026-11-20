@@ -31,6 +31,8 @@
   --chip: rgba(10, 17, 23, 0.06);
   --skeleton-hi: rgba(255, 255, 255, 0.75);
   --danger: #c4281c;
+  --success: #0b7a5c;      /* teal-emerald: stays on the cool side of the palette */
+  --on-success: #ffffff;
 
   /* The arch behind the portrait: the one saturated field on the page. */
   --arch-a: #2aabee;
@@ -42,7 +44,7 @@
   --product-shadow: 0 30px 60px -28px rgba(10, 17, 23, 0.45), 0 2px 6px rgba(10, 17, 23, 0.08);
 
   --radius-card: 1.125rem;
-  --radius-plate: 1.25rem;
+  --radius-plate: 2rem;
   --font-latin: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: "Bricolage Grotesque", "Instrument Sans", -apple-system, "Segoe UI", sans-serif;
   --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -72,6 +74,8 @@
   --chip: rgba(255, 255, 255, 0.08);
   --skeleton-hi: rgba(255, 255, 255, 0.06);
   --danger: #ff8a80;
+  --success: #34d3a0;
+  --on-success: #04201a;
 
   --arch-a: #2aabee;
   --arch-b: #0a6396;
@@ -158,7 +162,7 @@ body {
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
-    border-radius: 0.375rem;
+    border-radius: 999px;
   }
 }
 
@@ -278,7 +282,7 @@ img { max-width: 100%; height: auto; }
 .rule { border-top: 1px solid var(--hairline); }
 
 /* ---------- Buttons ----------
-   Square-shouldered blocks. On hover the label's ground is replaced by a fill that rises from below. */
+   Full pills. On hover the label's ground is replaced by a fill that rises from below. */
 .btn {
   position: relative;
   isolation: isolate;
@@ -288,8 +292,8 @@ img { max-width: 100%; height: auto; }
   justify-content: center;
   gap: 0.6rem;
   height: 3.25rem;
-  padding-inline: 1.5rem;
-  border-radius: 0.5rem;
+  padding-inline: 1.6rem;
+  border-radius: 999px;
   font-size: 1rem;
   font-weight: 500;
   white-space: nowrap;
@@ -308,7 +312,7 @@ img { max-width: 100%; height: auto; }
 .btn:hover::before, .btn:focus-visible::before { transform: translateY(0); }
 .btn:active { transform: scale(0.97); }
 .btn:disabled { pointer-events: none; opacity: 0.55; }
-.btn-sm { height: 2.5rem; padding-inline: 1rem; font-size: 0.875rem; }
+.btn-sm { height: 2.5rem; padding-inline: 1.15rem; font-size: 0.875rem; }
 .btn-lg { height: 3.75rem; padding-inline: 1.9rem; font-size: 1.0625rem; }
 
 .btn-primary { background-color: var(--accent); color: var(--on-accent); }
@@ -376,7 +380,7 @@ img { max-width: 100%; height: auto; }
   height: 1.875rem;
   padding-inline: 0.625rem;
   border: 1px solid var(--hairline);
-  border-radius: 0.375rem;
+  border-radius: 999px;
   font-family: var(--font-code);
   font-size: 0.75rem;
   letter-spacing: -0.01em;
@@ -409,14 +413,14 @@ img { max-width: 100%; height: auto; }
 .plate[data-tone="ink"] { background: #0c1218; }
 .shot {
   display: block;
-  border-radius: 0.75rem;
+  border-radius: 1.25rem;
   box-shadow: var(--product-shadow);
   outline: 1px solid rgba(127, 140, 152, 0.22);
   outline-offset: -1px;
   background: var(--surface-2);
 }
-.shot-phone { border-radius: 1.5rem; }
-@media (max-width: 640px) { .shot-phone { border-radius: 1.1rem; } }
+.shot-phone { border-radius: 2rem; }
+@media (max-width: 640px) { .shot { border-radius: 0.9rem; } .shot-phone { border-radius: 1.4rem; } }
 
 /* ---------- Chrome ---------- */
 .glass {
@@ -460,6 +464,17 @@ img { max-width: 100%; height: auto; }
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
+/* ---------- Hero entrance ----------
+   CSS keyframes with a per-element delay (--d). `both` holds the hidden state until the delay
+   elapses and the visible state after, so nothing depends on script timing. Reduced motion
+   collapses the durations (see the bottom of this file) and the content is simply there. */
+@keyframes enter { from { opacity: 0; transform: translateY(18px); } }
+@keyframes enter-clip { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes enter-lift { from { transform: translateY(10%); } }
+.enter { animation: enter 900ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) both; }
+.enter-clip { animation: enter-clip 1300ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both; }
+.enter-lift { animation: enter-lift 1600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both; }
+
 /* ---------- Marquee ----------
    Two bands of the stack travelling in opposite directions: left-to-right and right-to-left, like the two scripts. */
 @keyframes marquee { to { transform: translateX(-50%); } }
@@ -467,26 +482,88 @@ img { max-width: 100%; height: auto; }
 .marquee[data-reverse] { animation-direction: reverse; }
 .marquee-wrap:hover .marquee { animation-play-state: paused; }
 
-/* ---------- Custom cursor (fine pointers only) ---------- */
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 90;
-  pointer-events: none;
-  display: grid;
-  place-items: center;
-  width: 5.5rem;
-  height: 5.5rem;
-  margin: -2.75rem 0 0 -2.75rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.1;
+/* ---------- Custom cursor (fine pointers only; see Cursor.tsx) ----------
+   A dot that sits exactly on the pointer and a ring that trails it by a few frames. Position is
+   written per frame from script; everything below is state styling, switched by data-state.
+   The ring is one 96px disc scaled down, so state changes never touch layout. */
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+/* The native cursor stays where the custom one cannot follow or would get in the way:
+   text fields (caret placement) and the modal search, which lives in the top layer. */
+html.has-cursor :is(input, textarea, select),
+html.has-cursor dialog, html.has-cursor dialog *, html.has-cursor dialog::backdrop { cursor: auto !important; }
+
+.cur { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; transition: opacity 200ms ease; }
+.cur[data-on] { opacity: 1; }
+.cur-dot, .cur-ring { position: absolute; top: 0; left: 0; will-change: transform; }
+.cur-dot::after {
+  content: ""; position: absolute; width: 6px; height: 6px; margin: -3px; border-radius: 50%;
+  background: var(--accent-2); transition: opacity 250ms ease, transform 250ms ease;
 }
+.cur-stretch { position: absolute; top: 0; left: 0; }
+.cur-shape {
+  --s: 0.354; --p: 1;
+  position: absolute; width: 96px; height: 96px; margin: -48px; border-radius: 50%;
+  transform: scale(calc(var(--s) * var(--p)));
+  border: calc(1.5px / var(--s)) solid var(--accent-2);
+  background: transparent;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, border-color 200ms ease, opacity 180ms ease;
+}
+.cur-label {
+  position: absolute; width: 96px; height: 96px; margin: -48px; display: flex; align-items: center; justify-content: center; gap: 0.3em;
+  font-size: 0.8125rem; font-weight: 600; line-height: 1.1; text-align: center; color: var(--on-accent);
+  opacity: 0; transform: translateY(8px); transition: opacity 250ms ease, transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cur-label::before, .cur-label::after { content: none; transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cur-mag {
+  position: absolute; top: 0; left: 0; border-radius: 0.75rem;
+  border: 1.5px solid var(--accent-2); background: color-mix(in oklab, var(--accent-2) 12%, transparent);
+  opacity: 0; transform: translate(-50%, -50%) scale(0.55);
+  transition: opacity 250ms ease, transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cur[data-state="link"] .cur-shape { --s: 0.57; background: color-mix(in oklab, var(--accent-2) 16%, transparent); }
+.cur:is([data-state="view"], [data-state="drag"]) .cur-shape { --s: 1; background: var(--accent); border-color: transparent; }
+.cur:is([data-state="view"], [data-state="drag"]) .cur-label { opacity: 1; transform: none; }
+.cur[data-state="drag"] .cur-label::before { content: "\2190"; }
+.cur[data-state="drag"] .cur-label::after { content: "\2192"; }
+.cur[data-state="drag"][data-press] .cur-label::before { transform: translateX(-5px); }
+.cur[data-state="drag"][data-press] .cur-label::after { transform: translateX(5px); }
+.cur:is([data-state="view"], [data-state="drag"], [data-state="magnetic"], [data-state="hidden"]) .cur-dot::after { opacity: 0; transform: scale(0.4); }
+.cur:is([data-state="magnetic"], [data-state="hidden"]) .cur-shape { opacity: 0; }
+.cur[data-state="magnetic"] .cur-mag { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.cur[data-press] .cur-shape { --p: 0.8; }
+.cur[data-press] .cur-mag { transform: translate(-50%, -50%) scale(0.94); }
+@media (prefers-reduced-motion: reduce) {
+  .cur-shape, .cur-label, .cur-mag { transition: opacity 200ms ease !important; }
+}
+
+/* ---------- Theme switch (see ThemeToggle.tsx) ----------
+   While the reveal runs, colour transitions are off so the two snapshots are clean, the page
+   wipe used for navigation is replaced by the circle driven from script, and named elements
+   stay part of the page so the circle sweeps over them too. */
+html.theme-vt *, html.theme-vt *::before, html.theme-vt *::after { transition: none !important; view-transition-name: none !important; }
+html.theme-vt::view-transition-old(root), html.theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html.theme-vt::view-transition-new(root) { z-index: 1; }
+
+/* Sun / moon icon. Sun: small core, eight rays, the bite parked off the corner. Moon: full core
+   with the bite slid in and the rays drawn back; the mark makes a quarter turn on the way. Mirrored in RTL so the bite
+   always enters from the top end. */
+.sunmoon { transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1); }
+.sunmoon :is(.sunmoon-core, .sunmoon-bite, .sunmoon-ray) { transform-box: fill-box; transform-origin: center; transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease; }
+.sunmoon-core { transform: scale(0.53); }
+.sunmoon-bite { transform: translate(14px, -14px); }
+.sunmoon:not([data-moon]) { transform: rotate(90deg); }
+.sunmoon[data-moon] .sunmoon-core { transform: scale(1); }
+.sunmoon[data-moon] .sunmoon-bite { transform: none; }
+.sunmoon[data-moon] .sunmoon-ray { transform: scale(0); opacity: 0; }
+:root[dir="rtl"] .sunmoon { scale: -1 1; }
+@media (prefers-reduced-motion: reduce) { .sunmoon { transform: none !important; } }
+
+/* ---------- Contact submit button states (see SubmitButton.tsx) ---------- */
+.btn[data-status]:not([data-status="idle"])::before { display: none; }
+.btn[data-status="sending"] { cursor: progress; }
+.btn[data-status="sending"]:hover, .btn[data-status="sending"]:focus-visible { color: var(--on-accent); }
+.btn[data-status="sent"], .btn[data-status="sent"]:hover, .btn[data-status="sent"]:focus-visible { background-color: var(--success); color: var(--on-success); }
+.btn[data-status] { transition: color 380ms cubic-bezier(0.16, 1, 0.3, 1), background-color 450ms ease; }
 
 /* ---------- Loading skeletons ---------- */
 @keyframes skeleton-sweep {
@@ -514,6 +591,10 @@ img { max-width: 100%; height: auto; }
 ::view-transition-group(*) { animation-duration: 620ms; animation-timing-function: var(--ease-cine); }
 ::view-transition-image-pair(root) { isolation: auto; }
 
+/* Screenshot viewer: a full-screen modal dialog over a dark, blurred page. */
+.viewer::backdrop { background: rgb(3 6 10 / 0.9); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+@media (prefers-reduced-motion: no-preference) { .viewer[open], .viewer[open]::backdrop { animation: palette-fade 260ms ease; } }
+
 /* Command palette: a native modal dialog, so the dimmed page behind is inert. */
 .palette { box-shadow: 0 30px 90px rgb(0 0 0 / 0.4), 0 0 0 1px var(--hairline); }
 .palette::backdrop { background: rgb(4 7 11 / 0.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
@@ -527,7 +608,7 @@ img { max-width: 100%; height: auto; }
 /* ---------- Reduced motion: stop decorative motion, disable smooth scroll ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
   .marquee { animation: none !important; flex-wrap: wrap; width: auto; justify-content: center; }
   .marquee > [aria-hidden="true"] { display: none; }
   .skeleton, .load-img:not([data-loaded]), .load-img[data-loaded] { animation: none !important; }

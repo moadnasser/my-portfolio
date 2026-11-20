@@ -77,7 +77,11 @@
     "prevShot": "Previous screenshot",
     "nextShot": "Next screenshot",
     "noScreenshots": "Screenshots for this project are coming soon.",
-    "index": "Index of builds"
+    "index": "Index of builds",
+    "openShot": "Open screenshot {n}",
+    "phoneShots": "Mobile",
+    "webShots": "Desktop",
+    "allShots": "All"
   },
   "services": {
     "eyebrow": "Services",
@@ -297,7 +301,8 @@
     "failed": "Could not send from here. Email me directly instead:",
     "required": "Please fill in this field.",
     "invalidEmail": "Enter a valid email address.",
-    "tooShort": "A sentence or two helps me reply properly."
+    "tooShort": "A sentence or two helps me reply properly.",
+    "sentShort": "Sent"
   },
   "palette": {
     "label": "Quick search",

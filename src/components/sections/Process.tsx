@@ -25,7 +25,7 @@ function Stage({ id, index }: { id: (typeof stages)[number]; index: number }) {
         <p className="text-pretty text-text-2">{t(`process.items.${id}.body`)}</p>
         <ul className="mt-6 flex flex-wrap gap-2">
           {[0, 1, 2].map((n) => (
-            <li key={n} className="rounded-md border border-hairline px-3 py-1.5 text-[14px] text-text">
+            <li key={n} className="rounded-full border border-hairline px-3 py-1.5 text-[14px] text-text">
               {t(`process.items.${id}.points.${n}`)}
             </li>
           ))}

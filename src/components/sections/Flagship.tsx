@@ -84,7 +84,7 @@ function Pinned() {
   const title = localize(flagship!.title)
 
   return (
-    <section ref={sectionRef} id="work" data-theme="dark" data-tone="ink" className="sec scroll-mt-0" style={{ height: `${100 + steps.length * 90}svh` }} aria-labelledby="flagship-title">
+    <section ref={sectionRef} id="work" data-theme="dark" data-tone="ink" className="sec scroll-mt-0" style={{ height: `${100 + steps.length * 45}svh` }} aria-labelledby="flagship-title">
       <div className="sticky top-0 h-svh overflow-hidden">
         <div className="stage-glow pointer-events-none absolute inset-0" aria-hidden="true" />
 
@@ -106,7 +106,8 @@ function Pinned() {
         <div
           ref={grabRef}
           aria-hidden="true"
-          data-cursor={phase === 'steps' ? t('cursor.drag') : undefined}
+          data-cursor={phase === 'steps' ? 'drag' : undefined}
+          data-cursor-label={t('cursor.drag')}
           className={`absolute inset-x-[22%] top-[10%] h-[46%] touch-pan-y cursor-grab active:cursor-grabbing lg:inset-x-auto lg:inset-y-[10%] lg:end-[9%] lg:h-auto lg:w-[30%] ${phase === 'steps' ? '' : 'pointer-events-none'}`}
         />
 

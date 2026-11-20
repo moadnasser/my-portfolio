@@ -20,7 +20,7 @@ function Row({ project, floating, onEnter }: { project: Project; floating: boole
   return (
     <li
       onPointerEnter={onEnter}
-      data-cursor={t('cursor.view')}
+      data-cursor="view" data-cursor-label={t('cursor.view')}
       className="group relative border-b border-hairline transition-opacity duration-500 lg:group-hover/index:opacity-35 lg:hover:!opacity-100"
     >
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 py-8 lg:grid-cols-12 lg:items-center lg:py-8">

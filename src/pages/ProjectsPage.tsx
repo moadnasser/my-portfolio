@@ -38,7 +38,7 @@ function Entry({ project, index, eager }: { project: Project; index: number; eag
   return (
     <article className="grid grid-cols-1 items-end gap-x-10 gap-y-7 lg:grid-cols-12">
       {project.screens && (
-        <TLink to={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" data-cursor={t('cursor.view')} className={`group block ${cut.plate}`}>
+        <TLink to={`/projects/${project.id}`} tabIndex={-1} aria-hidden="true" data-cursor="view" data-cursor-label={t('cursor.view')} className={`group block ${cut.plate}`}>
           <Plate screens={project.screens} alt="" shape={cut.shape} tone={cut.tone} transitionName={`shot-${project.id}`} eager={eager} />
         </TLink>
       )}

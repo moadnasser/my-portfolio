@@ -6,16 +6,40 @@ import { TURN, clamp01, ease, loadScreen, mix, panelGeometry, roundedRect, studi
 import { INTRO } from './timeline'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 
-/** Phone proportions in world units. The screen matches the 720×1564 app screenshots. */
+/**
+ * Phone proportions in world units, after the iPhone Pro Max (about 78 × 163.4 × 8.75 mm): a
+ * flat metal band with a tight edge radius, a black glass face with a thin even bezel and a small
+ * island, and a display that matches the 720×1564 app screenshots. The back follows the 18 Pro
+ * Max: a raised camera plateau across the full width with three lenses in a triangle, flash and
+ * sensor at the far end, and a glass panel below that all but matches the metal around it.
+ */
 const W = 1.5
-const H = 3.12
-const R = 0.27
-const DEPTH = 0.12
-const BEVEL = 0.035
-const SW = 1.4
-const SH = 3.02
-const SR = 0.22
+const H = 3.142
+const R = 0.275
+const DEPTH = 0.132
+const BEVEL = 0.022
 const FRONT = DEPTH / 2 + BEVEL
+/** Glass sits just inside the band; the display sits inside the glass. */
+const GLASS_INSET = 0.034
+const BEZEL = 0.05
+const SW = W - BEZEL * 2
+const SH = H - BEZEL * 2
+const SR = R - BEZEL
+/** Side buttons as [x side, y centre, length]: action, volume up, volume down on one side; power on the other. */
+const BUTTONS: [number, number, number][] = [
+  [-1, 0.93, 0.13],
+  [-1, 0.63, 0.24],
+  [-1, 0.33, 0.24],
+  [1, 0.5, 0.4],
+]
+/** Camera plateau: size, and the lenses on it relative to its centre. */
+const PLATEAU = { w: W - 0.1, h: 0.9, r: 0.27, depth: 0.05 }
+const LENSES: [number, number][] = [
+  [-0.44, 0.2],
+  [-0.44, -0.2],
+  [-0.1, 0],
+]
+const TITANIUM = { color: '#8b929a', metalness: 1, roughness: 0.34 } as const
 /** Sparse depth field behind the phone, generated once (seeded so renders stay pure). */
 const DUST = 420
 const dust = (() => {
@@ -96,14 +120,19 @@ function Phone({ progress, screens, rtl, light: lightTheme, onReady, grab }: Rig
   const env = useMemo(() => studioEnvironment(gl, RoomEnvironment), [gl])
 
   const body = useMemo(() => {
-    const g = new THREE.ExtrudeGeometry(roundedRect(W, H, R), { depth: DEPTH, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: BEVEL, bevelSegments: 5, curveSegments: 20 })
+    const g = new THREE.ExtrudeGeometry(roundedRect(W, H, R), { depth: DEPTH, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: BEVEL, bevelSegments: 4, curveSegments: 24 })
     g.translate(0, 0, -DEPTH / 2)
     return g
   }, [])
+  const glassGeo = useMemo(() => new THREE.ShapeGeometry(roundedRect(W - GLASS_INSET, H - GLASS_INSET, R - GLASS_INSET / 2), 24), [])
   const screenGeo = useMemo(() => panelGeometry(SW, SH, SR), [])
-  const islandGeo = useMemo(() => new THREE.ShapeGeometry(roundedRect(0.44, 0.13, 0.065), 12), [])
-  const plateGeo = useMemo(() => new THREE.ExtrudeGeometry(roundedRect(0.7, 0.72, 0.2), { depth: 0.03, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 3, curveSegments: 14 }), [])
-  const lensGeo = useMemo(() => new THREE.CylinderGeometry(0.125, 0.125, 0.05, 36).rotateX(Math.PI / 2), [])
+  const islandGeo = useMemo(() => new THREE.ShapeGeometry(roundedRect(0.34, 0.108, 0.054), 12), [])
+  const dotGeo = useMemo(() => new THREE.CircleGeometry(1, 24), [])
+  const buttonGeo = useMemo(() => new THREE.BoxGeometry(1, 1, 1), [])
+  const plateGeo = useMemo(() => new THREE.ExtrudeGeometry(roundedRect(PLATEAU.w, PLATEAU.h, PLATEAU.r), { depth: PLATEAU.depth, bevelEnabled: true, bevelThickness: 0.016, bevelSize: 0.016, bevelSegments: 4, curveSegments: 20 }), [])
+  const insetGeo = useMemo(() => new THREE.ShapeGeometry(roundedRect(W - 0.2, H * 0.6, 0.22), 20), [])
+  const ringGeo = useMemo(() => new THREE.CylinderGeometry(0.168, 0.168, 0.07, 44).rotateX(Math.PI / 2), [])
+  const lensGeo = useMemo(() => new THREE.CylinderGeometry(0.124, 0.124, 0.076, 44).rotateX(Math.PI / 2), [])
 
   const light = (t: THREE.Texture) => {
     const m = screenMat.current
@@ -196,30 +225,66 @@ function Phone({ progress, screens, rtl, light: lightTheme, onReady, grab }: Rig
       <group ref={rig} position={[0, -3, 0]} rotation={[-1.02, 0, 0]}>
         <group ref={spin}>
           <group ref={hand}>
+          {/* Titanium band. */}
           <mesh geometry={body}>
-            <meshStandardMaterial color="#27333f" metalness={0.92} roughness={0.3} envMap={env} envMapIntensity={0.55} />
+            <meshStandardMaterial {...TITANIUM} envMap={env} envMapIntensity={0.85} />
           </mesh>
-          {/* Glass front, then the lit screen and its camera island. */}
-          <mesh geometry={screenGeo} position={[0, 0, FRONT + 0.002]}>
+          {BUTTONS.map(([side, y, length]) => (
+            <mesh key={`${side}${y}`} geometry={buttonGeo} position={[side * (W / 2 + BEVEL + 0.004), y, 0]} scale={[0.022, length, 0.052]}>
+              <meshStandardMaterial {...TITANIUM} envMap={env} envMapIntensity={0.85} />
+            </mesh>
+          ))}
+
+          {/* Front: black glass edge to edge, the lit display inside it, then the island with its lens. */}
+          <mesh geometry={glassGeo} position={[0, 0, FRONT + 0.001]}>
+            <meshBasicMaterial color="#020406" toneMapped={false} />
+          </mesh>
+          <mesh geometry={screenGeo} position={[0, 0, FRONT + 0.003]}>
             <meshBasicMaterial ref={screenMat} color="#0b1218" toneMapped={false} />
           </mesh>
-          <mesh geometry={islandGeo} position={[0, SH / 2 - 0.17, FRONT + 0.004]}>
-            <meshBasicMaterial color="#05080b" toneMapped={false} />
+          <mesh geometry={islandGeo} position={[0, SH / 2 - 0.15, FRONT + 0.005]}>
+            <meshBasicMaterial color="#010203" toneMapped={false} />
           </mesh>
-          {/* Back: camera plate with three lenses. */}
+          <mesh geometry={dotGeo} position={[0.1, SH / 2 - 0.15, FRONT + 0.006]} scale={0.026}>
+            <meshBasicMaterial color="#0c1826" toneMapped={false} />
+          </mesh>
+
+          {/* Back: metal shell, the glass panel that nearly matches it, and the camera plateau across the top. */}
           <group rotation={[0, Math.PI, 0]} position={[0, 0, -FRONT]}>
-            <mesh geometry={plateGeo} position={[-W / 2 + 0.5, H / 2 - 0.52, 0]}>
-              <meshStandardMaterial color="#1c2630" metalness={0.9} roughness={0.38} envMap={env} envMapIntensity={0.55} />
+            <mesh geometry={glassGeo} position={[0, 0, 0.001]}>
+              <meshStandardMaterial color="#5d666f" metalness={0.9} roughness={0.42} envMap={env} envMapIntensity={0.6} />
             </mesh>
-            {[
-              [-0.16, 0.16],
-              [-0.16, -0.16],
-              [0.16, 0],
-            ].map(([lx, ly]) => (
-              <mesh key={`${lx}${ly}`} geometry={lensGeo} position={[-W / 2 + 0.5 + lx, H / 2 - 0.52 + ly, 0.055]}>
-                <meshStandardMaterial color="#060b11" metalness={1} roughness={0.08} envMap={env} envMapIntensity={0.8} />
+            <mesh geometry={insetGeo} position={[0, -H * 0.145, 0.003]}>
+              <meshStandardMaterial color="#555e68" metalness={0.5} roughness={0.22} envMap={env} envMapIntensity={0.75} />
+            </mesh>
+            <group position={[0, H / 2 - 0.05 - PLATEAU.h / 2, 0]}>
+              <mesh geometry={plateGeo}>
+                <meshStandardMaterial color="#59626c" metalness={0.9} roughness={0.4} envMap={env} envMapIntensity={0.65} />
               </mesh>
-            ))}
+              {LENSES.map(([lx, ly]) => (
+                <group key={`${lx}${ly}`} position={[lx, ly, PLATEAU.depth + 0.04]}>
+                  <mesh geometry={ringGeo}>
+                    <meshStandardMaterial {...TITANIUM} envMap={env} envMapIntensity={0.9} />
+                  </mesh>
+                  <mesh geometry={lensGeo} position={[0, 0, 0.004]}>
+                    <meshStandardMaterial color="#04070b" metalness={1} roughness={0.06} envMap={env} envMapIntensity={1} />
+                  </mesh>
+                  <mesh geometry={dotGeo} position={[0, 0, 0.044]} scale={0.05}>
+                    <meshBasicMaterial color="#10233a" toneMapped={false} />
+                  </mesh>
+                </group>
+              ))}
+              {/* Far end of the plateau: flash, microphone, depth sensor. */}
+              <mesh geometry={dotGeo} position={[0.5, 0.2, PLATEAU.depth + 0.018]} scale={0.058}>
+                <meshBasicMaterial color="#e6edf3" toneMapped={false} />
+              </mesh>
+              <mesh geometry={dotGeo} position={[0.5, 0, PLATEAU.depth + 0.018]} scale={0.014}>
+                <meshBasicMaterial color="#05080c" toneMapped={false} />
+              </mesh>
+              <mesh geometry={dotGeo} position={[0.5, -0.2, PLATEAU.depth + 0.018]} scale={0.05}>
+                <meshBasicMaterial color="#05080c" toneMapped={false} />
+              </mesh>
+            </group>
           </group>
           </group>
         </group>

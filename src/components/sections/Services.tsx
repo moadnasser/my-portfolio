@@ -13,7 +13,7 @@ function Band({ reverse = false }: { reverse?: boolean }) {
         <ul key={copy} aria-hidden={copy === 1 || undefined} className="flex shrink-0 items-center">
           {items.map((tech, i) => (
             <li key={tech.id} className="latin t-hero flex items-center whitespace-nowrap !text-[clamp(1.75rem,1.2rem+2vw,3.25rem)]">
-              <span className={i % 3 === 1 ? 't-outline' : 'text-text'}>{tech.label}</span>
+              <span className={i % 3 === 1 ? 'text-text-2' : 'text-text'}>{tech.label}</span>
               <span aria-hidden="true" className="arch-mark mx-[0.45em] inline-block h-[0.34em] w-[0.26em] shrink-0 " />
             </li>
           ))}
@@ -55,7 +55,7 @@ export function Services() {
               return (
                 <li key={service.id}>
                   <Reveal delay={i * 0.05} className="group grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-hairline py-8 last:border-b sm:grid-cols-[4.5rem_1fr] lg:py-10">
-                    <span className="mt-1 grid size-11 place-items-center rounded-lg border border-hairline text-text-2 transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent" aria-hidden="true">
+                    <span className="mt-1 grid size-11 place-items-center rounded-full border border-hairline text-text-2 transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-on-accent" aria-hidden="true">
                       <Icon className="size-5" strokeWidth={1.6} />
                     </span>
                     <div>

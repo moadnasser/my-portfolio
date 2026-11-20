@@ -391,7 +391,7 @@ function Toast({ message, placement }: { message: string | null; placement: 'top
         {message && (
           <motion.div
             key={message}
-            className="flex max-w-sm items-center gap-2.5 rounded-lg border border-hairline bg-surface px-4 py-2.5 text-sm product-shadow"
+            className="flex max-w-sm items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2.5 text-sm product-shadow"
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: offset, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: offset }}

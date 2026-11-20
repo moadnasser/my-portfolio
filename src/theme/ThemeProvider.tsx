@@ -21,6 +21,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    // Mobile browser chrome follows the chosen theme, not just the OS setting.
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', theme === 'dark' ? '#070b10' : '#edf1f4'))
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme)
     } catch {

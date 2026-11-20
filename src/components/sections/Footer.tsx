@@ -57,7 +57,7 @@ export function Footer() {
           </ul>
 
           <div className="col-span-2 flex lg:col-span-2 lg:justify-end">
-            <button type="button" onClick={() => scrollToTarget(0, Boolean(reduce))} className="group inline-flex h-fit cursor-pointer items-center gap-3 text-text">
+            <button type="button" onClick={() => scrollToTarget(0, Boolean(reduce))} data-cursor="magnetic" className="group inline-flex h-fit cursor-pointer items-center gap-3 rounded-full text-text">
               {t('footer.backToTop')}
               <span className="arch-mark grid h-12 w-10 place-items-center  text-on-accent transition-transform duration-500 ease-out-expo group-hover:-translate-y-1.5">
                 <ArrowUp className="size-4" aria-hidden="true" />

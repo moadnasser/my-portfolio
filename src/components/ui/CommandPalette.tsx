@@ -156,7 +156,7 @@ export function CommandPalette() {
         setIndex(0)
       }}
       onClick={(e) => e.target === e.currentTarget && close()}
-      className="palette themed mx-auto mt-[12svh] w-[min(38rem,calc(100vw-2rem))] max-w-none overflow-hidden rounded-2xl bg-surface p-0 text-text"
+      className="palette themed mx-auto mt-[12svh] w-[min(38rem,calc(100vw-2rem))] max-w-none overflow-hidden rounded-[1.75rem] bg-surface p-0 text-text"
     >
       <div className="flex items-center gap-3 border-b border-hairline px-5">
         <Search className="size-[18px] shrink-0 text-text-2" aria-hidden="true" />
@@ -179,7 +179,7 @@ export function CommandPalette() {
           placeholder={t('palette.placeholder')}
           className="h-14 min-w-0 grow bg-transparent text-[17px] text-text outline-none placeholder:text-text-2"
         />
-        <kbd className="latin t-fine hidden rounded-md bg-chip px-1.5 py-0.5 text-text-2 sm:block">esc</kbd>
+        <kbd className="latin t-fine hidden rounded-full bg-chip px-1.5 py-0.5 text-text-2 sm:block">esc</kbd>
       </div>
 
       <div ref={list} id={`${uid}-list`} role="listbox" aria-label={t('palette.label')} data-lenis-prevent className="max-h-[min(24rem,52svh)] overflow-y-auto overscroll-contain p-2">
@@ -203,7 +203,7 @@ export function CommandPalette() {
                     aria-selected={selected}
                     onPointerMove={() => !selected && setIndex(results.indexOf(c))}
                     onClick={() => run(c)}
-                    className={`flex h-11 cursor-pointer items-center gap-3 rounded-lg px-3 ${selected ? 'bg-accent text-on-accent' : 'text-text'}`}
+                    className={`flex h-11 cursor-pointer items-center gap-3 rounded-full px-3 ${selected ? 'bg-accent text-on-accent' : 'text-text'}`}
                   >
                     <Icon className={`size-4 shrink-0 rtl:-scale-x-100 ${selected ? '' : 'text-text-2'}`} aria-hidden="true" />
                     <span className="min-w-0 grow truncate" dir="auto">

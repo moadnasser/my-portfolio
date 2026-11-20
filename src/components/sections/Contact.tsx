@@ -94,12 +94,12 @@ export function Contact() {
                 const copied = state?.id === c.id
                 const body = (
                   <>
-                    <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-accent/12 text-accent transition-colors duration-300 group-hover:bg-accent group-hover:text-on-accent">{c.icon}</span>
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/12 text-accent transition-colors duration-300 group-hover:bg-accent group-hover:text-on-accent">{c.icon}</span>
                     <span className="t-title min-w-0 grow truncate !text-[1.125rem] text-text sm:!text-[1.25rem]">{c.text}</span>
                     {c.href && <ArrowUpRight className="size-5 shrink-0 text-text-2 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden="true" />}
                   </>
                 )
-                const main = 'group flex min-w-0 grow items-center gap-4 rounded-lg p-2.5'
+                const main = 'group flex min-w-0 grow items-center gap-4 rounded-full p-2.5'
                 return (
                   <li key={c.id} className="themed flex items-center gap-1 rounded-plate border border-hairline bg-surface p-1.5 transition-colors duration-300 hover:border-accent/50">
                     {c.href ? (
@@ -114,7 +114,7 @@ export function Contact() {
                       onClick={() => void copy(c.id, c.value)}
                       aria-label={c.copyLabel}
                       title={c.copyLabel}
-                      className="me-1.5 inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-hairline px-3 text-text-2 transition-colors duration-200 hover:border-text hover:text-text active:scale-95"
+                      className="me-1.5 inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-hairline px-3 text-text-2 transition-colors duration-200 hover:border-text hover:text-text active:scale-95"
                     >
                       {copied && state.ok ? <Check className="size-4 text-accent" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
                       <span className="sr-only" aria-live="polite">

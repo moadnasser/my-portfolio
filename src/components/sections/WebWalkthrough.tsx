@@ -65,7 +65,7 @@ function Pinned() {
   const title = localize(project!.title)
 
   return (
-    <section ref={sectionRef} id="web" data-tone="surface" className="sec themed" style={{ height: `${100 + steps.length * 75}svh` }} aria-labelledby="web-title">
+    <section ref={sectionRef} id="web" data-tone="surface" className="sec themed" style={{ height: `${100 + steps.length * 38}svh` }} aria-labelledby="web-title">
       <div className="sticky top-0 flex h-svh items-center overflow-hidden">
         <div className="shell grid grid-cols-1 items-center gap-x-14 gap-y-8 lg:grid-cols-12">
           <div className="order-2 text-center lg:order-1 lg:col-span-4 lg:text-start">

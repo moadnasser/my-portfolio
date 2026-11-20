@@ -1,9 +1,8 @@
 import { ArrowLeft, ArrowUpRight, Code2, ExternalLink } from 'lucide-react'
 import { useEffect } from 'react'
 import { Navigate, useParams } from 'react-router'
-import { ShotStrip } from '../components/gallery/ShotStrip'
+import { ShotGallery } from '../components/gallery/ShotGallery'
 import { DemoLink } from '../components/ui/DemoLink'
-import { LoadImg } from '../components/ui/LoadImg'
 import { Plate } from '../components/ui/Plate'
 import { Reveal } from '../components/ui/Reveal'
 import { RiseText } from '../components/ui/RiseText'
@@ -119,22 +118,16 @@ export function ProjectPage() {
               <RiseText text={t('work.gallery')} />
             </h2>
           </div>
-          <Reveal className="mt-8 lg:mt-12">
-            {shots.length > 1 ? (
-              <ShotStrip images={shots} label={t('work.gallery')} altFor={(i) => t('work.screenshotAlt', { title, n: i + 1 })} />
-            ) : (
-              <div className="shell">
-                <LoadImg src={shots[0]} alt={t('work.screenshotAlt', { title, n: 1 })} loading="lazy" decoding="async" className="shot max-h-[70svh] w-auto" />
-              </div>
-            )}
-          </Reveal>
+          <div className="shell mt-8 lg:mt-12">
+            <ShotGallery images={shots} title={title} />
+          </div>
         </section>
       )}
 
       {/* Onward: the next build, as one large link. */}
       {next && next.id !== project.id && (
         <section data-theme="dark" data-tone="ink" className="sec border-b border-hairline">
-          <TLink to={`/projects/${next.id}`} data-cursor={t('cursor.open')} className="shell group flex flex-col py-[clamp(4rem,3rem+5vw,7.5rem)]">
+          <TLink to={`/projects/${next.id}`} data-cursor="view" data-cursor-label={t('cursor.open')} className="shell group flex flex-col py-[clamp(4rem,3rem+5vw,7.5rem)]">
             <span className="t-eyebrow">{t('work.next')}</span>
             <span className="t-hero mt-5 flex items-end justify-between gap-6 text-text transition-colors duration-500 group-hover:text-accent">
               {localize(next.title)}
